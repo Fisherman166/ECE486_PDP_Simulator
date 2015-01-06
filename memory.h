@@ -15,7 +15,7 @@
 #define PAGES 32
 #define MEMORY_MASK 0xFFF	/* Only 12 bits are needed in an address or a data item */
 
-uint16_t memory[PAGES][WORDS_PER_PAGE];
+uint16_t memory[PAGES * WORDS_PER_PAGE];
 
 #endif
 
