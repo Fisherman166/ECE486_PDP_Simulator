@@ -5,13 +5,10 @@
 ** main.c
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
+#include "main.h"
 #include "memory.h"
 #include "cpu.h"
 
-uint8_t fill_memory(int argc, char* argv[]);
 
 int main(int argc, char* argv[]) {
 	
@@ -19,11 +16,17 @@ int main(int argc, char* argv[]) {
 }	
 
 
-uint8_t fill_memory(int argc, char* argv[]) {
+/******************************************************************************
+** FILLS MEMORY WITH INPUTTED MEMORY FILE
+******************************************************************************/
+void fill_memory(int argc, char* argv[]) {
+	const uint8_t data_mask = 0x3F;		/* Keep lower 6 bits of the upper/lower bytes */
+	const uint8_t address_mask = 0x40;	/* Mask to check the address bit */
+	const uint8_t high_shift	= 6;		/* Shifts the high byte */
 	FILE* program_file;
-	size_t file_size;
-	struct stat stats;
-	int current_byte;
+	int return1, return2;
+	uint16_t high_byte, low_byte, word_value;
+	static uint16_t address = 0;
 
 	if(argc > 1 && argc < 3) {
 		program_file = fopen(argv[1], "r");
@@ -38,19 +41,42 @@ uint8_t fill_memory(int argc, char* argv[]) {
 		exit(-2);
 	}
 
-	/* Get the length of the program in bytes */
-	if(stat(argv[1], &stats) == 0) {
-		file_size = (size_t)stats.st_size;
+	/* Main loop that loads the memory */
+	for(;;) {
+		/* Grab up to a maximum of three octal values */
+		return1 = fscanf(program_file, "%3" SCNo16, &high_byte);
+		return2 = fscanf(program_file, "%3" SCNo16, &low_byte);
+	
+		if(return1 == EOF || return2 == EOF)
+			break;
+
+		word_value = ((high_byte & data_mask) << high_shift) | (low_byte & data_mask);
+
+		#ifdef FILL_DEBUG
+			printf("From file - high: %o, low: %o\n", high_byte, low_byte);
+			printf("Word_value: %o\n", word_value);
+		#endif
+
+		if(high_byte & address_mask) {
+			address = word_value;
+			#ifdef FILL_DEBUG
+				printf("Address changed to: %o\n", address);
+			#endif
+		}
+		else {
+			
+			memory[address] = word_value;
+			#ifdef FILL_DEBUG
+				printf("Memory value at address %o set to: %o\n", address, memory[address]);
+			#endif
+			address++;
+		}
+
+		#ifdef FILL_DEBUG
+			printf("\n");
+		#endif
 	}
-	else {
-		printf("Could not determine the size of the inputted file\n");
-	}
 
-	/* Words are only 12 bits long, but the first two bits of each byte
-	** are passed by our special assembler.  Making our memory actually
-	** use 16 bit words
-	*/
-
-
+	fclose(program_file);
 }
 
