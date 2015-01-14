@@ -8,6 +8,8 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <stdio.h>
+
 #define CUTOFF_MASK 0xFFF	/* Bitmask to keep registers/memory at 12 bits */
 
 /* CPU registers - only 12 bits are used of the 16 */
@@ -38,6 +40,17 @@ void RAR(void);
 void RTR(void);
 void RAL(void);
 void RTL(void);
+
+/* Opcode 7 - group 2 */
+void SMA(void);
+void SZA(void);
+void SNL(void);
+void SPA(void);
+void SNA(void);
+void SZL(void);
+void SKP(void);
+void OSR(void);
+void HLT(void);
 
 #endif
 
