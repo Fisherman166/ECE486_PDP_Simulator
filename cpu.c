@@ -119,7 +119,7 @@ void RTR(void) {
 ******************************************************************************/
 void RAL(void) {
 	const uint8_t shift_num = 12;	/* Shift bit 12 into bit 0 */
-	const uint8_t new_link_pos = 0x1000;	/* Bit 12 */
+	const uint16_t new_link_pos = 0x1000;	/* Bit 12 */
 
 	/* Shift AC left 1.  New link is bit 12
 	** New bit 0 of AC is old link
