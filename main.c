@@ -13,29 +13,40 @@
 int main(int argc, char* argv[]) {
 	
 	fill_memory(argc, argv);
-}	
 
+	//can capture return values to verify fopen && fclose
+	trace_init();
+	trace_close();
+
+}/*end main*/
 
 /******************************************************************************
 ** FILLS MEMORY WITH INPUTTED MEMORY FILE
+@CHANGELOG:
+	JSP:
+	-Modified argv count and first 'if' statement to take tracefile arg
+	-Added tracefile generation functions
 ******************************************************************************/
 void fill_memory(int argc, char* argv[]) {
 	const uint8_t data_mask = 0x3F;		/* Keep lower 6 bits of the upper/lower bytes */
 	const uint8_t address_mask = 0x40;	/* Mask to check the address bit */
 	const uint8_t high_shift	= 6;		/* Shifts the high byte */
 	FILE* program_file;
-	int return1, return2;
 	uint16_t high_byte, low_byte, word_value;
 	static uint16_t address = 0;
 
-	if(argc > 1 && argc < 3) {
+	int return1, return2;
+	return1 = return2 = 0;
+
+	if(argc == 3) {
 		program_file = fopen(argv[1], "r");
+		trace_name = argv[2];
 	}
 	else {
 		printf("Please provide a valid program filename to use with the simulator.\n");
+		printf("FORMAT:\n PDP_sim <input_file> <trace_file>\n");
 		exit(-1);
 	}
-
 	if(program_file == NULL) {
 		printf("The entered program filename does not exist.\n");
 		exit(-2);
@@ -63,8 +74,7 @@ void fill_memory(int argc, char* argv[]) {
 				printf("Address changed to: %o\n", address);
 			#endif
 		}
-		else {
-			
+		else {		
 			memory[address] = word_value;
 			#ifdef FILL_DEBUG
 				printf("Memory value at address %o set to: %o\n", address, memory[address]);
@@ -75,8 +85,10 @@ void fill_memory(int argc, char* argv[]) {
 		#ifdef FILL_DEBUG
 			printf("\n");
 		#endif
-	}
+	}/*end for*/
 
 	fclose(program_file);
 }
-
+/******************************************************************************
+**	EOF
+******************************************************************************/
