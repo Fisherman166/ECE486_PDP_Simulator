@@ -101,14 +101,14 @@ void IAC(regs* registers) {
 ** OPCODE 7 GROUP 1 - RAR
 ******************************************************************************/
 void RAR(regs* registers) {
-	const uint8_t bit11_shift = 12;
+	const uint8_t bit11_shift = 11;
 	uint8_t old_link = registers->link_bit;
 
-	/* Shift right 1.  New link is bit 0 of registers->AC before shift.
+	/* Shift right 1.  New link is bit 0 of registers->AC.
 	** Bit 11 of new registers->AC is old link bit value.
 	*/
-	registers->link_bit = registers->AC & 1;
 	registers->AC >>= 1;
+	registers->link_bit = registers->AC & 1;
 	registers->AC = (registers->AC | (old_link << bit11_shift)) & CUTOFF_MASK;
 }
 
@@ -129,12 +129,12 @@ void RAL(regs* registers) {
 	const uint16_t new_link_pos = 0x1000;	/* Bit 12 */
 
 	/* Shift registers->AC left 1.  New link is bit 12
-	** New bit 0 of registers->AC is old link
+	** Bit 0 of registers->AC is old link bit
 	*/
 	registers->AC <<= 1;
 	registers->AC |= registers->link_bit;
-	registers->AC &= CUTOFF_MASK;
 	registers->link_bit = (registers->AC & new_link_pos) >> shift_num;
+	registers->AC &= CUTOFF_MASK;
 }
 
 /******************************************************************************
@@ -234,6 +234,8 @@ int main() {
 
 	reset_test_regs(&registers);
 	group1_opcodes_test(&registers);
+	reset_test_regs(&registers);
+	group1_micro_test(&registers);
 
 	return 0;
 }
@@ -298,6 +300,60 @@ void group1_opcodes_test(regs* registers) {
 	registers->CPMA = 0x25;
 	JMP(registers);
 	assert(registers->PC == 0x25);
+}
 
+void group1_micro_test(regs* registers) {
+	/* CLA test */
+	registers->AC = 0x83D;
+	CLA(registers);
+	assert(registers->AC == 0);
+
+	/* CLL test */
+	registers->link_bit = 0x1;
+	CLL(registers);
+	assert(registers->link_bit == 0);
+
+	/* CMA test */
+	registers->AC = 0;
+	CMA(registers);
+	assert(registers->AC == 0xFFF);
+
+	/* CML test */
+	registers->link_bit = 0;
+	CML(registers);
+	assert(registers->link_bit == 1);
+
+	/* IAC test */
+	registers->AC = 0;
+	IAC(registers);
+	assert(registers->AC == 0x1);
+
+	/* RAR test */
+	registers->link_bit = 1;
+	registers->AC = 0xFFD;
+	RAR(registers);
+	assert(registers->link_bit == 0);
+	assert(registers->AC == 0xFFE);
+
+	/* RTR test */
+	registers->link_bit = 0;
+	registers->AC = 0xFFD;
+	RTR(registers);
+	assert(registers->link_bit == 1);
+	assert(registers->AC == 0x3FF);
+
+	/* RAL test */
+	registers->link_bit = 1;
+	registers->AC = 0x7FE;
+	RAL(registers);
+	assert(registers->link_bit == 0);
+	assert(registers->AC == 0xFFD);
+
+	/* RTR test */
+	registers->link_bit = 1;
+	registers->AC = 0x7FE;
+	RTL(registers);
+	assert(registers->link_bit == 1);
+	assert(registers->AC == 0xFFA);
 }
 
