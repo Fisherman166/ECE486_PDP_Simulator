@@ -3,206 +3,219 @@
 ** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
 **
 ** cpu.c
-*/
+**
+******************************************************************************/
 
 #include "cpu.h"
 
 /******************************************************************************
 ** OPCODE 0 - AND
 ******************************************************************************/
-void AND(void) {
-	AC &= MB;
+void AND(regs* registers) {
+	registers->AC &= registers->MB;
 }
 
 /******************************************************************************
 ** OPCODE 1 - TAD
 ******************************************************************************/
-void TAD(void) {
-	/* TODO: 12 bit addition */
+void TAD(regs* registers) {
+	const uint16_t carry_out = 0x1000;	/* Check bit 13 for carry out */
+	registers->AC += registers->MB;
+
+	if(registers->AC & carry_out) registers->link_bit = ~registers->link_bit;
+
+	registers->AC &= CUTOFF_MASK;
 }
 
 /******************************************************************************
 ** OPCODE 2 - ISZ
 ******************************************************************************/
-void ISZ(void) {
-	/* If MB is zero, do nothing */
-	if(MB) {
-		MB = (MB + 1) & CUTOFF_MASK;
+void ISZ(regs* registers) {
+	registers->MB = (registers->MB + 1) & CUTOFF_MASK;
+
+	if(!registers->MB) {
+		registers->PC++;
 	}
 }
 
 /******************************************************************************
 ** OPCODE 3 - DCA
 ******************************************************************************/
-void DCA(void) {
-	MB = AC;
-	AC = 0;
+void DCA(regs* registers) {
+	registers->MB = registers->AC;
+	registers->AC = 0;
 }
 
 /******************************************************************************
 ** OPCODE 4 - JMS
 ******************************************************************************/
-void JMS(void) {
-	MB = PC;
+void JMS(regs* registers) {
+	registers->MB = registers->PC;
 	/* TODO: write MB to memory */
-	PC = (CPMA + 1) & CUTOFF_MASK;
+	registers->PC = (registers->CPMA + 1) & CUTOFF_MASK;
 }
 
 /******************************************************************************
 ** OPCODE 5 - JMP
 ******************************************************************************/
-void JMP(void) {
-	PC = CPMA;
+void JMP(regs* registers) {
+	registers->PC = registers->CPMA;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - CLA
 ******************************************************************************/
-void CLA(void) {
-	AC = 0;
+void CLA(regs* registers) {
+	registers->AC = 0;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - CLL
 ******************************************************************************/
-void CLL(void) {
-	link_bit = 0;
+void CLL(regs* registers) {
+	registers->link_bit = 0;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - CMA
 ******************************************************************************/
-void CMA(void) {
-	AC = ~AC & CUTOFF_MASK;
+void CMA(regs* registers) {
+	registers->AC = ~registers->AC & CUTOFF_MASK;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - CML
 ******************************************************************************/
-void CML(void) {
-	link_bit = ~link_bit & 1;
+void CML(regs* registers) {
+	registers->link_bit = ~registers->link_bit & 1;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - IAC
 ******************************************************************************/
-void IAC(void) {
-	AC = (AC + 1) & CUTOFF_MASK;
+void IAC(regs* registers) {
+	registers->AC = (registers->AC + 1) & CUTOFF_MASK;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - RAR
 ******************************************************************************/
-void RAR(void) {
-	const uint8_t = bit11_shift = 12;
-	uint8_t old_link = link_bit;
+void RAR(regs* registers) {
+	const uint8_t bit11_shift = 12;
+	uint8_t old_link = registers->link_bit;
 
-	/* Shift right 1.  New link is bit 0 of AC before shift.
-	** Bit 11 of new AC is old link bit value.
+	/* Shift right 1.  New link is bit 0 of registers->AC before shift.
+	** Bit 11 of new registers->AC is old link bit value.
 	*/
-	link_bit = AC & 1;
-	AC >>= 1;
-	AC = (AC | (old_link << bit11_shift)) & CUTOFF_MASK;
+	registers->link_bit = registers->AC & 1;
+	registers->AC >>= 1;
+	registers->AC = (registers->AC | (old_link << bit11_shift)) & CUTOFF_MASK;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - RTR
 ******************************************************************************/
-void RTR(void) {
+void RTR(regs* registers) {
 	/* Same as two RAR in a row */
-	RAR();
-	RAR();
+	RAR(registers);
+	RAR(registers);
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - RAL
 ******************************************************************************/
-void RAL(void) {
+void RAL(regs* registers) {
 	const uint8_t shift_num = 12;	/* Shift bit 12 into bit 0 */
 	const uint16_t new_link_pos = 0x1000;	/* Bit 12 */
 
-	/* Shift AC left 1.  New link is bit 12
-	** New bit 0 of AC is old link
+	/* Shift registers->AC left 1.  New link is bit 12
+	** New bit 0 of registers->AC is old link
 	*/
-	AC <<= 1;
-	AC |= link_bit;
-	link_bit = (AC & new_link_pos) >> shift_num;
+	registers->AC <<= 1;
+	registers->AC |= registers->link_bit;
+	registers->AC &= CUTOFF_MASK;
+	registers->link_bit = (registers->AC & new_link_pos) >> shift_num;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 1 - RTL
 ******************************************************************************/
-void RTL(void) {
+void RTL(regs* registers) {
 	/* Same as two RAL in a row */
-	RAL();
-	RAL();
+	RAL(registers);
+	RAL(registers);
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SMA
 ******************************************************************************/
-void SMA(void) {
-	//TODO
+void SMA(regs* registers) {
+	const uint16_t sign_bit = 0x1000;
+
+	if(registers->AC & sign_bit) {
+		registers->PC++;
+	}
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SZA
 ******************************************************************************/
-void SZA(void) {
-	if(!AC) {
-		PC++;
+void SZA(regs* registers) {
+	if(!registers->AC) {
+		registers->PC++;
 	}
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SNL
 ******************************************************************************/
-void SNL(void) {
-	if(link_bit) {
-		PC++;
+void SNL(regs* registers) {
+	if(registers->link_bit) {
+		registers->PC++;
 	}
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SPA
 ******************************************************************************/
-void SPA(void) {
-	short AC_value = (short)AC;
-	if(AC_value > 0) {
-		PC++;
+void SPA(regs* registers) {
+	const uint16_t sign_bit = 0x1000;
+
+	if( !(registers->AC & sign_bit) ) {
+		registers->PC++;
 	}
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SNA
 ******************************************************************************/
-void SNA(void) {
-	if(AC) {
-		PC++;
+void SNA(regs* registers) {
+	if(registers->AC) {
+		registers->PC++;
 	}
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SZL
 ******************************************************************************/
-void SZL(void) {
-	if(!link_bit) {
-		PC++;
+void SZL(regs* registers) {
+	if(!registers->link_bit) {
+		registers->PC++;
 	}
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SKP
 ******************************************************************************/
-void SKP(void) {
-	PC++;
+void SKP(regs* registers) {
+	registers->PC++;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - OSR
 ******************************************************************************/
-void OSR(void) {
-	AC = (AC | SR) & CUTOFF_MASK;
+void OSR(regs* registers) {
+	registers->AC = (registers->AC | registers->SR) & CUTOFF_MASK;
 }
 
 /******************************************************************************
@@ -210,5 +223,13 @@ void OSR(void) {
 ******************************************************************************/
 void HLT(void) {
 	printf("HALTING SYSTEM\n");
+}
+
+
+/******************************************************************************
+** TEST MAIN FOR TESTING THE OPCODES
+******************************************************************************/
+int main() {
+	return 0;
 }
 

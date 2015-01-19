@@ -3,53 +3,58 @@
 ** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
 **
 ** cpu.h
-*/
+**
+******************************************************************************/
 
 #ifndef CPU_H
 #define CPU_H
 
 #include <stdio.h>
+#include <inttypes.h>
+#include <assert.h>
 
 #define CUTOFF_MASK 0xFFF	/* Bitmask to keep registers/memory at 12 bits */
 
 /* CPU registers - only 12 bits are used of the 16 */
-uint16_t AC;		/* Accumulator */
-uint16_t MQ;		/* Multiplier Quotient */
-uint16_t PC;		/* Program Counter */
-uint16_t MB;		/* Memory Buffer */
-uint16_t CPMA;		/* Central Processor Memory Address */
-uint16_t SR;		/* Console Switch Register */
-uint8_t IR;			/* Instruction Register - only 3 bits are used */
-uint8_t link_bit;	/* Carry out bit */
+typedef struct {
+	uint16_t AC;		/* Accumulator */
+	uint16_t MQ;		/* Multiplier Quotient */
+	uint16_t PC;		/* Program Counter */
+	uint16_t MB;		/* Memory Buffer */
+	uint16_t CPMA;		/* Central Processor Memory Address */
+	uint16_t SR;		/* Console Switch Register */
+	uint8_t IR;			/* Instruction Register - only 3 bits are used */
+	uint8_t link_bit;	/* Carry out bit */
+} regs;
 
 /* Opcodes 0-5 - Memory reference functions */
-void AND(void);
-void TAD(void);
-void ISZ(void);
-void DCA(void);
-void JMS(void);
-void JMP(void);
+void AND(regs*);
+void TAD(regs*);
+void ISZ(regs*);
+void DCA(regs*);
+void JMS(regs*);
+void JMP(regs*);
 
 /* Opcode 7 - group 1 */
-void CLA(void);
-void CLL(void);
-void CMA(void);
-void CML(void);
-void IAC(void);
-void RAR(void);
-void RTR(void);
-void RAL(void);
-void RTL(void);
+void CLA(regs*);
+void CLL(regs*);
+void CMA(regs*);
+void CML(regs*);
+void IAC(regs*);
+void RAR(regs*);
+void RTR(regs*);
+void RAL(regs*);
+void RTL(regs*);
 
-/* Opcode 7 - group 2 */
-void SMA(void);
-void SZA(void);
-void SNL(void);
-void SPA(void);
-void SNA(void);
-void SZL(void);
-void SKP(void);
-void OSR(void);
+/* Opcoderegs* 7 - group 2 */
+void SMA(regs*);
+void SZA(regs*);
+void SNL(regs*);
+void SPA(regs*);
+void SNA(regs*);
+void SZL(regs*);
+void SKP(regs*);
+void OSR(regs*);
 void HLT(void);
 
 #endif
