@@ -230,6 +230,74 @@ void HLT(void) {
 ** TEST MAIN FOR TESTING THE OPCODES
 ******************************************************************************/
 int main() {
+	regs registers;
+
+	reset_test_regs(&registers);
+	group1_opcodes_test(&registers);
+
 	return 0;
+}
+
+void reset_test_regs(regs* registers) {
+	registers->AC = 0;
+	registers->PC = 0;
+	registers->MB = 0;
+	registers->CPMA = 0;
+}
+
+void group1_opcodes_test(regs* registers) {
+	/* AND test */
+	registers->AC = 0xFFF;
+	registers->MB = 0xF1C;
+	AND(registers);
+	assert(registers->AC == 0xF1C);
+
+	/* TAD test: -25 + -26 */
+	registers->AC = 0xFE7; 	//-25
+	registers->MB = 0xFE6;	//-26
+	TAD(registers);
+	assert(registers->AC == 0xFCD); /* -51 */
+
+	/* TAD test: 25 + -26 */
+	registers->AC = 0xFE6;	//-26 
+	registers->MB = 0x19;		//25
+	TAD(registers);
+	assert(registers->AC == 0xFFF); /* -1 */
+
+	/* TAD test: 26 + -25 */
+	registers->AC = 0x1A;	//26 
+	registers->MB = 0xFE7;	//-25
+	TAD(registers);
+	assert(registers->AC == 0x1); /* 1 */
+
+	/* TAD test: 25 + 26 */
+	registers->AC = 0x19;		//25
+	registers->MB = 0x1A;		//26
+	TAD(registers);
+	assert(registers->AC == 0x33); /* 51 */
+
+	/* ISZ test */
+	registers->MB = 0xFFF;
+	ISZ(registers);
+	assert(registers->MB == 0);
+	assert(registers->PC == 1);
+
+	/* DCA test */
+	registers->AC = 0xFFE;
+	DCA(registers);
+	assert(registers->AC == 0);
+	assert(registers->MB == 0xFFE);
+
+	/* JMS test */
+	registers->CPMA = 0x10;
+	JMS(registers);
+	assert(registers->PC == 0x11);
+	assert(registers->MB == 0x1);
+
+	/* JMP test */
+	registers->CPMA = 0x25;
+	JMP(registers);
+	assert(registers->PC == 0x25);
+
 }
 

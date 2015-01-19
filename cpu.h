@@ -57,5 +57,9 @@ void SKP(regs*);
 void OSR(regs*);
 void HLT(void);
 
+/* Test functions */
+void reset_test_regs(regs*);
+void group1_opcodes_test(regs*);
+
 #endif
 
