@@ -12,7 +12,6 @@
 
 #include<inttypes.h>
 #include<unistd.h>
-#include<stdbool.h>
 
 #ifndef MEMORY_H
 #define MEMORY_H
@@ -29,32 +28,22 @@ uint16_t memory[PAGES * WORDS_PER_PAGE];
 char *trace_name;
 FILE *trace_file;
 
-bool read_flag=false;
-bool write_flag=false;
-
 /******************************************************************************
 ** 	FUNCTION PROTOTYPES, TO BE FLESHED OUT
 ******************************************************************************/
-void mem_read(){
+uint16_t mem_read(uint16_t address){
 
 	//parse address from CPMA
 	//access memory at address in array
 	//place read data in MB
-	//set flags
-	write_flag = false;
-	read_flag = true;
-	//return
+	return memory[address];
 }/*end mem_read()*/
-void mem_write(){
+void mem_write(uint16_t address, uint16_t data){
 	
 	//parse address from CPMA
 	//go to location in memory array
 	//write data from MB to address in CPMA
 	//verify data written?
-	//set flags
-	read_flag = false;
-	write_flag = true;
-	//return to caller:
 }/*end mem_write*/
 
 /******************************************************************************
