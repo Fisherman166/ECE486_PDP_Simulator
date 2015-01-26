@@ -37,13 +37,24 @@ bool write_flag=false;
 ******************************************************************************/
 void mem_read(){
 
+	//parse address from CPMA
+	//access memory at address in array
+	//place read data in MB
+	//set flags
 	write_flag = false;
 	read_flag = true;
+	//return
 }/*end mem_read()*/
 void mem_write(){
-
+	
+	//parse address from CPMA
+	//go to location in memory array
+	//write data from MB to address in CPMA
+	//verify data written?
+	//set flags
 	read_flag = false;
 	write_flag = true;
+	//return to caller:
 }/*end mem_write*/
 
 /******************************************************************************
