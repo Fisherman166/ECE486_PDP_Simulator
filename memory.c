@@ -10,7 +10,7 @@
 ** 	READ FROM MEMORY
 ******************************************************************************/
 uint16_t mem_read(uint16_t to_convert){
-	uint8_t page;
+	uint16_t page;
 	uint8_t offset;
 	uint16_t converted;
 	//parse address from CPMA
@@ -34,7 +34,7 @@ uint16_t mem_read(uint16_t to_convert){
 ** 	WRITE TO MEMORY 	
 ******************************************************************************/
 void mem_write(uint16_t to_convert, uint16_t data){
-	uint8_t page;
+	uint16_t page;
 	uint8_t offset;
 	uint16_t converted;
 	//parse address from CPMA
