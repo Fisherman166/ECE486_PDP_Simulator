@@ -23,7 +23,9 @@
 #define MEMORY_MASK 0xFFF	/*Only 12 bits needed for address or a data*/
 
 uint16_t memory[PAGES * WORDS_PER_PAGE];
-#endif
+
+uint16_t mem_read(uint16_t to_convert);
+void mem_write(uint16_t to_convert, uint16_t data);
 
 char *trace_name;
 FILE *trace_file;
@@ -62,3 +64,5 @@ return ret_val;
 /******************************************************************************
 **	EOF
 ******************************************************************************/
+#endif
+
