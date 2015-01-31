@@ -68,7 +68,7 @@ void mem_init(void){
 	unsigned int i;
 
 	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
-		memory[i] &= ~(VALID_BIT | BREAKPOINT_BIT); // clear valid and breakpoint bits
+		memory[i] &= ~(MEMORY_VALID_BIT | MEMORY_BREAKPOINT_BIT); // clear valid and breakpoint bits
 	}	
 } // end mem_init
 
@@ -79,8 +79,8 @@ void mem_print_valid(void){
 	unsigned int i;
 
 	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
-		if (memory[i] & VALID_BIT){
-			printf("%o %o\n", i, memory[i]);
+		if (memory[i] & MEMORY_VALID_BIT){
+			printf("%o %o\n", i, memory[i] & MEMORY_MASK);
 		}
 	}	
 } // end mem_print_valid

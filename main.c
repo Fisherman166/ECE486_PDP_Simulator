@@ -77,7 +77,7 @@ void fill_memory(int argc, char* argv[]) {
 			#endif
 		}
 		else {		
-			memory[address] = word_value;
+			memory[address] = word_value | MEMORY_VALID_BIT;
 			#ifdef FILL_DEBUG
 				printf("Memory value at address %o set to: %o\n", address, memory[address]);
 			#endif

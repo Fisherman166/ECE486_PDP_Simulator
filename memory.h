@@ -22,8 +22,8 @@
 #define PAGES 32
 
 #define MEMORY_MASK		0xFFF	/*Only 12 bits needed for address or a data*/
-#define VALID_BIT 		0x80
-#define BREAKPOINT_BIT	0x40
+#define MEMORY_VALID_BIT 		0x8000
+#define MEMORY_BREAKPOINT_BIT	0x4000
 
 
 // Prototypes
