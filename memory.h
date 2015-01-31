@@ -25,18 +25,21 @@
 #define VALID_BIT 		0x80
 #define BREAKPOINT_BIT	0x40
 
+
 // Prototypes
 void mem_init(void);
 void mem_print_valid(void);
 int trace_init();
 int trace_close();
+uint16_t mem_read(uint16_t to_convert);
+void mem_write(uint16_t to_convert, uint16_t data);
 
 uint16_t memory[PAGES * WORDS_PER_PAGE];
 char *trace_name;
 FILE *trace_file;
 
-#endif
-
 /******************************************************************************
 **	EOF
 ******************************************************************************/
+#endif
+
