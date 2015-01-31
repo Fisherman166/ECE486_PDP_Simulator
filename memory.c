@@ -1,11 +1,13 @@
 /******************************************************************************
 ** ECE486/586 PDP-8 Simulator
-** Sean Koppenhafer, Luis Santiago, Ken, J.S. Peirce
+** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
 ** 
 ** 21 JANUARY 2015
 ** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
 ******************************************************************************/
 #include "memory.h"
+#include <stdio.h>
+
 /******************************************************************************
 ** 	READ FROM MEMORY
 ******************************************************************************/
@@ -19,11 +21,11 @@ uint16_t mem_read(uint16_t to_convert){
 	converted = (page + offset);
 	#ifdef DEBUG
 		printf("UNCONVERTED:\n");
-		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",to_convert,to_convert,to_convert);
+		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",to_convert,to_convert,to_convert);
 		printf("CONVERTED:\n");
-		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",converted,converted,converted);
-		printf("Page:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",page,page,page);
-		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",offset,offset,offset);
+		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",converted,converted,converted);
+		printf("Page:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",page,page,page);
+		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
 	//access memory at address in array
 	//place read data in MB
@@ -43,11 +45,11 @@ void mem_write(uint16_t to_convert, uint16_t data){
 	converted = (page + offset);
 	#ifdef DEBUG
 		printf("UNCONVERTED:\n");
-		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",to_convert,to_convert,to_convert);
+		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",to_convert,to_convert,to_convert);
 		printf("CONVERTED:\n");
-		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",converted,converted,converted);
-		printf("Page:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",page,page,page);
-		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %lu\n",offset,offset,offset);
+		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",converted,converted,converted);
+		printf("Page:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",page,page,page);
+		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
 
 	//go to location in memory array
@@ -55,11 +57,65 @@ void mem_write(uint16_t to_convert, uint16_t data){
 
 	#ifdef DEBUG
 		printf("CALLEE->WROTE: %o to: %o IN OCTAL\n", data, converted);
-		printf("CALLEE->WROTE: %lu to: %lu IN UNSIGNED DEC\n", data, converted);
+		printf("CALLEE->WROTE: %u to: %u IN UNSIGNED DEC\n", data, converted);
 	#endif
 }/*end mem_write*/
 
+/******************************************************************************
+** 	INITIALIZE THE MEMORY 	
+******************************************************************************/
+void mem_init(void){
+	unsigned int i;
 
+	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
+		memory[i] &= ~(VALID_BIT | BREAKPOINT_BIT); // clear valid and breakpoint bits
+	}	
+} // end mem_init
+
+/******************************************************************************
+** 	PRINT ALL VALID MEMORY LOCATIONS	
+******************************************************************************/
+void mem_print_valid(void){
+	unsigned int i;
+
+	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
+		if (memory[i] & VALID_BIT){
+			printf("%o %o\n", i, memory[i]);
+		}
+	}	
+} // end mem_print_valid
+
+/******************************************************************************
+**	OPEN THE TRACEFILE TO APPEND, START AT BEGINNING OF FILE: "a+"
+******************************************************************************/
+int trace_init(){
+	int ret_val;
+	trace_file = fopen(trace_name, "a+");
+	
+	if(trace_file == NULL){
+	#ifdef TRACE_DEBUG
+		printf("ERROR: Unable to open trace_file: %s\n", trace_name);
+	#endif
+		ret_val = -1;
+	}/*end if*/
+	else{
+	#ifdef TRACE_DEBUG
+		printf("trace_file: %s opened successefully\n", trace_name);
+	#endif
+		ret_val=0;
+	}/*end else*/
+return ret_val;
+}/*end trace_init()*/
+
+/******************************************************************************
+** CALL THIS FUNCTION AT COMPLETION OF PROGRAM TO CLOSE TRACEFILE
+** TODO: MAY NOT BE A BAD IDEA TO OPEN/CLOSE EACH TIME WE WRITE OUT?
+******************************************************************************/
+int trace_close(){
+	int ret_val;
+	ret_val = fclose(trace_file);
+return ret_val;
+}/*end close_trace()*/
 
 /******************************************************************************
  * 	EOF

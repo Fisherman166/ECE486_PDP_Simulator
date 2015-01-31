@@ -12,12 +12,14 @@
 
 int main(int argc, char* argv[]) {
 	
+	mem_init();
 	fill_memory(argc, argv);
+	mem_print_valid();
 
 	//can capture return values to verify fopen && fclose
 	trace_init();
 	trace_close();
-
+	return(0);
 }/*end main*/
 
 /******************************************************************************

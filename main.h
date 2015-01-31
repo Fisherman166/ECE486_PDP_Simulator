@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 int main(int argc, char* argv[]);
 void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */

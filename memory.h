@@ -12,6 +12,7 @@
 #define DEBUG 1
 #include<inttypes.h>
 #include<unistd.h>
+#include <stdio.h>
 
 #ifndef MEMORY_H
 #define MEMORY_H
@@ -20,44 +21,21 @@
 #define WORDS_PER_PAGE 128
 #define PAGES 32
 
-#define MEMORY_MASK 0xFFF	/*Only 12 bits needed for address or a data*/
+#define MEMORY_MASK		0xFFF	/*Only 12 bits needed for address or a data*/
+#define VALID_BIT 		0x80
+#define BREAKPOINT_BIT	0x40
+
+// Prototypes
+void mem_init(void);
+void mem_print_valid(void);
+int trace_init();
+int trace_close();
 
 uint16_t memory[PAGES * WORDS_PER_PAGE];
-#endif
-
 char *trace_name;
 FILE *trace_file;
-/******************************************************************************
-**	OPEN THE TRACEFILE TO APPEND, START AT BEGINNING OF FILE: "a+"
-******************************************************************************/
-int trace_init(){
-	int ret_val;
-	trace_file = fopen(trace_name, "a+");
-	
-	if(trace_file == NULL){
-	#ifdef TRACE_DEBUG
-		printf("ERROR: Unable to open trace_file: %s\n", trace_name);
-	#endif
-		ret_val = -1;
-	}/*end if*/
-	else{
-	#ifdef TRACE_DEBUG
-		printf("trace_file: %s opened successefully\n", trace_name);
-	#endif
-		ret_val=0;
-	}/*end else*/
-return ret_val;
-}/*end trace_init()*/
 
-/******************************************************************************
-** CALL THIS FUNCTION AT COMPLETION OF PROGRAM TO CLOSE TRACEFILE
-** TODO: MAY NOT BE A BAD IDEA TO OPEN/CLOSE EACH TIME WE WRITE OUT?
-******************************************************************************/
-int trace_close(){
-	int ret_val;
-	ret_val = fclose(trace_file);
-return ret_val;
-}/*end close_trace()*/
+#endif
 
 /******************************************************************************
 **	EOF
