@@ -78,11 +78,13 @@ void mem_init(void){
 void mem_print_valid(void){
 	unsigned int i;
 
+	printf("Valid memory:\n");
 	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
 		if (memory[i] & MEMORY_VALID_BIT){
-			printf("%o %o\n", i, memory[i] & MEMORY_MASK);
+			printf("  %o %o\n", i, memory[i] & MEMORY_MASK);
 		}
-	}	
+	}
+	printf("\n");
 } // end mem_print_valid
 
 /******************************************************************************

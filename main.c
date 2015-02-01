@@ -9,6 +9,9 @@
 #include "memory.h"
 #include "cpu.h"
 
+#define STARTING_ADDRESS 0200	// start at 200 octal
+#define OP_CODE_MASK 07000		// bits 0,1,2
+//#define OP_CODE_SHIFT 9			// how many bits to shift op code into lsb's
 
 int main(int argc, char* argv[]) {
 	
@@ -18,9 +21,122 @@ int main(int argc, char* argv[]) {
 
 	//can capture return values to verify fopen && fclose
 	trace_init();
+	run_program();
+	mem_print_valid();
 	trace_close();
 	return(0);
 }/*end main*/
+
+/******************************************************************************
+** 	RUN THE PROGRAM IN MEMORY 	
+******************************************************************************/
+void run_program(void){
+	uint16_t current_instruction;
+	
+	reset_test_regs(&registers);		// initialize the CPU (not sure if this needs to be done)
+	registers.PC = STARTING_ADDRESS;	// load the starting address of the program
+
+	do {
+		current_instruction = mem_read(registers.PC);	// load the next instruction
+		/* !update trace file here for instruction read! */
+		switch(current_instruction & OP_CODE_MASK){
+		case OP_CODE_AND:
+			AND(&registers);
+			break;
+		case OP_CODE_TAD:
+			TAD(&registers);
+			break;
+		case OP_CODE_ISZ:
+			ISZ(&registers);
+			break;
+		case OP_CODE_DCA:
+			DCA(&registers);
+			break;
+		case OP_CODE_JMS:
+			JMS(&registers);
+			break;
+		case OP_CODE_JMP:
+			JMP(&registers);
+			break;
+		case OP_CODE_IO:
+			printf("Op code 6? Implement I/O first\n");
+			break;
+		case OP_CODE_MICRO:
+			switch(current_instruction & MICRO_INSTRUCTION_GROUP_BIT){
+			case 0:	// Group 1
+				// Go through the bits and exeucute in sequence if high
+				if((current_instruction & MICRO_INSTRUCTION_BITS_MASK) == 0){
+					break;	// NOP instruction
+				}
+				if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
+					CLA(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_CLL_BITS) == MICRO_INSTRUCTION_CLL_BITS){
+					CLL(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_CMA_BITS) == MICRO_INSTRUCTION_CMA_BITS){
+					CMA(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_CML_BITS) == MICRO_INSTRUCTION_CML_BITS){
+					CML(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_IAC_BITS) == MICRO_INSTRUCTION_IAC_BITS){
+					IAC(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_RAR_BITS) == MICRO_INSTRUCTION_RAR_BITS){
+					RAR(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_RTR_BITS) == MICRO_INSTRUCTION_RTR_BITS){
+					RTR(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_RAL_BITS) == MICRO_INSTRUCTION_RAL_BITS){
+					RAL(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_RTL_BITS) == MICRO_INSTRUCTION_RTL_BITS){
+					RTL(&registers);
+				}
+				break;
+
+			case MICRO_INSTRUCTION_GROUP_BIT:	// Group 2
+				if((current_instruction & MICRO_INSTRUCTION_SMA_BITS) == MICRO_INSTRUCTION_SMA_BITS){
+					SMA(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_SZA_BITS) == MICRO_INSTRUCTION_SZA_BITS){
+					SZA(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_SNL_BITS) == MICRO_INSTRUCTION_SNL_BITS){
+					SNL(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_SPA_BITS) == MICRO_INSTRUCTION_SPA_BITS){
+					SPA(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_SNA_BITS) == MICRO_INSTRUCTION_SNA_BITS){
+					SNA(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_SZL_BITS) == MICRO_INSTRUCTION_SZL_BITS){
+					SZL(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_SKP_BITS) == MICRO_INSTRUCTION_SKP_BITS){
+					SKP(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
+					CLA(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_OSR_BITS) == MICRO_INSTRUCTION_OSR_BITS){
+					OSR(&registers);
+				}
+				if((current_instruction & MICRO_INSTRUCTION_HLT_BITS) == MICRO_INSTRUCTION_HLT_BITS){
+					HLT();
+				}
+				break;
+			}
+			break;
+		}
+		registers.PC++;	// increment the PC
+		} while ((current_instruction & CUTOFF_MASK) != 
+			(OP_CODE_MICRO | MICRO_INSTRUCTION_GROUP_BIT | MICRO_INSTRUCTION_HLT_BITS));  // run until halt
+
+} // end run_program
 
 /******************************************************************************
 ** FILLS MEMORY WITH INPUTTED MEMORY FILE

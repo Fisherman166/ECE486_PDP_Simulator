@@ -229,9 +229,8 @@ void HLT(void) {
 /******************************************************************************
 ** TEST MAIN FOR TESTING THE OPCODES
 ******************************************************************************/
+/*
 int main() {
-	regs registers;
-
 	reset_test_regs(&registers);
 	group1_opcodes_test(&registers);
 
@@ -243,6 +242,7 @@ int main() {
 
 	return 0;
 }
+*/
 
 void reset_test_regs(regs* registers) {
 	registers->AC = 0;

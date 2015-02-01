@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g -c -Wall
 LDFLAGS=
-SOURCES=main.c memory.c
+SOURCES=main.c memory.c cpu.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=PDP8_sim
 
@@ -18,5 +18,6 @@ clean:
 
 # to generate this list use: gcc -MM -g -c -Wall *.c
 
+cpu.o: cpu.c cpu.h
 main.o: main.c main.h memory.h cpu.h
 memory.o: memory.c memory.h
