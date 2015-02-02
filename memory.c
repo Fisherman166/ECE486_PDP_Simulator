@@ -27,8 +27,8 @@ uint16_t mem_read(uint16_t to_convert){
 		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
 	//access memory at address in array
-	//place read data in MB
-	return memory[converted];
+	//Make sure to remove valid and break bits from the value
+	return (memory[converted] & CUTOFF_MASK);
 }/*end mem_read()*/
 
 /******************************************************************************
@@ -51,7 +51,7 @@ void mem_write(uint16_t to_convert, uint16_t data){
 		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
 
-	//Make sure to make the location in memory value
+	//Make sure to make the location in memory valid
 	memory[converted] = MEMORY_VALID_BIT | data;
 
 	#ifdef MEMORY_DEBUG
@@ -77,10 +77,12 @@ void mem_init(void){
 void mem_print_valid(void){
 	unsigned int i;
 
-	printf("Valid memory:\n");
+	printf("******************************PRINTING VALID MEMORY**************************\n");
+	printf("Address    Contents\n");
+	printf("-------    --------\n");
 	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
 		if (memory[i] & MEMORY_VALID_BIT){
-			printf("  %o %o\n", i, memory[i] & MEMORY_MASK);
+			printf("%o        %o\n", i, memory[i] & MEMORY_MASK);
 		}
 	}
 	printf("\n");
@@ -139,15 +141,18 @@ uint16_t currentpage (uint16_t instruction, regs* reg)
 ******************************************************************************/
 uint16_t getaddress(uint16_t instruction,regs* reg)
 {
-    if (PageMode(instruction))
-    {
-        return  currentpage(instruction, reg);
+	uint16_t retval;
 
-    }
-    else
-    {
-        return zeropage(instruction);
-    }
+	if (PageMode(instruction)) 
+   {
+   	retval = currentpage(instruction, reg);
+   }
+   else
+   {
+   	retval = zeropage(instruction);
+   }
+
+	return retval;
 }
 
 /******************************************************************************
@@ -155,7 +160,7 @@ uint16_t getaddress(uint16_t instruction,regs* reg)
 ******************************************************************************/
 void EffAddCalc(uint16_t instruction, regs* reg)
 {
-    uint16_t tempmem;
+    uint16_t inter_address, indirect_address;
 
     if(AddrMode(instruction))
     {
@@ -163,19 +168,20 @@ void EffAddCalc(uint16_t instruction, regs* reg)
         need read functon to read content and move
         contento to memory register*/
 
-        tempmem = getaddress(instruction, reg);
+        inter_address = getaddress(instruction, reg);
+		  indirect_address = mem_read(inter_address);
         // check if address is the rage of auto indexing
-        if (tempmem >= 010 && tempmem <= 017)
+        if (inter_address >= 010 && inter_address <= 017)
         {
             // Mem read to the content add one and store back to mem
             // read the content of meme and put back to CPMA
         }
-        reg->CPMA= tempmem;
+        reg->CPMA= indirect_address;
     }
     else
     {
         // not indirect just store the value
-        reg->CPMA = getaddress(instruction , reg);
+        reg->CPMA = getaddress(instruction, reg);
     }
 }
 /******************************************************************************
