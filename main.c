@@ -32,12 +32,15 @@ int main(int argc, char* argv[]) {
 ******************************************************************************/
 void run_program(void){
 	uint16_t current_instruction;
+	regs registers;
 	
 	reset_test_regs(&registers);		// initialize the CPU (not sure if this needs to be done)
 	registers.PC = STARTING_ADDRESS;	// load the starting address of the program
 
 	do {
 		current_instruction = mem_read(registers.PC);	// load the next instruction
+		EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
+
 		/* !update trace file here for instruction read! */
 		switch(current_instruction & OP_CODE_MASK){
 		case OP_CODE_AND:
@@ -133,8 +136,13 @@ void run_program(void){
 			break;
 		}
 		registers.PC++;	// increment the PC
-		} while ((current_instruction & CUTOFF_MASK) != 
-			(OP_CODE_MICRO | MICRO_INSTRUCTION_GROUP_BIT | MICRO_INSTRUCTION_HLT_BITS));  // run until halt
+
+		#ifdef DEBUG
+			printf("AC: 0x%X, MB: 0x%X, PC: %o, CPMA: %o\n\n", registers.AC & CUTOFF_MASK, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
+		#endif
+
+	} while ((current_instruction & CUTOFF_MASK) != 
+				(OP_CODE_MICRO | MICRO_INSTRUCTION_GROUP_BIT | MICRO_INSTRUCTION_HLT_BITS));  // run until halt
 
 } // end run_program
 

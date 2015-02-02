@@ -6,7 +6,6 @@
 ** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
 ******************************************************************************/
 #include "memory.h"
-#include <stdio.h>
 
 /******************************************************************************
 ** 	READ FROM MEMORY
@@ -19,7 +18,7 @@ uint16_t mem_read(uint16_t to_convert){
 	page = (0b0000111110000000 & to_convert);//0xF80
 	offset = (0b0000000001111111 & to_convert);//0x7F
 	converted = (page + offset);
-	#ifdef DEBUG
+	#ifdef MEMORY_DEBUG
 		printf("UNCONVERTED:\n");
 		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",to_convert,to_convert,to_convert);
 		printf("CONVERTED:\n");
@@ -43,7 +42,7 @@ void mem_write(uint16_t to_convert, uint16_t data){
 	page = (0b0000111110000000 & to_convert);//0xF80
 	offset = (0b0000000001111111 & to_convert);//0x7F
 	converted = (page + offset);
-	#ifdef DEBUG
+	#ifdef MEMORY_DEBUG
 		printf("UNCONVERTED:\n");
 		printf("Address:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",to_convert,to_convert,to_convert);
 		printf("CONVERTED:\n");
@@ -52,10 +51,10 @@ void mem_write(uint16_t to_convert, uint16_t data){
 		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
 
-	//go to location in memory array
-	memory[converted] = data;
+	//Make sure to make the location in memory value
+	memory[converted] = MEMORY_VALID_BIT | data;
 
-	#ifdef DEBUG
+	#ifdef MEMORY_DEBUG
 		printf("CALLEE->WROTE: %o to: %o IN OCTAL\n", data, converted);
 		printf("CALLEE->WROTE: %u to: %u IN UNSIGNED DEC\n", data, converted);
 	#endif
@@ -119,6 +118,66 @@ int trace_close(){
 return ret_val;
 }/*end close_trace()*/
 
+/******************************************************************************
+**	RETURN EFFECTIVE ADDRESS AT ZERO PAGE
+******************************************************************************/
+uint16_t zeropage (uint16_t instruction)
+{
+    return instruction & OFFSET_MASK;
+}
+
+/******************************************************************************
+**	RETURN EFFECTVE ADDRESS AT THE CURRENT PAGE
+******************************************************************************/
+uint16_t currentpage (uint16_t instruction, regs* reg)
+{
+    return ( (reg->PC & PAGE_MASK) | (instruction & OFFSET_MASK) );
+}
+
+/******************************************************************************
+**	DECODE ADDRESS?
+******************************************************************************/
+uint16_t getaddress(uint16_t instruction,regs* reg)
+{
+    if (PageMode(instruction))
+    {
+        return  currentpage(instruction, reg);
+
+    }
+    else
+    {
+        return zeropage(instruction);
+    }
+}
+
+/******************************************************************************
+**	CALCULATE THE EFFECTIVE ADDRESS
+******************************************************************************/
+void EffAddCalc(uint16_t instruction, regs* reg)
+{
+    uint16_t tempmem;
+
+    if(AddrMode(instruction))
+    {
+        /* gets the value of the address to be used
+        need read functon to read content and move
+        contento to memory register*/
+
+        tempmem = getaddress(instruction, reg);
+        // check if address is the rage of auto indexing
+        if (tempmem >= 010 && tempmem <= 017)
+        {
+            // Mem read to the content add one and store back to mem
+            // read the content of meme and put back to CPMA
+        }
+        reg->CPMA= tempmem;
+    }
+    else
+    {
+        // not indirect just store the value
+        reg->CPMA = getaddress(instruction , reg);
+    }
+}
 /******************************************************************************
  * 	EOF
  *****************************************************************************/

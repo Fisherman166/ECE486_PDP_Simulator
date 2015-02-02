@@ -9,13 +9,15 @@
 	-added tracefile open/close functions
 	-TODO: talk to Luis about args passed for mem read/writes
 ******************************************************************************/
-#define DEBUG 1
-#include<inttypes.h>
-#include<unistd.h>
+#include <inttypes.h>
+#include <unistd.h>
 #include <stdio.h>
+#include "cpu.h"	//Needed for regs
 
 #ifndef MEMORY_H
 #define MEMORY_H
+
+#define DEBUG 1
 
 /* Total memory size is 4K */
 #define WORDS_PER_PAGE 128
@@ -25,6 +27,11 @@
 #define MEMORY_VALID_BIT 		0x8000
 #define MEMORY_BREAKPOINT_BIT	0x4000
 
+/* Effective address */
+#define PageMode(var) 	((var) & (1<<7))
+#define AddrMode(var) 	((var) & (1<<8))
+#define OFFSET_MASK   	0X7F
+#define PAGE_MASK	0XF80
 
 // Prototypes
 void mem_init(void);
@@ -33,6 +40,10 @@ int trace_init();
 int trace_close();
 uint16_t mem_read(uint16_t to_convert);
 void mem_write(uint16_t to_convert, uint16_t data);
+uint16_t zeropage(uint16_t);
+uint16_t currentpage(uint16_t, regs*);
+uint16_t getaddress(uint16_t, regs*);
+void EffAddCalc(uint16_t, regs*);
 
 uint16_t memory[PAGES * WORDS_PER_PAGE];
 char *trace_name;

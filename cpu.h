@@ -98,8 +98,5 @@ void group1_opcodes_test(regs*);
 void group1_micro_test(regs*);
 void group2_micro_test(regs*);
 
-// instantiate the registers
-regs registers;
-
 #endif
 

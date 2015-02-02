@@ -7,11 +7,13 @@
 ******************************************************************************/
 
 #include "cpu.h"
+#include "memory.h"
 
 /******************************************************************************
 ** OPCODE 0 - AND
 ******************************************************************************/
 void AND(regs* registers) {
+	registers->MB = mem_read(registers->CPMA);
 	registers->AC &= registers->MB;
 }
 
@@ -20,6 +22,7 @@ void AND(regs* registers) {
 ******************************************************************************/
 void TAD(regs* registers) {
 	const uint16_t carry_out = 0x1000;	/* Check bit 13 for carry out */
+	registers->MB = mem_read(registers->CPMA);
 	registers->AC += registers->MB;
 
 	if(registers->AC & carry_out) registers->link_bit = ~registers->link_bit;
@@ -31,7 +34,9 @@ void TAD(regs* registers) {
 ** OPCODE 2 - ISZ
 ******************************************************************************/
 void ISZ(regs* registers) {
+	registers->MB = mem_read(registers->CPMA);
 	registers->MB = (registers->MB + 1) & CUTOFF_MASK;
+	mem_write(registers->CPMA, registers->MB);
 
 	if(!registers->MB) {
 		registers->PC++;
@@ -43,6 +48,7 @@ void ISZ(regs* registers) {
 ******************************************************************************/
 void DCA(regs* registers) {
 	registers->MB = registers->AC;
+	mem_write(registers->CPMA, registers->MB);
 	registers->AC = 0;
 }
 
@@ -51,7 +57,7 @@ void DCA(regs* registers) {
 ******************************************************************************/
 void JMS(regs* registers) {
 	registers->MB = registers->PC;
-	/* TODO: write MB to memory */
+	mem_write(registers->CPMA, registers->MB);
 	registers->PC = (registers->CPMA + 1) & CUTOFF_MASK;
 }
 
