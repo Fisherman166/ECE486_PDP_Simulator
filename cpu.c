@@ -56,9 +56,10 @@ void DCA(regs* registers) {
 ** OPCODE 4 - JMS
 ******************************************************************************/
 void JMS(regs* registers) {
-	registers->MB = registers->PC;
+	registers->MB = registers->PC;	//PC will be incremented on return from subroutine
 	mem_write(registers->CPMA, registers->MB);
-	registers->PC = (registers->CPMA + 1) & CUTOFF_MASK;
+	registers->PC = registers->CPMA & CUTOFF_MASK;	//PC will be incremented in main
+																	//to give PC + 1
 }
 
 /******************************************************************************
