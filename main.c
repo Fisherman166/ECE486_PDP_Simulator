@@ -10,14 +10,15 @@
 #include "cpu.h"
 
 #define OP_CODE_MASK 07000		// bits 0,1,2
+#define OPCODE_NUM 8
 //#define OP_CODE_SHIFT 9			// how many bits to shift op code into lsb's
+
+static uint32_t clock_cycles = 0;
+static uint32_t opcode_freq[OPCODE_NUM];
 
 int main(int argc, char* argv[]) {
 	int trace_return;
-	
-	mem_init();
-	fill_memory(argc, argv);
-	mem_print_valid();
+	init_system(argc, argv);
 
 	//can capture return values to verify fopen && fclose
 	trace_return = trace_init();
@@ -28,6 +29,7 @@ int main(int argc, char* argv[]) {
 
 	run_program();
 	mem_print_valid();
+	print_stats();
 	trace_close();
 	return(0);
 }/*end main*/
@@ -49,26 +51,34 @@ void run_program(void){
 		switch(current_instruction & OP_CODE_MASK){
 		case OP_CODE_AND:
 			AND(&registers);
+			opcode_freq[0]++;
 			break;
 		case OP_CODE_TAD:
 			TAD(&registers);
+			opcode_freq[1]++;
 			break;
 		case OP_CODE_ISZ:
 			ISZ(&registers);
+			opcode_freq[2]++;
 			break;
 		case OP_CODE_DCA:
 			DCA(&registers);
+			opcode_freq[3]++;
 			break;
 		case OP_CODE_JMS:
 			JMS(&registers);
+			opcode_freq[4]++;
 			break;
 		case OP_CODE_JMP:
 			JMP(&registers);
+			opcode_freq[5]++;
 			break;
 		case OP_CODE_IO:
 			printf("Op code 6? Implement I/O first\n");
+			opcode_freq[6]++;
 			break;
 		case OP_CODE_MICRO:
+			opcode_freq[7]++;
 			switch(current_instruction & MICRO_INSTRUCTION_GROUP_BIT){
 			case 0:	// Group 1
 				// Go through the bits and exeucute in sequence if high
@@ -150,6 +160,18 @@ void run_program(void){
 
 } // end run_program
 
+void init_system(int argc, char* argv[]) {
+	int i;
+
+	mem_init();
+	fill_memory(argc, argv);
+	mem_print_valid();
+
+	for(i = 0; i < OPCODE_NUM; i++) {
+		opcode_freq[i] = 0;
+	}
+}
+
 /******************************************************************************
 ** FILLS MEMORY WITH INPUTTED MEMORY FILE
 @CHANGELOG:
@@ -219,6 +241,24 @@ void fill_memory(int argc, char* argv[]) {
 
 	fclose(program_file);
 }
+
+void print_stats(void) {
+	int i;
+	uint32_t executed_total = 0;
+
+	printf("\n\n*************************************************************\n");
+	printf("***********************PRINTING STATS************************\n");
+	printf("*************************************************************\n");
+	printf("Total clock cycles = %u\n", clock_cycles);
+	
+	for(i = 0; i < OPCODE_NUM; i++) {
+		printf("Opcode number %d was executed %u times\n", i, opcode_freq[i]);
+		executed_total += opcode_freq[i];
+	}
+
+	printf("The total number of opcodes executed = %u\n", executed_total);
+}
+
 /******************************************************************************
 **	EOF
 ******************************************************************************/

@@ -15,7 +15,9 @@
 #include <stdint.h>
 
 int main(int argc, char* argv[]);
-void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */
 void run_program(void);
+void init_system(int argc, char* argv[]);
+void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */
+void print_stats(void);
 
 #endif
