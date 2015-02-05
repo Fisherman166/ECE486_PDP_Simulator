@@ -10,11 +10,11 @@
 #include "cpu.h"
 
 #define OP_CODE_MASK 07000		// bits 0,1,2
-#define OPCODE_NUM 8
 //#define OP_CODE_SHIFT 9			// how many bits to shift op code into lsb's
 
 static uint32_t clock_cycles = 0;
 static uint32_t opcode_freq[OPCODE_NUM];
+static uint8_t opcode_cycles[OPCODE_NUM] = {2,2,2,2,2,1,0,1};
 
 int main(int argc, char* argv[]) {
 	int trace_return;
@@ -39,13 +39,15 @@ int main(int argc, char* argv[]) {
 ******************************************************************************/
 void run_program(void){
 	uint16_t current_instruction;
+	uint8_t addressing_mode;
 	regs registers;
 	
 	reset_regs(&registers);		// initialize the CPU 
 
 	do {
 		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// load the next instruction
-		EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
+		addressing_mode = EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
+		registers.IR = (current_instruction >> 9) & 0xFF;						// Put the opcode in here
 
 		/* !update trace file here for instruction read! */
 		switch(current_instruction & OP_CODE_MASK){
@@ -151,7 +153,21 @@ void run_program(void){
 		}
 		registers.PC++;	// increment the PC
 
-		#ifdef DEBUG
+		#ifdef MEMORY_DEBUG
+			printf("Opcode: %u Addressing mode: %u\n", registers.IR, addressing_mode);
+		#endif
+
+		if(addressing_mode == DIRECT_MODE) {
+			clock_cycles += opcode_cycles[registers.IR];
+		}
+		else if(addressing_mode == INDIRECT_MODE) {
+			clock_cycles += opcode_cycles[registers.IR] + 1;
+		}
+		else {	/* Autoincrement mode */
+			clock_cycles += opcode_cycles[registers.IR] + 2;
+		}
+
+		#ifdef MEMORY_DEBUG
 			printf("AC: 0x%X, MB: 0x%X, PC: %o, CPMA: %o\n\n", registers.AC & CUTOFF_MASK, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
 		#endif
 
@@ -246,7 +262,7 @@ void print_stats(void) {
 	int i;
 	uint32_t executed_total = 0;
 
-	printf("\n\n*************************************************************\n");
+	printf("*************************************************************\n");
 	printf("***********************PRINTING STATS************************\n");
 	printf("*************************************************************\n");
 	printf("Total clock cycles = %u\n", clock_cycles);

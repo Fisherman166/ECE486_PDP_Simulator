@@ -27,8 +27,14 @@
 #define MEMORY_VALID_BIT 		0x8000
 #define MEMORY_BREAKPOINT_BIT	0x4000
 
+/* For trace files */
 #define DATA_READ 0
 #define INSTRUCTION_FETCH 1
+
+/* Addressing mode defines */
+#define DIRECT_MODE 0
+#define INDIRECT_MODE 1
+#define AUTOINCREMENT_MODE 2
 
 /* Effective address */
 #define PageMode(var) 	((var) & (1<<7))
@@ -46,7 +52,7 @@ void mem_write(uint16_t to_convert, uint16_t data);
 uint16_t zeropage(uint16_t);
 uint16_t currentpage(uint16_t, regs*);
 uint16_t getaddress(uint16_t, regs*);
-void EffAddCalc(uint16_t, regs*);
+uint8_t EffAddCalc(uint16_t, regs*);
 
 uint16_t memory[PAGES * WORDS_PER_PAGE];
 char *trace_name;

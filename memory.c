@@ -173,22 +173,27 @@ uint16_t getaddress(uint16_t instruction,regs* reg)
 
 /******************************************************************************
 **	CALCULATE THE EFFECTIVE ADDRESS
+**	RETURNS 0 FOR DIRECT ADDRESSING, 1 FOR INDIRECT ADDRESSING,
+** AND 2 FOR AUTOINCREMENT
 ******************************************************************************/
-void EffAddCalc(uint16_t instruction, regs* reg)
+uint8_t EffAddCalc(uint16_t instruction, regs* reg)
 {
     uint16_t inter_address, indirect_address;
+	 uint8_t addressing_mode;
 
     if(AddrMode(instruction))
     {
         /* gets the value of the address to be used
         need read functon to read content and move
         contento to memory register*/
+		  addressing_mode = INDIRECT_MODE;
 
         inter_address = getaddress(instruction, reg);
 		  indirect_address = mem_read(inter_address, DATA_READ);
         // check if address is the rage of auto indexing
         if (inter_address >= 010 && inter_address <= 017)
         {
+		  		addressing_mode = AUTOINCREMENT_MODE;
             // Mem read to the content add one and store back to mem
             // read the content of meme and put back to CPMA
         }
@@ -198,7 +203,10 @@ void EffAddCalc(uint16_t instruction, regs* reg)
     {
         // not indirect just store the value
         reg->CPMA = getaddress(instruction, reg);
+		  addressing_mode = DIRECT_MODE;
     }
+
+	 return addressing_mode;
 }
 /******************************************************************************
  * 	EOF
