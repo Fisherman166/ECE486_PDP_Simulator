@@ -9,7 +9,6 @@
 #include "memory.h"
 #include "cpu.h"
 
-#define STARTING_ADDRESS 0200	// start at 200 octal
 #define OP_CODE_MASK 07000		// bits 0,1,2
 //#define OP_CODE_SHIFT 9			// how many bits to shift op code into lsb's
 
@@ -34,8 +33,7 @@ void run_program(void){
 	uint16_t current_instruction;
 	regs registers;
 	
-	reset_test_regs(&registers);		// initialize the CPU (not sure if this needs to be done)
-	registers.PC = STARTING_ADDRESS;	// load the starting address of the program
+	reset_regs(&registers);		// initialize the CPU 
 
 	do {
 		current_instruction = mem_read(registers.PC);	// load the next instruction

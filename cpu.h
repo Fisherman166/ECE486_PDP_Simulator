@@ -14,6 +14,7 @@
 #include <assert.h>
 
 #define CUTOFF_MASK 0xFFF	/* Bitmask to keep registers/memory at 12 bits */
+#define STARTING_ADDRESS 0200	// start at 200 octal
 
 #define OP_CODE_AND		0
 #define OP_CODE_TAD		01000
@@ -92,11 +93,8 @@ void SKP(regs*);
 void OSR(regs*);
 void HLT(void);
 
-/* Test functions */
-void reset_test_regs(regs*);
-void group1_opcodes_test(regs*);
-void group1_micro_test(regs*);
-void group2_micro_test(regs*);
+/* Reset the registers */
+void reset_regs(regs*);
 
 #endif
 

@@ -232,3 +232,17 @@ void HLT(void) {
 	printf("HALTING SYSTEM\n");
 }
 
+/******************************************************************************
+** RESET REGISTER VALUES
+******************************************************************************/
+void reset_regs(regs* registers) {
+	registers->PC = STARTING_ADDRESS;
+	registers->AC = 0;
+	registers->MQ = 0;
+	registers->link_bit = 0;
+	registers->CPMA = 0;
+	registers->MB = 0;
+	registers->SR = 0;
+	registers->IR = 0;
+}
+
