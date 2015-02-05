@@ -167,7 +167,7 @@ void run_program(void){
 			clock_cycles += opcode_cycles[registers.IR] + 2;
 		}
 
-		#ifdef MEMORY_DEBUG
+		#ifdef DEBUG
 			printf("AC: 0x%X, MB: 0x%X, PC: %o, CPMA: %o\n\n", registers.AC & CUTOFF_MASK, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
 		#endif
 
