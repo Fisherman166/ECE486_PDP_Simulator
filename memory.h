@@ -27,6 +27,9 @@
 #define MEMORY_VALID_BIT 		0x8000
 #define MEMORY_BREAKPOINT_BIT	0x4000
 
+#define DATA_READ 0
+#define INSTRUCTION_FETCH 1
+
 /* Effective address */
 #define PageMode(var) 	((var) & (1<<7))
 #define AddrMode(var) 	((var) & (1<<8))
@@ -38,7 +41,7 @@ void mem_init(void);
 void mem_print_valid(void);
 int trace_init();
 int trace_close();
-uint16_t mem_read(uint16_t to_convert);
+uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch);
 void mem_write(uint16_t to_convert, uint16_t data);
 uint16_t zeropage(uint16_t);
 uint16_t currentpage(uint16_t, regs*);

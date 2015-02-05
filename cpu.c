@@ -13,7 +13,7 @@
 ** OPCODE 0 - AND
 ******************************************************************************/
 void AND(regs* registers) {
-	registers->MB = mem_read(registers->CPMA);
+	registers->MB = mem_read(registers->CPMA, DATA_READ);
 	registers->AC &= registers->MB;
 }
 
@@ -22,7 +22,7 @@ void AND(regs* registers) {
 ******************************************************************************/
 void TAD(regs* registers) {
 	const uint16_t carry_out = 0x1000;	/* Check bit 13 for carry out */
-	registers->MB = mem_read(registers->CPMA);
+	registers->MB = mem_read(registers->CPMA, DATA_READ);
 	registers->AC += registers->MB;
 
 	if(registers->AC & carry_out) registers->link_bit = ~registers->link_bit;
@@ -34,7 +34,7 @@ void TAD(regs* registers) {
 ** OPCODE 2 - ISZ
 ******************************************************************************/
 void ISZ(regs* registers) {
-	registers->MB = mem_read(registers->CPMA);
+	registers->MB = mem_read(registers->CPMA, DATA_READ);
 	registers->MB = (registers->MB + 1) & CUTOFF_MASK;
 	mem_write(registers->CPMA, registers->MB);
 

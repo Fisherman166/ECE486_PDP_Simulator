@@ -13,13 +13,19 @@
 //#define OP_CODE_SHIFT 9			// how many bits to shift op code into lsb's
 
 int main(int argc, char* argv[]) {
+	int trace_return;
 	
 	mem_init();
 	fill_memory(argc, argv);
 	mem_print_valid();
 
 	//can capture return values to verify fopen && fclose
-	trace_init();
+	trace_return = trace_init();
+	if(trace_return) {
+		printf("Unable to open trace file. Exiting\n");
+		exit(-1);
+	}
+
 	run_program();
 	mem_print_valid();
 	trace_close();
@@ -36,7 +42,7 @@ void run_program(void){
 	reset_regs(&registers);		// initialize the CPU 
 
 	do {
-		current_instruction = mem_read(registers.PC);	// load the next instruction
+		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// load the next instruction
 		EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
 
 		/* !update trace file here for instruction read! */

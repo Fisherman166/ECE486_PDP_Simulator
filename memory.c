@@ -9,8 +9,9 @@
 
 /******************************************************************************
 ** 	READ FROM MEMORY
+**	FOR READ_OR_FETCH VARIABLE: 0 = DATA READ		1 = INSTRUCTION_FETCH
 ******************************************************************************/
-uint16_t mem_read(uint16_t to_convert){
+uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch){
 	uint16_t page;
 	uint8_t offset;
 	uint16_t converted;
@@ -26,6 +27,18 @@ uint16_t mem_read(uint16_t to_convert){
 		printf("Page:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",page,page,page);
 		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
+
+	/* Print to trace file */
+	if(read_or_fetch == 0) {
+		fprintf( trace_file, "DR %o\n", converted);
+	}
+	else if(read_or_fetch == 1) {
+		fprintf( trace_file, "IF %o\n", converted);
+	}
+	else {
+		fprintf( trace_file, "Read type not recognized\n");
+	}
+
 	//access memory at address in array
 	//Make sure to remove valid and break bits from the value
 	return (memory[converted] & CUTOFF_MASK);
@@ -50,6 +63,9 @@ void mem_write(uint16_t to_convert, uint16_t data){
 		printf("Page:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",page,page,page);
 		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
+
+	/* Write to trace file */
+	fprintf( trace_file, "DW %o\n", converted);
 
 	//Make sure to make the location in memory valid
 	memory[converted] = MEMORY_VALID_BIT | data;
@@ -93,7 +109,7 @@ void mem_print_valid(void){
 ******************************************************************************/
 int trace_init(){
 	int ret_val;
-	trace_file = fopen(trace_name, "a+");
+	trace_file = fopen(trace_name, "w");
 	
 	if(trace_file == NULL){
 	#ifdef TRACE_DEBUG
@@ -169,7 +185,7 @@ void EffAddCalc(uint16_t instruction, regs* reg)
         contento to memory register*/
 
         inter_address = getaddress(instruction, reg);
-		  indirect_address = mem_read(inter_address);
+		  indirect_address = mem_read(inter_address, DATA_READ);
         // check if address is the rage of auto indexing
         if (inter_address >= 010 && inter_address <= 017)
         {
