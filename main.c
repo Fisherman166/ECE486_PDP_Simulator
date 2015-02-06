@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
 ** 	RUN THE PROGRAM IN MEMORY 	
 ******************************************************************************/
 void run_program(void){
+	const uint8_t microinstruction = 7;
 	uint16_t current_instruction;
 	uint8_t addressing_mode;
 	regs registers;
@@ -46,8 +47,11 @@ void run_program(void){
 
 	do {
 		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// load the next instruction
-		addressing_mode = EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
 		registers.IR = (current_instruction >> 9) & 0xFF;						// Put the opcode in here
+
+		if(registers.IR != microinstruction) {
+			addressing_mode = EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
+		}
 
 		/* !update trace file here for instruction read! */
 		switch(current_instruction & OP_CODE_MASK){
