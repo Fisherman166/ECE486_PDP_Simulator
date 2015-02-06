@@ -153,8 +153,10 @@ uint16_t currentpage (uint16_t instruction, regs* reg)
 }
 
 /******************************************************************************
-**	DECODE ADDRESS?
+**	DECODE ADDRESS
 ******************************************************************************/
+// Check bit 4 (on PDP8 )  to federmine current page or zero page mode
+
 uint16_t getaddress(uint16_t instruction,regs* reg)
 {
 	uint16_t retval;
@@ -178,25 +180,27 @@ uint16_t getaddress(uint16_t instruction,regs* reg)
 ******************************************************************************/
 uint8_t EffAddCalc(uint16_t instruction, regs* reg)
 {
-    uint16_t inter_address, indirect_address;
+     uint16_t ptr_address, indirect_address;
 	 uint8_t addressing_mode;
 
     if(AddrMode(instruction))
     {
-        /* gets the value of the address to be used
-        need read functon to read content and move
-        contento to memory register*/
+        /* Indirect mode
+         gets the ponter address*/
 		  addressing_mode = INDIRECT_MODE;
 
-        inter_address = getaddress(instruction, reg);
-		  indirect_address = mem_read(inter_address, DATA_READ);
+        ptr_address = getaddress(instruction, reg);
+        indirect_address = mem_read(ptr_address, DATA_READ);
+        
         // check if address is the rage of auto indexing
-        if (inter_address >= 010 && inter_address <= 017)
+        if (ptr_address >= 010 && ptr_address <= 017)
         {
-		  		addressing_mode = AUTOINCREMENT_MODE;
-            // Mem read to the content add one and store back to mem
-            // read the content of meme and put back to CPMA
+            addressing_mode = AUTOINCREMENT_MODE;
+            ++indirect_address;
+            mem_write(ptr_address, indirect_address );
+            
         }
+        
         reg->CPMA= indirect_address;
     }
     else
