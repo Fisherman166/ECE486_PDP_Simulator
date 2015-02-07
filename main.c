@@ -172,7 +172,7 @@ void run_program(void){
 		}
 
 		#ifdef DEBUG
-			printf("AC: 0x%X, MB: 0x%X, PC: %o, CPMA: %o\n\n", registers.AC & CUTOFF_MASK, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
+			printf("After opcode (in octal) IR: %o, AC: %o, MB: %o, PC: %o, CPMA: %o\n\n", registers.IR, registers.AC & CUTOFF_MASK, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
 		#endif
 
 	} while ((current_instruction & CUTOFF_MASK) != 
