@@ -56,7 +56,7 @@ void DCA(regs* registers) {
 ** OPCODE 4 - JMS
 ******************************************************************************/
 void JMS(regs* registers) {
-	registers->MB = registers->PC;	//PC will be incremented on return from subroutine
+	registers->MB = registers->PC + 1;	//PC will be incremented on return from subroutine
 	mem_write(registers->CPMA, registers->MB);
 	registers->PC = registers->CPMA & CUTOFF_MASK;	//PC will be incremented in main
 																	//to give PC + 1
@@ -66,7 +66,7 @@ void JMS(regs* registers) {
 ** OPCODE 5 - JMP
 ******************************************************************************/
 void JMP(regs* registers) {
-	registers->PC = registers->CPMA;
+	registers->PC = registers->CPMA - 1;	//Fix for PC incrementing after this is set
 }
 
 /******************************************************************************

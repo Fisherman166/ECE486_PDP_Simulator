@@ -11,10 +11,6 @@
 
 #define OP_CODE_MASK 07000		// bits 0,1,2
 //#define OP_CODE_SHIFT 9			// how many bits to shift op code into lsb's
-#define OPCODE_NUM 8
-static uint32_t clock_cycles = 0;
-static uint32_t opcode_freq[OPCODE_NUM];
-static uint8_t opcode_cycles[OPCODE_NUM] = {2,2,2,2,2,1,0,1};
 
 int main(int argc, char* argv[]) {
 	int trace_return;
@@ -172,7 +168,8 @@ void run_program(void){
 		}
 
 		#ifdef DEBUG
-			printf("After opcode (in octal) IR: %o, AC: %o, MB: %o, PC: %o, CPMA: %o\n\n", registers.IR, registers.AC & CUTOFF_MASK, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
+			printf("After opcode (in octal) IR: %o, AC: %o, Link: %o, MB: %o, PC: %o, CPMA: %o\n\n", registers.IR, registers.AC & CUTOFF_MASK, 
+						registers.link_bit, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
 		#endif
 
 	} while ((current_instruction & CUTOFF_MASK) != 
@@ -190,6 +187,15 @@ void init_system(int argc, char* argv[]) {
 	for(i = 0; i < OPCODE_NUM; i++) {
 		opcode_freq[i] = 0;
 	}
+
+	opcode_text[0] = "AND";
+	opcode_text[1] = "TAD";
+	opcode_text[2] = "ISZ";
+	opcode_text[3] = "DCA";
+	opcode_text[4] = "JMS";
+	opcode_text[5] = "JMP";
+	opcode_text[6] = "I\\O";
+	opcode_text[7] = "Micro Ops";
 }
 
 /******************************************************************************
@@ -272,7 +278,7 @@ void print_stats(void) {
 	printf("Total clock cycles = %u\n", clock_cycles);
 	
 	for(i = 0; i < OPCODE_NUM; i++) {
-		printf("Opcode number %d was executed %u times\n", i, opcode_freq[i]);
+		printf("%s was executed %u times\n", opcode_text[i], opcode_freq[i]);
 		executed_total += opcode_freq[i];
 	}
 
