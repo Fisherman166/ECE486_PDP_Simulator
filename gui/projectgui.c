@@ -5,10 +5,16 @@
                                    To DO 
 *****************************************************************************
  1) use struct to break widget into manageble functions
- 2) redirect g_item.buffer to receive a file
- 3) free obj (not freed as 2/10/2015)
+    struct needs to be define inside main in order to 
+    free at the end 
+ 2) free obj (not freed as 2/10/2015)
+ 3) redirect g_item.buffer to receive a file
  4) add a start and a quit button 
     - quit button MUST free obj
+ 5) add IR
+ 6) add label for file name 
+ 7) maybe add a menu (only if we can make good use of it)
+ 
 ***************************************************************************/
  typedef struct{
  // GtkWidget *window;
@@ -129,13 +135,14 @@ obj->c =0;
   gtk_grid_set_column_homogeneous (GTK_GRID (obj->grid), TRUE);
  // gtk_grid_set_row_homogeneous (GTK_GRID (grid), TRUE);
   
-  gtk_grid_attach (GTK_GRID (obj->grid),obj->scrolled_window, 1, 1 , 1, 12);
+  gtk_grid_attach (GTK_GRID (obj->grid),obj->scrolled_window, 1, 1 , 1, 30);
+
 
   gtk_grid_attach (GTK_GRID (obj->grid), obj->label ,2, 1 , 1, 1);
   gtk_grid_attach (GTK_GRID (obj->grid), obj->PC_label ,2, 2 , 1, 1);
   gtk_grid_attach (GTK_GRID (obj->grid), obj->Accumulator_label ,2, 3 , 1, 1);
   gtk_grid_attach (GTK_GRID (obj->grid), obj->CPMA_label ,2, 4 , 1, 1); 
-  gtk_grid_attach (GTK_GRID (obj->grid), obj->button1 ,2, 5 , 1, 1);
+  gtk_grid_attach (GTK_GRID (obj->grid), obj->button1 ,1, 125 , 1, 1);
 
 
   gtk_grid_attach (GTK_GRID (obj->grid), obj->value ,3, 1 , 1, 1);
@@ -147,8 +154,6 @@ obj->c =0;
   
   g_signal_connect (GTK_BUTTON (obj->button1), "clicked", 
                     G_CALLBACK (on_button_click), obj);
-  g_print(" c value in activate: %d", obj->c);
-  g_printf("2value of obj addr -> %p \n",obj);
 
   gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (obj->grid));
   gtk_widget_show_all (window);
