@@ -43,6 +43,7 @@ void run_program(void){
 
 	do {
 		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// load the next instruction
+		registers.PC++;																	// increment the PC
 		registers.IR = (current_instruction >> 9) & 0xFF;						// Put the opcode in here
 
 		if(registers.IR != microinstruction) {
@@ -151,7 +152,6 @@ void run_program(void){
 			}
 			break;
 		}
-		registers.PC++;	// increment the PC
 
 		#ifdef MEMORY_DEBUG
 			printf("Opcode: %u Addressing mode: %u\n", registers.IR, addressing_mode);
