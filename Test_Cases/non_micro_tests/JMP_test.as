@@ -1,7 +1,6 @@
 / Program : JMP_test.as
-/ Date : Feb 2, 2015
-/
-/ Desc : This program tests the JMP instruction
+/ Date : Feb 11, 2015
+/ Should take 7 cycles
 /-------------------------------------------
 /
 / Code Section

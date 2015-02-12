@@ -25,7 +25,8 @@ void TAD(regs* registers) {
 	registers->MB = mem_read(registers->CPMA, DATA_READ);
 	registers->AC += registers->MB;
 
-	if(registers->AC & carry_out) registers->link_bit = ~registers->link_bit;
+	//Keep only the first bit after complimenting
+	if(registers->AC & carry_out) registers->link_bit = (~registers->link_bit) & 1;
 
 	registers->AC &= CUTOFF_MASK;
 }
@@ -56,17 +57,16 @@ void DCA(regs* registers) {
 ** OPCODE 4 - JMS
 ******************************************************************************/
 void JMS(regs* registers) {
-	registers->MB = registers->PC + 1;	//PC will be incremented on return from subroutine
+	registers->MB = registers->PC; 
 	mem_write(registers->CPMA, registers->MB);
-	registers->PC = registers->CPMA & CUTOFF_MASK;	//PC will be incremented in main
-																	//to give PC + 1
+	registers->PC = (registers->CPMA + 1) & CUTOFF_MASK; //Start 1 address into sub
 }
 
 /******************************************************************************
 ** OPCODE 5 - JMP
 ******************************************************************************/
 void JMP(regs* registers) {
-	registers->PC = registers->CPMA - 1;	//Fix for PC incrementing after this is set
+	registers->PC = registers->CPMA;
 }
 
 /******************************************************************************

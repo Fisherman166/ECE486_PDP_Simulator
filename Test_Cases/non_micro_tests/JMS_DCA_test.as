@@ -1,10 +1,8 @@
-/ Program : JMS_test.as
+/ Program : JMS_DCA_test.as
 / Date : Feb 2, 2015
-/
-/ Desc : This program computes c = a + b in a sub routine
-/
+/ 12 cycles in total
+/ C = 5 at the end of the program and accum = 0
 /-------------------------------------------
-/
 / Code Section
 /
 *0200			/ start at address 0200
@@ -15,7 +13,7 @@ Main,
 	jmp Main	/ To continue - goto Main
 
 Add, 			/ C = A + B
-	nop			/ For return address
+	nop			/ Space for return address
 	tad A 		/ add A to Accumulator
 	tad B 		/ add B
 	dca C 		/ store sum at C

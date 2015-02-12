@@ -1,10 +1,12 @@
 / Date : Feb 7, 2015
 /
 / Desc : Tests the AND instruction
+/ Should take 8 cycles total
 /-------------------------------------------
 / Code Section
 *0200			/ start at address 0200
 Main, 	
+	cla cll 				/ clear AC and Link
 	tad fillAccum		/ Fill accum with 1s
 	and andMask			/ Keep 731
 	and zero				/ Zero out accum

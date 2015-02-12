@@ -46,8 +46,13 @@ void run_program(void){
 		registers.PC++;																	// increment the PC
 		registers.IR = (current_instruction >> 9) & 0xFF;						// Put the opcode in here
 
+		//Microinstructions don't have indirect or auto increment modes
+		//Set the addressing mode to direct to not add additional cycles onto micro ops
 		if(registers.IR != microinstruction) {
 			addressing_mode = EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
+		}
+		else {
+			addressing_mode = DIRECT_MODE;
 		}
 
 		/* !update trace file here for instruction read! */
@@ -157,6 +162,10 @@ void run_program(void){
 			printf("Opcode: %u Addressing mode: %u\n", registers.IR, addressing_mode);
 		#endif
 
+		#ifdef DEBUG
+		printf("Cycles Before = %u, ", clock_cycles);
+		#endif
+
 		if(addressing_mode == DIRECT_MODE) {
 			clock_cycles += opcode_cycles[registers.IR];
 		}
@@ -168,6 +177,7 @@ void run_program(void){
 		}
 
 		#ifdef DEBUG
+			printf("Cycles After = %u\n", clock_cycles);
 			printf("After opcode (in octal) IR: %o, AC: %o, Link: %o, MB: %o, PC: %o, CPMA: %o\n\n", registers.IR, registers.AC & CUTOFF_MASK, 
 						registers.link_bit, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
 		#endif
