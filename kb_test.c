@@ -6,6 +6,12 @@
 #include <stdlib.h>
 
 // Compile with gcc -pthread -o kb_test kb_test.c
+//
+// References:
+//
+// http://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html#CREATIONTERMINATION
+// http://cc.byexamples.com/2007/04/08/non-blocking-user-input-in-loop-without-ncurses/
+// http://stackoverflow.com/questions/717572/how-do-you-do-non-blocking-console-i-o-on-linux-in-c
 
 int kbhit(void);
 void nonblock(int);
