@@ -17,7 +17,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#define DEBUG 1
+//#define DEBUG 1
 
 /* Total memory size is 4K */
 #define WORDS_PER_PAGE 128
@@ -33,8 +33,8 @@
 
 /* Addressing mode defines */
 #define DIRECT_MODE 0
-#define INDIRECT_MODE 1
-#define AUTOINCREMENT_MODE 2
+#define INDIRECT_MODE 2
+#define AUTOINCREMENT_MODE 4
 
 /* Effective address */
 #define PageMode(var) 	((var) & (1<<7))
@@ -51,7 +51,7 @@ uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch);
 void mem_write(uint16_t to_convert, uint16_t data);
 uint16_t zeropage(uint16_t);
 uint16_t currentpage(uint16_t, regs*);
-uint16_t getaddress(uint16_t, regs*);
+//uint16_t getaddress(uint16_t, regs*);
 uint8_t EffAddCalc(uint16_t, regs*);
 
 uint16_t memory[PAGES * WORDS_PER_PAGE];

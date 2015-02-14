@@ -6,6 +6,7 @@
 ** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
 ******************************************************************************/
 #include "memory.h"
+//#define MEMORY_DEBUG
 
 /******************************************************************************
 ** 	READ FROM MEMORY
@@ -157,17 +158,18 @@ uint16_t currentpage (uint16_t instruction, regs* reg)
 ******************************************************************************/
 // Check bit 4 (on PDP8 )  to federmine current page or zero page mode
 
-uint16_t getaddress(uint16_t instruction,regs* reg)
+uint16_t getaddress(uint16_t instruction,regs* reg, uint8_t * page)
 {
 	uint16_t retval;
-
 	if (PageMode(instruction)) 
    {
    	retval = currentpage(instruction, reg);
+  	*page=1;
    }
    else
    {
    	retval = zeropage(instruction);
+	*page=0;
    }
 
 	return retval;
@@ -180,19 +182,20 @@ uint16_t getaddress(uint16_t instruction,regs* reg)
 ******************************************************************************/
 uint8_t EffAddCalc(uint16_t instruction, regs* reg)
 {
-     uint16_t ptr_address, indirect_address;
-	 uint8_t addressing_mode;
+	uint16_t ptr_address, indirect_address;
+	uint8_t addressing_mode, page_mode;
 
+page_mode =0;
     if(AddrMode(instruction))
     {
         /* Indirect mode
          gets the ponter address*/
-		  addressing_mode = INDIRECT_MODE;
-
-        ptr_address = getaddress(instruction, reg);
+	ptr_address = getaddress(instruction, reg, & page_mode);
         indirect_address = mem_read(ptr_address, DATA_READ);
+	
+	addressing_mode = INDIRECT_MODE+ page_mode;
         
-        // check if address is the rage of auto indexing
+        // check if address is the range of auto indexing
         if (ptr_address >= 010 && ptr_address <= 017)
         {
             addressing_mode = AUTOINCREMENT_MODE;
@@ -206,8 +209,8 @@ uint8_t EffAddCalc(uint16_t instruction, regs* reg)
     else
     {
         // not indirect just store the value
-        reg->CPMA = getaddress(instruction, reg);
-		  addressing_mode = DIRECT_MODE;
+        reg->CPMA = getaddress(instruction, reg,& page_mode);
+		  addressing_mode = DIRECT_MODE + page_mode;
     }
 
 	 return addressing_mode;

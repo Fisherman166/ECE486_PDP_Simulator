@@ -8,9 +8,8 @@
 #include "main.h"
 #include "memory.h"
 #include "cpu.h"
-
+#define MEMORY_DEBUG
 #define OP_CODE_MASK 07000		// bits 0,1,2
-//#define OP_CODE_SHIFT 9			// how many bits to shift op code into lsb's
 
 int main(int argc, char* argv[]) {
 	int trace_return;
@@ -159,17 +158,35 @@ void run_program(void){
 		}
 
 		#ifdef MEMORY_DEBUG
-			printf("Opcode: %u Addressing mode: %u\n", registers.IR, addressing_mode);
+			switch (addressing_mode){
+			case 0:
+			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,0, "Direct Mode, \tZero Page");
+			break;
+			case 1:
+			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,1, "Direct Mode, \tCurrent Page");
+			break;
+			case 2:
+			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,2, "Indirect Mode, \tZero Page");
+			break;
+			case 3:
+			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,3, "Indirect Mode, \tCurrent Page");
+			break;
+			case 4:
+			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,4, "Indirect Mode, \tAuto Indexing");
+			break;
+			default:
+			break;
+			}
 		#endif
 
 		#ifdef DEBUG
 		printf("Cycles Before = %u, ", clock_cycles);
 		#endif
 
-		if(addressing_mode == DIRECT_MODE) {
+		if(addressing_mode == DIRECT_MODE ||addressing_mode == (DIRECT_MODE +1)  ) {
 			clock_cycles += opcode_cycles[registers.IR];
 		}
-		else if(addressing_mode == INDIRECT_MODE) {
+		else if(addressing_mode == INDIRECT_MODE || addressing_mode == (INDIRECT_MODE+1)) {
 			clock_cycles += opcode_cycles[registers.IR] + 1;
 		}
 		else {	/* Autoincrement mode */
