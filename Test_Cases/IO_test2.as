@@ -1,4 +1,8 @@
-/ Date : Feb 7, 2015
+/ Date : Feb 13, 2015
+/
+/ This tests the I/O function of the PDP8
+/ The program will ask for your name (up to 8 characters long).
+/ It will then say "Nice to meet you name"
 /
 /-------------------------------------------
 / Code Section
@@ -45,7 +49,7 @@ nameLoop,
 	cla					/ Clear accum
 	tad i tempPtr		/ Load the inputted char
 	tad enterChk		/ Subtract the ascii value of enter
-	sna					/ Skip if character - enter != 0
+	sna					/ Skip if (character - enter) != 0
 	jmp i getName		/ Return to main
 
 	cla					/ Clear accum
@@ -67,7 +71,7 @@ resLoop,
 	dca tempPtr			/ Make copy of the pointer
 	
 printName,
-	tad i tempPtr		/ Load in char
+	tad i tempPtr		/ Load in name char
 	tpc					/ Print the char
 	cla					/ Clear accum
 	isz tempPtr			/ Increment character address
