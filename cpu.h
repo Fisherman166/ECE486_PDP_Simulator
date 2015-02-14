@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <assert.h>
+#include "kb_input.h"
 
 #define CUTOFF_MASK 0xFFF	/* Bitmask to keep registers/memory at 12 bits */
 #define STARTING_ADDRESS 0200	// start at 200 octal
@@ -25,8 +26,24 @@
 #define OP_CODE_IO		06000
 #define OP_CODE_MICRO	07000
 
+#define IO_OPCODE_BITS_MASK 0077
 #define MICRO_INSTRUCTION_GROUP_BIT 0400
 #define MICRO_INSTRUCTION_BITS_MASK 0377
+#define MICRO_GROUP2_SUBGROUP_BIT 00010
+
+// I/O Keyboard
+#define IO_OPCODE_KCF_BITS 0030
+#define IO_OPCODE_KSF_BITS 0031
+#define IO_OPCODE_KCC_BITS 0032
+#define IO_OPCODE_KRS_BITS 0034
+#define IO_OPCODE_KRB_BITS 0036
+
+// I/O Monitor
+#define IO_OPCODE_TFL_BITS 0040
+#define IO_OPCODE_TSF_BITS 0041
+#define IO_OPCODE_TCF_BITS 0042
+#define IO_OPCODE_TPC_BITS 0044
+#define IO_OPCODE_TLS_BITS 0046
 
 // Group 1 micro instructions
 #define MICRO_INSTRUCTION_CLA_BITS	0200
@@ -61,6 +78,7 @@ typedef struct {
 	uint16_t SR;		/* Console Switch Register */
 	uint8_t IR;			/* Instruction Register - only 3 bits are used */
 	uint8_t link_bit;	/* Carry out bit */
+	uint8_t print_flag;
 } regs;
 
 /* Opcodes 0-5 - Memory reference functions */
@@ -70,6 +88,20 @@ void ISZ(regs*);
 void DCA(regs*);
 void JMS(regs*);
 void JMP(regs*);
+
+/* Opcode 6 - I/O - Keyboard */
+void KCF(struct keyboard*);
+void KSF(regs*, struct keyboard*);
+void KCC(regs*, struct keyboard*);
+void KRS(regs*, struct keyboard*);
+void KRB(regs*, struct keyboard*);
+
+/* Opcode 6 - I/O - Monitor */
+void TFL(regs*);
+void TSF(regs*);
+void TCF(regs*);
+void TPC(regs*);
+void TLS(regs*);
 
 /* Opcode 7 - group 1 */
 void CLA(regs*);
@@ -83,15 +115,15 @@ void RAL(regs*);
 void RTL(regs*);
 
 /* Opcoderegs* 7 - group 2 */
-void SMA(regs*);
-void SZA(regs*);
-void SNL(regs*);
-void SPA(regs*);
-void SNA(regs*);
-void SZL(regs*);
+uint8_t SMA(regs*);
+uint8_t SZA(regs*);
+uint8_t SNL(regs*);
+uint8_t SPA(regs*);
+uint8_t SNA(regs*);
+uint8_t SZL(regs*);
 void SKP(regs*);
 void OSR(regs*);
-void HLT(void);
+void HLT(struct keyboard*);
 
 /* Reset the registers */
 void reset_regs(regs*);

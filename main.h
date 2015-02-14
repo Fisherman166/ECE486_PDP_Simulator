@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #define OPCODE_NUM 8
 
@@ -22,7 +23,7 @@ static uint8_t opcode_cycles[OPCODE_NUM] = {2,2,2,2,2,1,0,1};
 static const char *opcode_text[OPCODE_NUM];
 
 int main(int argc, char* argv[]);
-void run_program(void);
+void* run_program(void*);
 void init_system(int argc, char* argv[]);
 void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */
 void print_stats(void);
