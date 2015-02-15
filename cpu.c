@@ -8,6 +8,7 @@
 
 #include "cpu.h"
 #include "memory.h"
+#include "branch_trace.h"
 
 /******************************************************************************
 ** OPCODE 0 - AND
@@ -35,13 +36,20 @@ void TAD(regs* registers) {
 ** OPCODE 2 - ISZ
 ******************************************************************************/
 void ISZ(regs* registers) {
+	const char* opcode_text = "ISZ";
+	uint8_t taken = 0;
+	uint16_t current_PC = registers->PC;
+
 	registers->MB = mem_read(registers->CPMA, DATA_READ);
 	registers->MB = (registers->MB + 1) & CUTOFF_MASK;
 	mem_write(registers->CPMA, registers->MB);
 
 	if(!registers->MB) {
 		registers->PC++;
+		taken = 1;
 	}
+
+	write_branch_trace(current_PC, current_PC + 1, opcode_text, taken);
 }
 
 /******************************************************************************
@@ -57,16 +65,28 @@ void DCA(regs* registers) {
 ** OPCODE 4 - JMS
 ******************************************************************************/
 void JMS(regs* registers) {
+	const char* opcode_text = "JMS";
+	uint8_t taken = 1;
+	uint16_t current_PC = registers->PC;
+
 	registers->MB = registers->PC; 
 	mem_write(registers->CPMA, registers->MB);
 	registers->PC = (registers->CPMA + 1) & CUTOFF_MASK; //Start 1 address into sub
+
+	write_branch_trace(current_PC, registers->PC, opcode_text, taken);
 }
 
 /******************************************************************************
 ** OPCODE 5 - JMP
 ******************************************************************************/
 void JMP(regs* registers) {
+	const char* opcode_text = "JMP";
+	uint8_t taken = 1;
+	uint16_t current_PC = registers->PC;
+
 	registers->PC = registers->CPMA;
+
+	write_branch_trace(current_PC, registers->PC, opcode_text, taken);
 }
 
 /******************************************************************************
@@ -82,11 +102,17 @@ void KCF(struct keyboard* kb_state) {
 ** OPCODE 6 - Keyboard - KSF
 ******************************************************************************/
 void KSF(regs* registers, struct keyboard* kb_state) {
+	const char* opcode_text = "KSF";
+	uint8_t taken = 0;
+	uint16_t current_PC = registers->PC;
+
 	pthread_mutex_lock(&keyboard_mux);
 	if(kb_state->input_flag) {
 		registers->PC++;
+		taken = 1;
 	}
 	pthread_mutex_unlock(&keyboard_mux);
+	write_branch_trace(current_PC, current_PC + 1, opcode_text, taken);
 }
 
 /******************************************************************************
@@ -130,9 +156,16 @@ void TFL(regs* registers) {
 ** OPCODE 6 - Monitor - TSF
 ******************************************************************************/
 void TSF(regs* registers) {
+	const char* opcode_text = "TSF";
+	uint8_t taken = 0;
+	uint16_t current_PC = registers->PC;
+
 	if(registers->print_flag) {
 		registers->PC++;
+		taken = 1;
 	}
+
+	write_branch_trace(current_PC, current_PC + 1, opcode_text, taken);
 }
 
 /******************************************************************************
@@ -322,6 +355,10 @@ uint8_t SZL(regs* registers) {
 ** OPCODE 7 GROUP 2 - SKP
 ******************************************************************************/
 void SKP(regs* registers) {
+	const char* opcode_text = "SKP";
+	uint8_t taken = 1;
+	
+	write_branch_trace(registers->PC, registers->PC + 1, opcode_text, taken);
 	registers->PC++;
 }
 

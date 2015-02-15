@@ -114,13 +114,13 @@ int trace_init(){
 	
 	if(trace_file == NULL){
 	#ifdef TRACE_DEBUG
-		printf("ERROR: Unable to open trace_file: %s\n", trace_name);
+		printf("ERROR: Unable to open memory trace file: %s\n", trace_name);
 	#endif
 		ret_val = -1;
 	}/*end if*/
 	else{
 	#ifdef TRACE_DEBUG
-		printf("trace_file: %s opened successefully\n", trace_name);
+		printf("Memory trace file: %s opened successfully\n", trace_name);
 	#endif
 		ret_val=0;
 	}/*end else*/

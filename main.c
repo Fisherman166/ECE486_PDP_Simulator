@@ -9,6 +9,7 @@
 #include "memory.h"
 #include "cpu.h"
 #include "kb_input.h"
+#include "branch_trace.h"
 
 //#define MEMORY_DEBUG
 #define OP_CODE_MASK 07000		// bits 0,1,2
@@ -51,6 +52,7 @@ int main(int argc, char* argv[]) {
 	mem_print_valid();
 	print_stats();
 	trace_close();
+	close_branch_trace();
 	return(0);
 }/*end main*/
 
@@ -363,6 +365,11 @@ void* run_program(void* keyboard_object){
 
 void init_system(int argc, char* argv[]) {
 	int i;
+	int branch_trace_open;
+
+	branch_trace_open = branch_trace_init();
+
+	if(branch_trace_open) exit(branch_trace_open);
 
 	mem_init();
 	fill_memory(argc, argv);
