@@ -8,14 +8,9 @@
 #include "main.h"
 #include "memory.h"
 #include "cpu.h"
-
-#define MEMORY_DEBUG
-=======
-=======
->>>>>>> FETCH_HEAD
 #include "kb_input.h"
 
->>>>>>> FETCH_HEAD
+//#define MEMORY_DEBUG
 #define OP_CODE_MASK 07000		// bits 0,1,2
 
 int main(int argc, char* argv[]) {
@@ -267,8 +262,6 @@ void* run_program(void* keyboard_object){
 						registers.PC++;
 					}
 				}
-=======
-				}
 				else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {	//AND subgroup
 					//Set to 1 initially so it passes the AND at the end
 					subgroup_returns[0] = 1;
@@ -298,7 +291,6 @@ void* run_program(void* keyboard_object){
 						registers.PC++;
 					}
 				}
->>>>>>> FETCH_HEAD
 
 				if((current_instruction & 07770) == MICRO_INSTRUCTION_SKP_BITS){
 					SKP(&registers);
