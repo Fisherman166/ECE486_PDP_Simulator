@@ -8,9 +8,11 @@
 #include "main.h"
 #include "memory.h"
 #include "cpu.h"
-<<<<<<< HEAD
+
 #define MEMORY_DEBUG
 =======
+=======
+>>>>>>> FETCH_HEAD
 #include "kb_input.h"
 
 >>>>>>> FETCH_HEAD
@@ -234,6 +236,7 @@ void* run_program(void* keyboard_object){
 					if(subgroup_returns[0] || subgroup_returns[1] || subgroup_returns[2]) {
 						registers.PC++;
 					}
+
 				}
 				else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {	//AND subgroup
 					//Set to 1 initially so it passes the AND at the end
@@ -264,6 +267,38 @@ void* run_program(void* keyboard_object){
 						registers.PC++;
 					}
 				}
+=======
+				}
+				else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {	//AND subgroup
+					//Set to 1 initially so it passes the AND at the end
+					subgroup_returns[0] = 1;
+					subgroup_returns[1] = 1;
+					subgroup_returns[2] = 1;
+					
+					if((current_instruction & MICRO_INSTRUCTION_SPA_BITS) == MICRO_INSTRUCTION_SPA_BITS){
+						subgroup_returns[0] = SPA(&registers);
+						strcpy(instruct_text, "SPA");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_SNA_BITS) == MICRO_INSTRUCTION_SNA_BITS){
+						subgroup_returns[1] = SNA(&registers);
+						strcpy(instruct_text, "SNA");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_SZL_BITS) == MICRO_INSTRUCTION_SZL_BITS){
+						subgroup_returns[2] = SZL(&registers);
+						strcpy(instruct_text, "SZL");
+					}
+
+					if((current_instruction & 00160) == 00160) strcpy(instruct_text, "SPA & SNA & SZL");
+					else if((current_instruction & 00160) == 00060) strcpy(instruct_text, "SNA & SZL");
+					else if((current_instruction & 00160) == 00140) strcpy(instruct_text, "SPA & SNA");
+					else if((current_instruction & 00160) == 00120) strcpy(instruct_text, "SPA & SZL");
+
+					//If all in sequence are skip, then skip
+					if(subgroup_returns[0] && subgroup_returns[1] && subgroup_returns[2]) {
+						registers.PC++;
+					}
+				}
+>>>>>>> FETCH_HEAD
 
 				if((current_instruction & 07770) == MICRO_INSTRUCTION_SKP_BITS){
 					SKP(&registers);
