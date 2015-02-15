@@ -11,7 +11,7 @@ Main,
 	isz X					/ Increment but don't skip
 	isz X					/ Increment and do skip
 	tad Y					/ If this is executed, ISZ is wrong
-	isz Y					/ Incremtn and don't skip
+	isz Y					/ Increment and don't skip
 	hlt					/ Halt the system
 	jmp Main				/Incase something goes wrong
 		

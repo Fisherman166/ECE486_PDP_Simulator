@@ -70,6 +70,97 @@ void JMP(regs* registers) {
 }
 
 /******************************************************************************
+** OPCODE 6 - Keyboard - KCF
+******************************************************************************/
+void KCF(struct keyboard* kb_state) {
+	pthread_mutex_lock(&keyboard_mux);
+	kb_state->input_flag = 0;
+	pthread_mutex_unlock(&keyboard_mux);
+}
+
+/******************************************************************************
+** OPCODE 6 - Keyboard - KSF
+******************************************************************************/
+void KSF(regs* registers, struct keyboard* kb_state) {
+	pthread_mutex_lock(&keyboard_mux);
+	if(kb_state->input_flag) {
+		registers->PC++;
+	}
+	pthread_mutex_unlock(&keyboard_mux);
+}
+
+/******************************************************************************
+** OPCODE 6 - Keyboard - KCC
+******************************************************************************/
+void KCC(regs* registers, struct keyboard* kb_state) {
+	CLA(registers);
+	pthread_mutex_lock(&keyboard_mux);
+	kb_state->input_flag = 0;
+	pthread_mutex_unlock(&keyboard_mux);
+}
+
+/******************************************************************************
+** OPCODE 6 - Keyboard - KRS
+******************************************************************************/
+void KRS(regs* registers, struct keyboard* kb_state) {
+	pthread_mutex_lock(&keyboard_mux);
+		registers->AC |= kb_state->input_char << 4;
+	pthread_mutex_unlock(&keyboard_mux);
+}
+
+/******************************************************************************
+** OPCODE 6 - Keyboard - KRB
+******************************************************************************/
+void KRB(regs* registers, struct keyboard* kb_state) {
+	registers->AC = 0;
+	pthread_mutex_lock(&keyboard_mux);
+		kb_state->input_flag = 0;
+		registers->AC |= kb_state->input_char << 4;
+	pthread_mutex_unlock(&keyboard_mux);
+}
+
+/******************************************************************************
+** OPCODE 6 - Monitor - TFL
+******************************************************************************/
+void TFL(regs* registers) {
+	registers->print_flag = 1;
+}
+
+/******************************************************************************
+** OPCODE 6 - Monitor - TSF
+******************************************************************************/
+void TSF(regs* registers) {
+	if(registers->print_flag) {
+		registers->PC++;
+	}
+}
+
+/******************************************************************************
+** OPCODE 6 - Monitor - TCF
+******************************************************************************/
+void TCF(regs* registers) {
+	registers->print_flag = 0;
+}
+
+/******************************************************************************
+** OPCODE 6 - Monitor - TPC
+******************************************************************************/
+void TPC(regs* registers) {
+	char to_print = (registers->AC >> 4) & 0xFF;
+	printf("%c", to_print);
+	fflush(stdout);
+}
+
+/******************************************************************************
+** OPCODE 6 - Monitor - TLS
+******************************************************************************/
+void TLS(regs* registers) {
+	registers->print_flag = 0;
+	char to_print = (registers->AC >> 4) & 0xFF;
+	printf("%c", to_print);
+}
+
+/******************************************************************************
 ** OPCODE 7 GROUP 1 - CLA
 ******************************************************************************/
 void CLA(regs* registers) {
@@ -156,59 +247,75 @@ void RTL(regs* registers) {
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SMA
 ******************************************************************************/
-void SMA(regs* registers) {
+uint8_t SMA(regs* registers) {
 	const uint16_t sign_bit = 0x800;
+	uint8_t retval = 0;
 
 	if(registers->AC & sign_bit) {
-		registers->PC++;
+		retval = 1;
 	}
+	return retval;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SZA
 ******************************************************************************/
-void SZA(regs* registers) {
+uint8_t SZA(regs* registers) {
+	uint8_t retval = 0;
+
 	if(!registers->AC) {
-		registers->PC++;
+		retval = 1;
 	}
+	return retval;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SNL
 ******************************************************************************/
-void SNL(regs* registers) {
+uint8_t SNL(regs* registers) {
+	uint8_t retval = 0;
+
 	if(registers->link_bit) {
-		registers->PC++;
+		retval = 1;
 	}
+	return retval;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SPA
 ******************************************************************************/
-void SPA(regs* registers) {
+uint8_t SPA(regs* registers) {
 	const uint16_t sign_bit = 0x800;
+	uint8_t retval = 0;
 
 	if( !(registers->AC & sign_bit) ) {
-		registers->PC++;
+		retval = 1;
 	}
+	return retval;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SNA
 ******************************************************************************/
-void SNA(regs* registers) {
+uint8_t SNA(regs* registers) {
+	uint8_t retval = 0;
+
 	if(registers->AC) {
-		registers->PC++;
+		retval = 1;
 	}
+	return retval;
 }
 
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - SZL
 ******************************************************************************/
-void SZL(regs* registers) {
+uint8_t SZL(regs* registers) {
+	uint8_t retval = 0;
+
 	if(!registers->link_bit) {
-		registers->PC++;
+		retval = 1;
 	}
+	return retval;
 }
 
 /******************************************************************************
@@ -228,8 +335,12 @@ void OSR(regs* registers) {
 /******************************************************************************
 ** OPCODE 7 GROUP 2 - HLT
 ******************************************************************************/
-void HLT(void) {
-	printf("HALTING SYSTEM\n");
+void HLT(struct keyboard* kb_state) {
+	printf("\n\nHALTING SYSTEM\n");
+
+	pthread_mutex_lock(&keyboard_mux);
+	kb_state->quit = 1;
+	pthread_mutex_unlock(&keyboard_mux);
 }
 
 /******************************************************************************
@@ -244,5 +355,6 @@ void reset_regs(regs* registers) {
 	registers->MB = 0;
 	registers->SR = 0;
 	registers->IR = 0;
+	registers->print_flag = 0;
 }
 

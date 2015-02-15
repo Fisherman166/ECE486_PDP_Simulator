@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-g -c -Wall
-LDFLAGS=
-SOURCES=main.c memory.c cpu.c
+CFLAGS= -g -c -Wall
+LDFLAGS= -pthread
+SOURCES=main.c memory.c cpu.c kb_input.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=PDP8_sim
 
@@ -21,3 +21,4 @@ clean:
 cpu.o: cpu.c cpu.h
 main.o: main.c main.h memory.h cpu.h
 memory.o: memory.c memory.h
+kb_input.o: kb_input.c kb_input.h
