@@ -1,6 +1,6 @@
 /******************************************************************************
 ** ECE486/586 PDP-8 Simulator
-** Sean Koppenhafer, Luis Santiago, Ken
+** Sean Koppenhafer, Luis Santiago, Ken Benderly
 **
 ** main.c
 */
@@ -193,20 +193,22 @@ void* run_program(void* keyboard_object){
 					strcpy(instruct_text, "IAC");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_RAR_BITS) == MICRO_INSTRUCTION_RAR_BITS){
-					RAR(&registers);
-					strcpy(instruct_text, "RAR");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_RTR_BITS) == MICRO_INSTRUCTION_RTR_BITS){
-					RTR(&registers);
-					strcpy(instruct_text, "RTR");
+					if((current_instruction & MICRO_INSTRUCTION_RTR_BITS) == MICRO_INSTRUCTION_RTR_BITS){
+						RTR(&registers);
+						strcpy(instruct_text, "RTR");
+					} else {
+						RAR(&registers);
+						strcpy(instruct_text, "RAR");
+					}
 				}
 				if((current_instruction & MICRO_INSTRUCTION_RAL_BITS) == MICRO_INSTRUCTION_RAL_BITS){
-					RAL(&registers);
-					strcpy(instruct_text, "RAL");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_RTL_BITS) == MICRO_INSTRUCTION_RTL_BITS){
-					RTL(&registers);
-					strcpy(instruct_text, "RTL");
+					if((current_instruction & MICRO_INSTRUCTION_RTL_BITS) == MICRO_INSTRUCTION_RTL_BITS){
+						RTL(&registers);
+						strcpy(instruct_text, "RTL");
+					} else {
+						RAL(&registers);
+						strcpy(instruct_text, "RAL");
+					}
 				}
 				break;
 
