@@ -7,6 +7,11 @@
 
 #include "branch_trace.h"
 
+/* Declare branch text types */
+const char* const unconditional_text = "Unconditional";
+const char* const conditional_text = "Conditional";
+const char* const sub_text = "Subroutine";
+
 /******************************************************************************
 ** THIS FUNCTIONS OPENS THE BRANCH TRACE FILE
 ******************************************************************************/
@@ -42,7 +47,7 @@ void write_branch_trace(uint16_t PC, uint16_t target_address, const char* opcode
 	if(taken) strcpy(result_text, "Taken");
 	else strcpy(result_text, "Not Taken");
 
-	fprintf(branch_file, "Current PC: %04o, Target: %04o, Opcode: %s, Result: %s\n", PC,
+	fprintf(branch_file, "Current PC: %04o, Target: %04o, Type: %s, Result: %s\n", PC,
 				target_address, opcode, result_text);
 }
 

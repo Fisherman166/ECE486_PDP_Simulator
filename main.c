@@ -63,6 +63,8 @@ void* run_program(void* keyboard_object){
 	const uint8_t microinstruction = 7;
 	char instruct_text[20];
 	uint8_t subgroup_returns[3];
+	uint8_t subgroup_taken;		//Will be 0 if branch not taken, 1 if taken
+	uint16_t current_PC;			//Used for the branch trace file
 	uint16_t current_instruction;
 	uint8_t addressing_mode;
 	regs registers;
@@ -209,7 +211,8 @@ void* run_program(void* keyboard_object){
 				break;
 
 			case MICRO_INSTRUCTION_GROUP_BIT:	// Group 2
-				if( !(current_instruction & MICRO_GROUP2_SUBGROUP_BIT) ) {		//OR subgroup
+				//OR subgroup if bit 3 is not set and bits 0-2 are not set
+				if( !(current_instruction & MICRO_GROUP2_SUBGROUP_BIT) && !(current_instruction & 07) ) {
 					if((current_instruction & MICRO_INSTRUCTION_SMA_BITS) == MICRO_INSTRUCTION_SMA_BITS){
 						subgroup_returns[0] = SMA(&registers);
 						strcpy(instruct_text, "SMA");
@@ -229,13 +232,17 @@ void* run_program(void* keyboard_object){
 					else if(subgroup_returns[0] && subgroup_returns[1] && subgroup_returns[2]) 
 						strcpy(instruct_text, "SMA & SZA & SNL");
 
+					subgroup_taken = 0;
+					current_PC = registers.PC;
 					//If any in a sequence would skip, then skip
 					if(subgroup_returns[0] || subgroup_returns[1] || subgroup_returns[2]) {
 						registers.PC++;
+						subgroup_taken = 1;
 					}
-
+					write_branch_trace(current_PC, current_PC + 1, conditional_text, subgroup_taken);
 				}
-				else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {	//AND subgroup
+				//AND subgroup if bit 3 is set and bits 0-2 are not set
+				else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {
 					//Set to 1 initially so it passes the AND at the end
 					subgroup_returns[0] = 1;
 					subgroup_returns[1] = 1;
@@ -259,41 +266,17 @@ void* run_program(void* keyboard_object){
 					else if((current_instruction & 00160) == 00140) strcpy(instruct_text, "SPA & SNA");
 					else if((current_instruction & 00160) == 00120) strcpy(instruct_text, "SPA & SZL");
 
+					subgroup_taken = 0;
+					current_PC = registers.PC;
 					//If all in sequence are skip, then skip
 					if(subgroup_returns[0] && subgroup_returns[1] && subgroup_returns[2]) {
 						registers.PC++;
+						subgroup_taken = 1;
 					}
-				}
-				else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {	//AND subgroup
-					//Set to 1 initially so it passes the AND at the end
-					subgroup_returns[0] = 1;
-					subgroup_returns[1] = 1;
-					subgroup_returns[2] = 1;
-					
-					if((current_instruction & MICRO_INSTRUCTION_SPA_BITS) == MICRO_INSTRUCTION_SPA_BITS){
-						subgroup_returns[0] = SPA(&registers);
-						strcpy(instruct_text, "SPA");
-					}
-					if((current_instruction & MICRO_INSTRUCTION_SNA_BITS) == MICRO_INSTRUCTION_SNA_BITS){
-						subgroup_returns[1] = SNA(&registers);
-						strcpy(instruct_text, "SNA");
-					}
-					if((current_instruction & MICRO_INSTRUCTION_SZL_BITS) == MICRO_INSTRUCTION_SZL_BITS){
-						subgroup_returns[2] = SZL(&registers);
-						strcpy(instruct_text, "SZL");
-					}
-
-					if((current_instruction & 00160) == 00160) strcpy(instruct_text, "SPA & SNA & SZL");
-					else if((current_instruction & 00160) == 00060) strcpy(instruct_text, "SNA & SZL");
-					else if((current_instruction & 00160) == 00140) strcpy(instruct_text, "SPA & SNA");
-					else if((current_instruction & 00160) == 00120) strcpy(instruct_text, "SPA & SZL");
-
-					//If all in sequence are skip, then skip
-					if(subgroup_returns[0] && subgroup_returns[1] && subgroup_returns[2]) {
-						registers.PC++;
-					}
+					write_branch_trace(current_PC, current_PC + 1, conditional_text, subgroup_taken);
 				}
 
+				//SKP will run along with SPA, SNA or SZL if bits 3-5 are not checked
 				if((current_instruction & 07770) == MICRO_INSTRUCTION_SKP_BITS){
 					SKP(&registers);
 					strcpy(instruct_text, "SKP");

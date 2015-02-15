@@ -8,7 +8,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define FILL_DEBUG
+//#define FILL_DEBUG
+//#define DEBUG
 
 #include <stdio.h>
 #include <stdlib.h>

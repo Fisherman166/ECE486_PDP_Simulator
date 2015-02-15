@@ -31,10 +31,10 @@ uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch){
 
 	/* Print to trace file */
 	if(read_or_fetch == 0) {
-		fprintf( trace_file, "DR %o\n", converted);
+		fprintf( trace_file, "DR %04o\n", converted);
 	}
 	else if(read_or_fetch == 1) {
-		fprintf( trace_file, "IF %o\n", converted);
+		fprintf( trace_file, "IF %04o\n", converted);
 	}
 	else {
 		fprintf( trace_file, "Read type not recognized\n");
@@ -66,7 +66,7 @@ void mem_write(uint16_t to_convert, uint16_t data){
 	#endif
 
 	/* Write to trace file */
-	fprintf( trace_file, "DW %o\n", converted);
+	fprintf( trace_file, "DW %04o\n", converted);
 
 	//Make sure to make the location in memory valid
 	memory[converted] = MEMORY_VALID_BIT | data;

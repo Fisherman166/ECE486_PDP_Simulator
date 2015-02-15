@@ -17,8 +17,6 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-//#define DEBUG 1
-
 /* Total memory size is 4K */
 #define WORDS_PER_PAGE 128
 #define PAGES 32
