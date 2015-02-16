@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
 ******************************************************************************/
 void* run_program(void* keyboard_object){
 	const uint8_t microinstruction = 7;
-	char instruct_text[20];
+	char instruct_text[80];
 	uint8_t subgroup_returns[3];
 	uint8_t subgroup_taken;		//Will be 0 if branch not taken, 1 if taken
 	uint16_t current_PC;			//Used for the branch trace file
@@ -69,10 +69,11 @@ void* run_program(void* keyboard_object){
 	uint8_t addressing_mode;
 	regs registers;
 	struct keyboard* local_kb = (struct keyboard*)keyboard_object;
-	
+	unsigned int running;
 	reset_regs(&registers);		// initialize the CPU 
 
-	do {
+	running = 1;
+	while(running){
 		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// load the next instruction
 		registers.PC++;																	// increment the PC
 		registers.IR = (current_instruction >> 9) & 0xFF;						// Put the opcode in here
@@ -166,6 +167,7 @@ void* run_program(void* keyboard_object){
 			break;
 		case OP_CODE_MICRO:
 			opcode_freq[7]++;
+			instruct_text[0] = '\0'; // intialize string as empty
 			switch(current_instruction & MICRO_INSTRUCTION_GROUP_BIT){
 			case 0:	// Group 1
 				// Go through the bits and exeucute in sequence if high
@@ -174,40 +176,40 @@ void* run_program(void* keyboard_object){
 				}
 				if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
 					CLA(&registers);
-					strcpy(instruct_text, "CLA");
+					strcat(instruct_text, "CLA ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_CLL_BITS) == MICRO_INSTRUCTION_CLL_BITS){
 					CLL(&registers);
-					strcpy(instruct_text, "CLL");
+					strcat(instruct_text, "CLL ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_CMA_BITS) == MICRO_INSTRUCTION_CMA_BITS){
 					CMA(&registers);
-					strcpy(instruct_text, "CMA");
+					strcat(instruct_text, "CMA ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_CML_BITS) == MICRO_INSTRUCTION_CML_BITS){
 					CML(&registers);
-					strcpy(instruct_text, "CML");
+					strcat(instruct_text, "CML ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_IAC_BITS) == MICRO_INSTRUCTION_IAC_BITS){
 					IAC(&registers);
-					strcpy(instruct_text, "IAC");
+					strcat(instruct_text, "IAC ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_RAR_BITS) == MICRO_INSTRUCTION_RAR_BITS){
 					if((current_instruction & MICRO_INSTRUCTION_RTR_BITS) == MICRO_INSTRUCTION_RTR_BITS){
 						RTR(&registers);
-						strcpy(instruct_text, "RTR");
+						strcat(instruct_text, "RTR ");
 					} else {
 						RAR(&registers);
-						strcpy(instruct_text, "RAR");
+						strcat(instruct_text, "RAR ");
 					}
 				}
 				if((current_instruction & MICRO_INSTRUCTION_RAL_BITS) == MICRO_INSTRUCTION_RAL_BITS){
 					if((current_instruction & MICRO_INSTRUCTION_RTL_BITS) == MICRO_INSTRUCTION_RTL_BITS){
 						RTL(&registers);
-						strcpy(instruct_text, "RTL");
+						strcat(instruct_text, "RTL ");
 					} else {
 						RAL(&registers);
-						strcpy(instruct_text, "RAL");
+						strcat(instruct_text, "RAL ");
 					}
 				}
 				break;
@@ -219,23 +221,16 @@ void* run_program(void* keyboard_object){
 					subgroup_returns[0] = subgroup_returns[1] = subgroup_returns[2] = 0;
 					if((current_instruction & MICRO_INSTRUCTION_SMA_BITS) == MICRO_INSTRUCTION_SMA_BITS){
 						subgroup_returns[0] = SMA(&registers);
-						strcpy(instruct_text, "SMA");
+						strcat(instruct_text, "SMA ");
 					}
 					if((current_instruction & MICRO_INSTRUCTION_SZA_BITS) == MICRO_INSTRUCTION_SZA_BITS){
 						subgroup_returns[1] = SZA(&registers);
-						strcpy(instruct_text, "SZA");
+						strcat(instruct_text, "SZA ");
 					}
 					if((current_instruction & MICRO_INSTRUCTION_SNL_BITS) == MICRO_INSTRUCTION_SNL_BITS){
 						subgroup_returns[2] = SNL(&registers);
-						strcpy(instruct_text, "SNL");
+						strcat(instruct_text, "SNL ");
 					}
-					
-					if(subgroup_returns[0] && subgroup_returns[1]) strcpy(instruct_text, "SMA & SZA");
-					else if(subgroup_returns[0] && subgroup_returns[2]) strcpy(instruct_text, "SMA & SNL");
-					else if(subgroup_returns[1] && subgroup_returns[2]) strcpy(instruct_text, "SZA & SNL");
-					else if(subgroup_returns[0] && subgroup_returns[1] && subgroup_returns[2]) 
-						strcpy(instruct_text, "SMA & SZA & SNL");
-
 					subgroup_taken = 0;
 					current_PC = registers.PC;
 					//If any in a sequence would skip, then skip
@@ -254,21 +249,16 @@ void* run_program(void* keyboard_object){
 					
 					if((current_instruction & MICRO_INSTRUCTION_SPA_BITS) == MICRO_INSTRUCTION_SPA_BITS){
 						subgroup_returns[0] = SPA(&registers);
-						strcpy(instruct_text, "SPA");
+						strcat(instruct_text, "SPA ");
 					}
 					if((current_instruction & MICRO_INSTRUCTION_SNA_BITS) == MICRO_INSTRUCTION_SNA_BITS){
 						subgroup_returns[1] = SNA(&registers);
-						strcpy(instruct_text, "SNA");
+						strcat(instruct_text, "SNA ");
 					}
 					if((current_instruction & MICRO_INSTRUCTION_SZL_BITS) == MICRO_INSTRUCTION_SZL_BITS){
 						subgroup_returns[2] = SZL(&registers);
-						strcpy(instruct_text, "SZL");
+						strcat(instruct_text, "SZL ");
 					}
-
-					if((current_instruction & 00160) == 00160) strcpy(instruct_text, "SPA & SNA & SZL");
-					else if((current_instruction & 00160) == 00060) strcpy(instruct_text, "SNA & SZL");
-					else if((current_instruction & 00160) == 00140) strcpy(instruct_text, "SPA & SNA");
-					else if((current_instruction & 00160) == 00120) strcpy(instruct_text, "SPA & SZL");
 
 					subgroup_taken = 0;
 					current_PC = registers.PC;
@@ -283,24 +273,26 @@ void* run_program(void* keyboard_object){
 				//SKP will run along with SPA, SNA or SZL if bits 3-5 are not checked
 				if((current_instruction & 07770) == MICRO_INSTRUCTION_SKP_BITS){
 					SKP(&registers);
-					strcpy(instruct_text, "SKP");
+					strcat(instruct_text, "SKP ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
 					CLA(&registers);
-					strcpy(instruct_text, "CLA");
+					strcat(instruct_text, "CLA ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_OSR_BITS) == MICRO_INSTRUCTION_OSR_BITS){
 					OSR(&registers);
-					strcpy(instruct_text, "OSR");
+					strcat(instruct_text, "OSR ");
 				}
 				if((current_instruction & MICRO_INSTRUCTION_HLT_BITS) == MICRO_INSTRUCTION_HLT_BITS){
 					HLT(local_kb);
-					strcpy(instruct_text, "HLT");
+					strcat(instruct_text, "HLT ");
+					running = 0; // stop further execution
 				}
 				break;
 			}
 			break;
 		}
+		printf("Instruction = %s\n", instruct_text);
 
 		#ifdef MEMORY_DEBUG
 			switch (addressing_mode){
@@ -344,9 +336,8 @@ void* run_program(void* keyboard_object){
 						registers.link_bit, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
 		#endif
 
-	} while ((current_instruction & CUTOFF_MASK) != 
-				(OP_CODE_MICRO | MICRO_INSTRUCTION_GROUP_BIT | MICRO_INSTRUCTION_HLT_BITS));  // run until halt
-
+	}
+	
 	pthread_exit(0);
 } // end run_program
 
