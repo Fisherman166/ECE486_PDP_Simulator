@@ -213,8 +213,10 @@ void* run_program(void* keyboard_object){
 				break;
 
 			case MICRO_INSTRUCTION_GROUP_BIT:	// Group 2
-				//OR subgroup if bit 3 is not set and bits 0-2 are not set
+		   		//OR subgroup if bit 3 is not set and bits 0-2 are not set
 				if( !(current_instruction & MICRO_GROUP2_SUBGROUP_BIT) && !(current_instruction & 07) ) {
+					// Set returns to 0 initially
+					subgroup_returns[0] = subgroup_returns[1] = subgroup_returns[2] = 0;
 					if((current_instruction & MICRO_INSTRUCTION_SMA_BITS) == MICRO_INSTRUCTION_SMA_BITS){
 						subgroup_returns[0] = SMA(&registers);
 						strcpy(instruct_text, "SMA");
