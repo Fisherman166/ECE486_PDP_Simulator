@@ -2,18 +2,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "callback.h"
+
+
+
+// compile with  
+// gcc projgui.c -o proj $(pkg-config --cflags --libs gtk+-3.0)
+
 /****************************************************************************
                                    To DO
 *****************************************************************************
  1) maube different buttons
- 2) radio button
- 3) redirect g_item.buffer to receive a file
- 4) get an input txt window for breakpoins
- 5) add IR,
- 6) add label for file name
- 7) maybe add a menu (only if we can make good use of it)
- 8) add call back for buttons
- 9) entry text GTKentry
+ 2) add IR, CPMA, other registers to lables 
+ 3) maybe add a menu (only if we can make good use of it)
+ 4) msg window 
+ 5) 
+ 6)
+ 7) 
+ 8) 
+ 9) 
 ***************************************************************************/
 
 
