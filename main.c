@@ -11,6 +11,16 @@
 #include "kb_input.h"
 #include "branch_trace.h"
 
+//#define GUI
+
+#ifdef GUI
+#include <gtk/gtk.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "callback.h"
+#include "gui.h"
+#endif
+
 //#define MEMORY_DEBUG
 #define OP_CODE_MASK 07000		// bits 0,1,2
 
@@ -21,6 +31,17 @@ int main(int argc, char* argv[]) {
 	struct keyboard local_kb;	//Needed for I/O
 	local_kb.input_flag = 0;
 	local_kb.quit = 0;
+
+#ifdef GUI
+    GtkApplication *app;
+    int status;
+    g_items *obj = malloc(sizeof(*obj));
+
+    app = gtk_application_new ("ECE.Project", G_APPLICATION_FLAGS_NONE);
+    g_signal_connect (app, "activate", G_CALLBACK (activate), obj);
+    status = g_application_run (G_APPLICATION (app), argc, argv);
+    g_object_unref (app);
+#endif
 
 	init_system(argc, argv);
 
@@ -53,6 +74,9 @@ int main(int argc, char* argv[]) {
 	print_stats();
 	trace_close();
 	close_branch_trace();
+#ifdef GUI
+    free(obj);
+#endif
 	return(0);
 }/*end main*/
 

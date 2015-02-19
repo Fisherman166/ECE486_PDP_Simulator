@@ -1,0 +1,30 @@
+CC=gcc
+CFLAGS= -g -c -Wall `pkg-config --cflags gtk+-3.0`
+LDFLAGS= -pthread
+GTKLINK=`pkg-config --libs gtk+-3.0`
+SOURCES=main.c memory.c cpu.c kb_input.c branch_trace.c gui.c callback.c
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=PDP8_sim
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@ $(GTKLINK)
+
+.c.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+clean:
+	rm -rf *~ *.o $(EXECUTABLE)
+
+# to generate this list use: gcc -MM -g -c -Wall *.c
+
+branch_trace.o: branch_trace.c branch_trace.h
+callback.o: callback.c callback.h gui.h
+cpu.o: cpu.c cpu.h kb_input.h memory.h branch_trace.h
+gui.o: gui.c gui.h callback.h
+kb_input.o: kb_input.c kb_input.h
+kb_test.o: kb_test.c
+main.o: main.c main.h memory.h cpu.h kb_input.h branch_trace.h callback.h gui.h
+memory.o: memory.c memory.h cpu.h kb_input.h
+
