@@ -16,6 +16,8 @@ uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch){
 	uint16_t page;
 	uint8_t offset;
 	uint16_t converted;
+	uint16_t retval;
+
 	//parse address from CPMA
 	page = (0b0000111110000000 & to_convert);//0xF80
 	offset = (0b0000000001111111 & to_convert);//0x7F
@@ -29,20 +31,21 @@ uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch){
 		printf("Offset:\n\tHEX: 0x%x\tOCTAL: %o\tDEC: %u\n",offset,offset,offset);
 	#endif
 
-	/* Print to trace file */
-	if(read_or_fetch == 0) {
+	//Print to trace file and handle the fetch accordingly
+	if(read_or_fetch == DATA_READ) {
+		//Remove internal state bits for read
+		retval = memory[converted] & CUTOFF_MASK;
 		fprintf( trace_file, "DR %04o\n", converted);
 	}
-	else if(read_or_fetch == 1) {
+	else if(read_or_fetch == INSTRUCTION_FETCH) {
+		retval = memory[converted];
 		fprintf( trace_file, "IF %04o\n", converted);
 	}
 	else {
 		fprintf( trace_file, "Read type not recognized\n");
 	}
 
-	//access memory at address in array
-	//Make sure to remove valid and break bits from the value
-	return (memory[converted] & CUTOFF_MASK);
+	return retval;
 }/*end mem_read()*/
 
 /******************************************************************************
@@ -69,7 +72,12 @@ void mem_write(uint16_t to_convert, uint16_t data){
 	fprintf( trace_file, "DW %04o\n", converted);
 
 	//Make sure to make the location in memory valid
-	memory[converted] = MEMORY_VALID_BIT | data;
+	if(memory[converted] & MEMORY_BREAKPOINT_BIT) {
+		memory[converted] = MEMORY_VALID_BIT | data | MEMORY_BREAKPOINT_BIT;
+	}
+	else {
+		memory[converted] = MEMORY_VALID_BIT | data;
+	}	
 
 	#ifdef MEMORY_DEBUG
 		printf("CALLEE->WROTE: %o to: %o IN OCTAL\n", data, converted);
@@ -215,6 +223,21 @@ page_mode =0;
 
 	 return addressing_mode;
 }
+
+/******************************************************************************
+**	SETS A BREAKPOINT IN MEMORY
+******************************************************************************/
+void set_breakpoint(uint16_t breakpoint_address) {
+	memory[breakpoint_address] |= MEMORY_BREAKPOINT_BIT;
+}
+
+/******************************************************************************
+**	REMOVES A BREAKPOINT IN MEMORY
+******************************************************************************/
+void remove_breakpoint(uint16_t breakpoint_address) {
+	memory[breakpoint_address] &= ~MEMORY_BREAKPOINT_BIT;
+}
+
 /******************************************************************************
  * 	EOF
  *****************************************************************************/

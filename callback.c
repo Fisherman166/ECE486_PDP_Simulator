@@ -2,6 +2,8 @@
 
 #include "callback.h"
 #include "gui.h"
+#include "memory.h"
+#include "main.h"
 
 /******************************************************************* *
                              Buttons
@@ -126,12 +128,22 @@ void clear_tracepoint(GtkWidget *button, gpointer   user_data)
 void new_breakpoint(GtkEntry *entry,
              gpointer  user_data)
 {
-  const char *val;
-  val = gtk_entry_get_text (entry);
- 
-  g_print ("\nBreakpoint entered %d!\n\n", atoi(val));
-  gtk_entry_set_text (entry,"\0");
+  const int maximum_address = 07777;	//Maximum address allowed in PDP8
+  const char *breakpoint_text;
+  breakpoint_text = gtk_entry_get_text(entry);
+  int breakpoint_address = strtol(breakpoint_text, NULL, 8);	//Use octal base
 
+  if(breakpoint_address > maximum_address) {
+  		#ifdef DEBUG_GUI
+  		g_print("Breakpoint address %04o is not valid\n", breakpoint_address);
+  		#endif
+  }
+  else {
+  		set_breakpoint( (uint16_t)(breakpoint_address & 0xFFFF) );
+  		g_print ("Breakpoint entered at %04o!\n", breakpoint_address);
+  }
+
+  gtk_entry_set_text (entry,"\0");
 }
 
 
@@ -145,7 +157,4 @@ void new_tracepoint(GtkEntry *entry,
   gtk_entry_set_text (entry,"\0");
 
 }
-
-
-
 

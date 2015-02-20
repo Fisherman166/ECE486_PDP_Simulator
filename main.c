@@ -96,10 +96,22 @@ void* run_program(void* keyboard_object){
 	unsigned int running;
 	reset_regs(&registers);		// initialize the CPU 
 
+	#ifdef GUI
+	stall_execution = 0;
+	#endif
+
 	running = 1;
 	while(running){
-		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// load the next instruction
+		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// Has status bits still
 		registers.PC++;																	// increment the PC
+
+		#ifdef GUI
+		if(current_instruction & MEMORY_BREAKPOINT_BIT) stall_execution = 1;
+
+		while(stall_execution) {
+		}
+		#endif
+		
 		registers.IR = (current_instruction >> 9) & 0xFF;						// Put the opcode in here
 
 		//Microinstructions don't have indirect or auto increment modes
@@ -316,7 +328,7 @@ void* run_program(void* keyboard_object){
 			}
 			break;
 		}
-		printf("Instruction = %s\n", instruct_text);
+		//printf("Instruction = %s\n", instruct_text);
 
 		#ifdef MEMORY_DEBUG
 			switch (addressing_mode){

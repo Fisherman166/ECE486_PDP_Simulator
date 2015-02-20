@@ -40,6 +40,10 @@
 #define OFFSET_MASK   	0X7F
 #define PAGE_MASK	0XF80
 
+uint16_t memory[PAGES * WORDS_PER_PAGE];
+char *trace_name;
+FILE *trace_file;
+
 // Prototypes
 void mem_init(void);
 void mem_print_valid(void);
@@ -51,10 +55,8 @@ uint16_t zeropage(uint16_t);
 uint16_t currentpage(uint16_t, regs*);
 //uint16_t getaddress(uint16_t, regs*);
 uint8_t EffAddCalc(uint16_t, regs*);
-
-uint16_t memory[PAGES * WORDS_PER_PAGE];
-char *trace_name;
-FILE *trace_file;
+void set_breakpoint(uint16_t);
+void remove_breakpoint(uint16_t);
 
 /******************************************************************************
 **	EOF

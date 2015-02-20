@@ -9,7 +9,8 @@
 #define MAIN_H
 
 //#define FILL_DEBUG
-//#define DEBUG
+#define DEBUG
+#define DEBUG_GUI
 
 #include <stdio.h>
 #include <stdlib.h>
