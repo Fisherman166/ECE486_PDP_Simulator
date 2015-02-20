@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= -g -c -Wall `pkg-config --cflags gtk+-3.0`
+CFLAGS= -g -c -Wall -DGUI `pkg-config --cflags gtk+-3.0`
 LDFLAGS= -pthread
 GTKLINK=`pkg-config --libs gtk+-3.0`
 SOURCES=main.c memory.c cpu.c kb_input.c branch_trace.c gui.c callback.c
