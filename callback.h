@@ -12,7 +12,7 @@
 
 void spin_clicked (GtkSpinButton *spinbutton, gpointer user_data);
 void loadscreen(g_items* obj);
-void on_button_click (GtkButton *button1, gpointer   data);
+void run_button_click (GtkButton *button1, gpointer   data);
 void set_breakpt_cb(GtkWidget *button, gpointer   user_data);
 void clear_breakpt_cb(GtkWidget *button, gpointer   user_data);
 void set_tracepoint (GtkWidget *button, gpointer   user_data);

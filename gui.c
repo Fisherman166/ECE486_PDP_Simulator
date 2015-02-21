@@ -64,9 +64,8 @@ void create_buttons(g_items* obj)
 {
 // radio button needs to be created and label created
 
-    obj->button1 = gtk_button_new_with_label ("Start");
 
-    obj->button2 = gtk_button_new_with_label ("RUN");
+    obj->run_button = gtk_button_new_with_label ("RUN");
 
     obj->button3 = gtk_button_new_with_label ("Continue");
 
@@ -117,11 +116,10 @@ void set_grid(g_items * obj)
 
 
     /* set button location on the grid */
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->button1 ,1, 1, 1, 1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button2, obj->button1,GTK_POS_RIGHT,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button3, obj->button2,GTK_POS_RIGHT,1,1);
+    gtk_grid_attach (GTK_GRID (obj->grid), obj->run_button ,1, 1, 1, 1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button3, obj->run_button,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button4, obj->button3,GTK_POS_RIGHT,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->button1,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->run_button,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->spin_button, obj->pagenum,GTK_POS_BOTTOM,1,1);
 
 
@@ -148,9 +146,9 @@ void set_grid(g_items * obj)
 
 
 // radio Buttons placement
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->radio_BP1 ,lcol, ++c2row , 1, 1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_BP2, obj->radio_BP1,GTK_POS_BOTTOM,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->BreakP_entry,obj->radio_BP2, GTK_POS_BOTTOM, 1,1);
+    gtk_grid_attach (GTK_GRID (obj->grid), obj->radio_set_BP ,lcol, ++c2row , 1, 1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_clear_BP, obj->radio_set_BP,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->BreakP_entry,obj->radio_clear_BP, GTK_POS_BOTTOM, 1,1);
 
     gtk_grid_attach (GTK_GRID (obj->grid), obj->radioB_SetTr ,lcol-1, c2row , 1, 1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_ClrTr, obj->radioB_SetTr,GTK_POS_BOTTOM,1,1);
@@ -231,10 +229,10 @@ void create_buffers(g_items * obj)
 
 void create_radio_buttons(g_items* obj)
 {
-	obj->radio_BP1=gtk_radio_button_new_with_label(NULL, "Set Breakpoints");
+	obj->radio_set_BP=gtk_radio_button_new_with_label(NULL, "Set Breakpoints");
     
-	obj->radio_BP2=gtk_radio_button_new_with_label_from_widget 
-	(GTK_RADIO_BUTTON (obj->radio_BP1), "Clear Breakpoints");
+	obj->radio_clear_BP=gtk_radio_button_new_with_label_from_widget 
+	(GTK_RADIO_BUTTON (obj->radio_set_BP), "Clear Breakpoints");
 
     	obj->radioB_SetTr =gtk_radio_button_new_with_label(NULL, "Set Trace");
     
@@ -248,8 +246,8 @@ void create_radio_buttons(g_items* obj)
 void set_radio_buttons( g_items *obj)
 {
 // set values 
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radio_BP1), TRUE);
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radio_BP2), FALSE);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radio_set_BP), TRUE);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radio_clear_BP), FALSE);
 
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radioB_SetTr), TRUE);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radioB_ClrTr), FALSE);
@@ -267,9 +265,9 @@ void entry_box_cb(g_items *obj)
 void radio_button_callbacks( g_items * obj)
 {
 
-  g_signal_connect (GTK_TOGGLE_BUTTON (obj->radio_BP1), "toggled", 
+  g_signal_connect (GTK_TOGGLE_BUTTON (obj->radio_set_BP), "toggled", 
                     G_CALLBACK (set_breakpt_cb),  obj);
-  g_signal_connect (GTK_TOGGLE_BUTTON (obj->radio_BP2), "toggled", 
+  g_signal_connect (GTK_TOGGLE_BUTTON (obj->radio_clear_BP), "toggled", 
                     G_CALLBACK (clear_breakpt_cb),  obj);
 
 // trace points
@@ -287,10 +285,10 @@ void create_buttons_callbacks(g_items* obj)
 {
    /*Connecting the clicked signal to the callback function*/
 
-    g_signal_connect (GTK_BUTTON (obj->button1), "clicked",
-                      G_CALLBACK (on_button_click), obj);
+    g_signal_connect (GTK_BUTTON (obj->run_button), "clicked",
+                      G_CALLBACK (run_button_click), obj);
 
- g_signal_connect (obj->spin_button, 
+    g_signal_connect (obj->spin_button, 
                     "value-changed", 
                     G_CALLBACK (spin_clicked), 
                     obj);

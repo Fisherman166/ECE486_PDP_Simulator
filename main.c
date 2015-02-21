@@ -11,7 +11,7 @@
 #include "kb_input.h"
 #include "branch_trace.h"
 
-//#define GUI
+#define GUI
 
 #ifdef GUI
 #include <gtk/gtk.h>
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     app = gtk_application_new ("ECE.Project", G_APPLICATION_FLAGS_NONE);
     g_signal_connect (app, "activate", G_CALLBACK (activate), obj);
-    status = g_application_run (G_APPLICATION (app), argc, argv);
+    status = g_application_run (G_APPLICATION (app), NULL, NULL);
     g_object_unref (app);
 #endif
 

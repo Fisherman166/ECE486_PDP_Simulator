@@ -23,7 +23,7 @@ char * data1;
   gsize length;
 //obj->i=1;
 
- obj->FP = g_file_new_for_path ("add01.as");
+ obj->FP = g_file_new_for_path ("test1.txt");
 // obj->fname = g_file_get_basename (obj->FP);
 
  if (g_file_load_contents (obj->FP, NULL, &contents, &length, NULL, NULL))
@@ -59,7 +59,7 @@ g_free (obj->fname);
      }
    
 
-void on_button_click (GtkButton *button1,
+void run_button_click (GtkButton *button,
                              gpointer   data)
 {
     g_items * tptr;
@@ -132,6 +132,14 @@ void new_breakpoint(GtkEntry *entry,
   const char *breakpoint_text;
   breakpoint_text = gtk_entry_get_text(entry);
   int breakpoint_address = strtol(breakpoint_text, NULL, 8);	//Use octal base
+   g_items * temp_ptr;
+   temp_ptr = (g_items *) user_data;
+
+
+  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (temp_ptr->radio_set_BP)))
+   {
+      	    g_print ("\nset BP!\n");
+	}
 
   if(breakpoint_address > maximum_address) {
   		#ifdef DEBUG_GUI
@@ -143,6 +151,7 @@ void new_breakpoint(GtkEntry *entry,
   		g_print ("Breakpoint entered at %04o!\n", breakpoint_address);
   }
 
+// clear screen to confiem entry
   gtk_entry_set_text (entry,"\0");
 }
 

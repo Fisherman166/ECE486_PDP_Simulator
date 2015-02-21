@@ -11,8 +11,8 @@ typedef struct g_tag
 {
     GtkWidget *grid;
     GtkEntryBuffer * breakpoints;
-    GtkWidget *radio_BP1, *radio_BP2,*radioB_SetTr, *radioB_ClrTr;
-    GtkWidget *button1, * button2, *button3, *button4;
+    GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;
+    GtkWidget  * run_button, *button3, *button4;
     GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label, *Mesages_label;
     GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value;
     GtkWidget *scrolled_window, * scrolled_msg;
@@ -43,5 +43,5 @@ void entry_box_cb(g_items *obj);
 void radio_button_callbacks( g_items * obj);
 void create_buttons_callbacks(g_items* obj);
 void activate (GtkApplication *app, gpointer    data);
-
+int stall_execution;
 #endif
