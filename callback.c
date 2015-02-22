@@ -163,10 +163,10 @@ void new_breakpoint(GtkEntry *entry,
   		set_breakpoint( (uint16_t)(breakpoint_address & 0xFFFF) );
   		g_print ("Breakpoint entered at %04o!\n", breakpoint_address);
      
-       gtk_text_buffer_get_iter_at_line (obj->msgbuff,iter,1);
+     //  gtk_text_buffer_get_iter_at_line (obj->msgbuff,obj->iter,1);
 
   obj->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (obj->messages_txt));
-      gtk_text_buffer_set_text (obj->msgbuff, "Hello, this is some text\0", sizeof("Hello, this is some text"));
+      gtk_text_buffer_set_text (obj->msgbuff, "Hello, this is some text\0",-1);
   }
 
 
