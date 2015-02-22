@@ -19,6 +19,7 @@ void set_tracepoint (GtkWidget *button, gpointer   user_data);
 void clear_tracepoint(GtkWidget *button, gpointer   user_data);
 void new_breakpoint(GtkEntry *entry, gpointer  user_data);
 void new_tracepoint(GtkEntry *entry, gpointer  user_data);
+void breakpoint_to_set(int breakpoint_address, g_items * obj);
 
 #endif
 

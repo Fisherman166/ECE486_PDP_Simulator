@@ -54,7 +54,7 @@ g_free (obj->fname);
 
 //gtk_text_buffer_insert (obj->msgbuff,obj->mark, contents, sizeof(contents));
   //gtk_text_buffer_insert(contents, contents, sizeof(contents));
-// obj-> = gtk_text_buffer_new ("new txt");   //input buffer
+ //obj-> = gtk_text_buffer_new ("new txt");   //input buffer
   
      }
    
@@ -128,32 +128,52 @@ void clear_tracepoint(GtkWidget *button, gpointer   user_data)
 void new_breakpoint(GtkEntry *entry,
              gpointer  user_data)
 {
-  const int maximum_address = 07777;	//Maximum address allowed in PDP8
+  g_items * temp_ptr;
   const char *breakpoint_text;
   breakpoint_text = gtk_entry_get_text(entry);
   int breakpoint_address = strtol(breakpoint_text, NULL, 8);	//Use octal base
-   g_items * temp_ptr;
+ 
    temp_ptr = (g_items *) user_data;
 
 
-  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (temp_ptr->radio_set_BP)))
+  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON ((GtkWidget *)temp_ptr->radio_set_BP)))
    {
-      	    g_print ("\nset BP!\n");
+      	  breakpoint_to_set(breakpoint_address, temp_ptr);
 	}
+
+ 
+// clear screen to confiem entry
+  gtk_entry_set_text (entry,"\0");
+}
+
+
+
+
+ void breakpoint_to_set(int breakpoint_address, g_items * obj)
+ {
+   const int maximum_address = 07777;	//Maximum address allowed in PDP8
 
   if(breakpoint_address > maximum_address) {
   		#ifdef DEBUG_GUI
   		g_print("Breakpoint address %04o is not valid\n", breakpoint_address);
   		#endif
+    
   }
   else {
   		set_breakpoint( (uint16_t)(breakpoint_address & 0xFFFF) );
   		g_print ("Breakpoint entered at %04o!\n", breakpoint_address);
+     
+       gtk_text_buffer_get_iter_at_line (obj->msgbuff,iter,1);
+
+  obj->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (obj->messages_txt));
+      gtk_text_buffer_set_text (obj->msgbuff, "Hello, this is some text\0", sizeof("Hello, this is some text"));
   }
 
-// clear screen to confiem entry
-  gtk_entry_set_text (entry,"\0");
+
 }
+
+
+
 
 
 void new_tracepoint(GtkEntry *entry,

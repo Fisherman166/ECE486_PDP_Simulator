@@ -11,17 +11,20 @@ typedef struct g_tag
 {
     GtkWidget *grid;
     GtkEntryBuffer * breakpoints;
+
     GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;
+
     GtkWidget  * run_button, *button3, *button4;
     GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label, *Mesages_label;
     GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value;
     GtkWidget *scrolled_window, * scrolled_msg;
     GtkTextBuffer *buffer, *msgbuff;
-    GtkWidget *text_view,*BreakP_entry,*Trace_entry, *messages_txt;
+    GtkWidget *text_view, *BreakP_entry,*Trace_entry, *messages_txt;
     GtkWidget *spin_button;
-    GtkAdjustment *adjustment;
+    
+   GtkAdjustment *adjustment;
     GtkTextMark * mark;
-    GtkTextIter *i;
+    GtkTextIter *iter;
     
     int c;
 
