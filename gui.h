@@ -10,26 +10,31 @@
 typedef struct g_tag
 {
     GtkWidget *grid;
-    GtkEntryBuffer * breakpoints;
+    GtkWidget  * run_button, *step;
+// name of all label not to be changed change next group
+    GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label, *Mesages_label, *IR_label, *Link_label, *Memory_Buffer_label;
 
-    GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;
+// name if labels to be changed with the values of the registers
+    GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value, *IR_value, *Link_value, *Memory_Buffer_value;
 
-    GtkWidget  * run_button, *button3, *button4;
-    GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label, *Mesages_label;
-    GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value;
+
+// windows, buffers  buttons and misc stuff
     GtkWidget *scrolled_window, * scrolled_msg;
+    GtkEntryBuffer * breakpoints;
     GtkTextBuffer *buffer, *msgbuff;
     GtkWidget *text_view, *BreakP_entry,*Trace_entry, *messages_txt;
     GtkWidget *spin_button;
-    
-   GtkAdjustment *adjustment;
-    GtkTextMark * mark;
-    GtkTextIter *iter;
-    
+    GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;
+    GtkAdjustment *adjustment;  
+    //GtkTextMark * mark;    unsuccesfully try to use to change txt in mesage box
+    //GtkTextIter *iter;
+
+// file descripto for screen    
+ 	GFile *FP;
+	gchar *fname;
     int c;
 
-	GFile *FP;
-	gchar *fname;
+
 } g_items;
 
 

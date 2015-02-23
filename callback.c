@@ -70,8 +70,30 @@ void run_button_click (GtkButton *button,
     sprintf(buff, "%d", tptr->c);
     gtk_label_set_text(GTK_LABEL (tptr->PC_value),buff);
 
-   loadscreen(tptr);
+
+
+
+ //  loadscreen(tptr);
 }
+
+
+
+void step_button_click(GtkButton *button, gpointer   data)
+{
+    g_items * obj;
+    char buff[4];
+    obj = (g_items *) data;
+    ++(obj->c);
+    sprintf(buff, "%d", obj->c);
+
+    gtk_label_set_text(GTK_LABEL (obj->Memory_Buffer_value),buff);
+
+
+}
+
+
+
+
 
 /******************************************************************* *
                              Radio Buttons
@@ -136,7 +158,7 @@ void new_breakpoint(GtkEntry *entry,
    temp_ptr = (g_items *) user_data;
 
 
-  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON ((GtkWidget *)temp_ptr->radio_set_BP)))
+  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (temp_ptr->radio_set_BP)))
    {
       	  breakpoint_to_set(breakpoint_address, temp_ptr);
 	}

@@ -9,10 +9,10 @@
 /****************************************************************************
                                    To DO
 *****************************************************************************
- 1) maube different buttons
- 2) add IR, CPMA, other registers to lables 
- 3) maybe add a menu (only if we can make good use of it)
- 4) msg window 
+ 1)  msg window needs to work
+ 2) 
+ 3) 
+ 4)
  5) 
  6)
  7) 
@@ -38,6 +38,10 @@ void create_labels(g_items * obj)
     obj->PC_label= gtk_label_new ("PC");
     obj->Accumulator_label= gtk_label_new ("AC");
     obj->CPMA_label= gtk_label_new ("CPMA");
+    obj->IR_label= gtk_label_new ("IR");
+    obj->Link_label= gtk_label_new ("Link");
+    obj->Memory_Buffer_label= gtk_label_new ("Memory");
+   
     obj->Mesages_label= gtk_label_new ("Messages");
 
     gtk_label_set_justify (GTK_LABEL (obj->pagenum), GTK_JUSTIFY_CENTER);
@@ -50,15 +54,21 @@ void create_labels(g_items * obj)
 // values
 
     obj->value = gtk_label_new ("values");
-    obj->PC_value= gtk_label_new ("PC value");
-    obj->Accumulator_value= gtk_label_new ("AC value");
-    obj->CPMA_value = gtk_label_new ("CPMA value");
+    obj->PC_value= gtk_label_new ("0");
+    obj->Accumulator_value= gtk_label_new ("1");
+    obj->CPMA_value = gtk_label_new ("2");
+    obj->IR_value= gtk_label_new ("3");
+    obj->Link_value= gtk_label_new ("4");
+    obj->Memory_Buffer_value= gtk_label_new ("5");
 
     gtk_label_set_justify (GTK_LABEL (obj->value), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify (GTK_LABEL (obj->PC_value), GTK_JUSTIFY_RIGHT);
     gtk_label_set_justify (GTK_LABEL (obj->Accumulator_value), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify (GTK_LABEL (obj->CPMA_value), GTK_JUSTIFY_RIGHT);
 }
+/****************************************************************************
+                       create buttons
+****************************************************************************/
 
 void create_buttons(g_items* obj)
 {
@@ -67,9 +77,9 @@ void create_buttons(g_items* obj)
 
     obj->run_button = gtk_button_new_with_label ("RUN");
 
-    obj->button3 = gtk_button_new_with_label ("Continue");
+  //  obj->button3 = gtk_button_new_with_label ("Continue");
 
-    obj->button4 = gtk_button_new_with_label ("Step");
+    obj->step = gtk_button_new_with_label ("Step");
 
  /* Create an adjustment representing an adjustable bounded value */
   obj->adjustment = gtk_adjustment_new (0, 0, 31, 1, 0, 0);
@@ -80,7 +90,9 @@ void create_buttons(g_items* obj)
 
 
 }
-
+/****************************************************************************
+                      entry box
+****************************************************************************/
 void create_entrybox (g_items* obj)
 {
     obj->BreakP_entry = gtk_entry_new();
@@ -88,7 +100,10 @@ void create_entrybox (g_items* obj)
 }
 
 
-
+    /********************************************************************
+      Create a grid and attach the button and progress bar
+      accordingly
+    ********************************************************************/
 
 void set_grid(g_items * obj)
 {
@@ -96,29 +111,23 @@ void set_grid(g_items * obj)
     int lcol ,c1row, c2row;
     lcol =3;
     c1row = c2row = 2;
-    /********************************************************************
-      Create a grid and attach the button and progress bar
-      accordingly
-    ********************************************************************/
+
     obj->grid = gtk_grid_new ();
     gtk_grid_set_column_spacing (GTK_GRID (obj->grid), 10);
     gtk_grid_set_row_spacing (GTK_GRID (obj->grid), 3);
     gtk_grid_set_column_homogeneous (GTK_GRID (obj->grid), TRUE);
-// gtk_grid_set_row_homogeneous (GTK_GRID (grid), TRUE);
-
 
 
 
 //***********************************************************(left ,Top, width, height)
     gtk_widget_set_vexpand (obj->scrolled_window, TRUE);
- //   gtk_grid_attach (GTK_GRID (obj->grid), obj->pagenum, 1, 1, 1, 1);
     gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_window ,1, 4, 2, 10);
 
 
     /* set button location on the grid */
     gtk_grid_attach (GTK_GRID (obj->grid), obj->run_button ,1, 1, 1, 1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button3, obj->run_button,GTK_POS_RIGHT,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button4, obj->button3,GTK_POS_RIGHT,1,1);
+    //gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button3, obj->run_button,GTK_POS_RIGHT,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->step, obj->run_button,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->run_button,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->spin_button, obj->pagenum,GTK_POS_BOTTOM,1,1);
 
@@ -133,33 +142,39 @@ void set_grid(g_items * obj)
 
 //***********************************************************(left ,Top, width, height)
     gtk_grid_attach (GTK_GRID (obj->grid), obj->label , lcol , c1row , 1, 1);
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->PC_label , lcol, ++c1row , 1, 1);
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->Accumulator_label ,lcol,
-                     ++c1row , 1, 1);
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->CPMA_label ,lcol, ++c1row , 1, 1);
+   // gtk_grid_attach (GTK_GRID (obj->grid), obj->PC_label , lcol, ++c1row , 1, 1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->PC_label, obj->label,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Accumulator_label, obj->PC_label,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->CPMA_label, obj->Accumulator_label,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->IR_label, obj->CPMA_label,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Link_label, obj->IR_label,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Memory_Buffer_label, obj->Link_label,GTK_POS_BOTTOM,1,1);
+
+//*IR_label *Link_label, Memory_Buffer_label
 
     gtk_grid_attach (GTK_GRID (obj->grid), obj->value    ,(++lcol), c2row , 1, 1);
     gtk_grid_attach (GTK_GRID (obj->grid), obj->PC_value, (lcol), ++c2row , 1, 1);
     gtk_grid_attach (GTK_GRID (obj->grid), obj->Accumulator_value ,lcol, ++c2row , 1, 1);
     gtk_grid_attach (GTK_GRID (obj->grid), obj->CPMA_value ,lcol, ++c2row, 1, 1);
-
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->IR_value, obj->CPMA_value,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Link_value, obj->IR_value,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Memory_Buffer_value, obj->Link_value,GTK_POS_BOTTOM,1,1);
 
 
 // radio Buttons placement
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->radio_set_BP ,lcol, ++c2row , 1, 1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_set_BP, obj->Memory_Buffer_value,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_clear_BP, obj->radio_set_BP,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->BreakP_entry,obj->radio_clear_BP, GTK_POS_BOTTOM, 1,1);
 
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->radioB_SetTr ,lcol-1, c2row , 1, 1);
+
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_SetTr, obj->Memory_Buffer_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_ClrTr, obj->radioB_SetTr,GTK_POS_BOTTOM,1,1);
-
-	  gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Trace_entry  , obj->radioB_ClrTr,GTK_POS_BOTTOM,1,1);
-
-
-	gtk_grid_attach (GTK_GRID (obj->grid), obj->Mesages_label, lcol-1 , c1row+4 , 2, 1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Trace_entry, obj->radioB_ClrTr,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Mesages_label, obj->Trace_entry,GTK_POS_BOTTOM,2,1);
+ 
 
 // message window 
-gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_msg ,lcol-1, c1row+5, 2, 2);
+   gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->scrolled_msg, obj->Mesages_label,GTK_POS_BOTTOM,2,1);
 }
 
 
@@ -287,6 +302,8 @@ void create_buttons_callbacks(g_items* obj)
 
     g_signal_connect (GTK_BUTTON (obj->run_button), "clicked",
                       G_CALLBACK (run_button_click), obj);
+    g_signal_connect (GTK_BUTTON (obj->step), "clicked",
+                      G_CALLBACK (step_button_click), obj);
 
     g_signal_connect (obj->spin_button, 
                     "value-changed", 
