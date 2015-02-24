@@ -6,7 +6,6 @@
 ** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
 ******************************************************************************/
 #include "memory.h"
-//#define MEMORY_DEBUG
 
 /******************************************************************************
 ** 	READ FROM MEMORY
@@ -229,6 +228,7 @@ page_mode =0;
 ******************************************************************************/
 void set_breakpoint(uint16_t breakpoint_address) {
 	memory[breakpoint_address] |= MEMORY_BREAKPOINT_BIT;
+	printf("BOO = %X\n", memory[breakpoint_address]);
 }
 
 /******************************************************************************

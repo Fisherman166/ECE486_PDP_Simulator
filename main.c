@@ -11,9 +11,12 @@
 #include "kb_input.h"
 #include "branch_trace.h"
 
-
-//#define MEMORY_DEBUG
 #define OP_CODE_MASK 07000		// bits 0,1,2
+
+static uint32_t clock_cycles = 0;
+static uint32_t opcode_freq[OPCODE_NUM];
+static uint8_t opcode_cycles[OPCODE_NUM] = {2,2,2,2,2,1,0,1};
+static const char *opcode_text[OPCODE_NUM];
 
 int main(int argc, char* argv[]) {
 	int trace_return;
@@ -73,23 +76,12 @@ void* run_program(void* keyboard_object){
 	unsigned int running;
 	reset_regs(&registers);		// initialize the CPU 
 
-	#ifdef GUI
-	stall_execution = 0;
-	#endif
-
 	running = 1;
 	while(running){
 		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// Has status bits still
 		registers.PC++;																	// increment the PC
-
-		#ifdef GUI
-		if(current_instruction & MEMORY_BREAKPOINT_BIT) stall_execution = 1;
-
-		while(stall_execution) {
-		}
-		#endif
 		
-		registers.IR = (current_instruction >> 9) & 0xFF;						// Put the opcode in here
+		registers.IR = (current_instruction >> 9) & 0x7;						// Put the opcode in here
 
 		//Microinstructions don't have indirect or auto increment modes
 		//Set the addressing mode to direct to not add additional cycles onto micro ops

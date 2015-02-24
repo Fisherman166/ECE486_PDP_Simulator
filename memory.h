@@ -24,6 +24,7 @@
 #define MEMORY_MASK				0xFFF	/*Only 12 bits needed for address or a data*/
 #define MEMORY_VALID_BIT 		0x8000
 #define MEMORY_BREAKPOINT_BIT	0x4000
+#define MEMORY_TRACE_BIT		0x2000
 
 /* For trace files */
 #define DATA_READ 0

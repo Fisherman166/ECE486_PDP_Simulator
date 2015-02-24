@@ -23,7 +23,7 @@ void* read_keyboard(void* kb_layout) {
 
 	//Begin the main reading loop
    while(!kb_return) {
-   	usleep(2);
+   	//usleep(2);
       kb_return = kbhit();	//Check if key pressed
 
 		//Clear the keyboard flag to simulate missing input
