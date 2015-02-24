@@ -14,7 +14,7 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -rf *~ *.o $(EXECUTABLE)
+	rm -rf *~ *.o *.txt $(EXECUTABLE)
 
 # to generate this list use: gcc -MM -g -c -Wall *.c
 
