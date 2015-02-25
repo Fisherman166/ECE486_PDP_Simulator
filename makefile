@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -g -c -Wall
 LDFLAGS= -pthread
-SOURCES=main.c memory.c cpu.c kb_input.c branch_trace.c
+SOURCES=main.c memory.c cpu.c kb_input.c branch_trace.c debugger.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=PDP8_sim
 
@@ -18,8 +18,9 @@ clean:
 
 # to generate this list use: gcc -MM -g -c -Wall *.c
 
-cpu.o: cpu.c cpu.h
-main.o: main.c main.h memory.h cpu.h
-memory.o: memory.c memory.h
-kb_input.o: kb_input.c kb_input.h
 branch_trace.o: branch_trace.c branch_trace.h
+cpu.o: cpu.c cpu.h kb_input.h memory.h branch_trace.h
+debugger.o: debugger.c debugger.h
+kb_input.o: kb_input.c kb_input.h
+main.o: main.c main.h memory.h cpu.h kb_input.h branch_trace.h debugger.h
+memory.o: memory.c memory.h cpu.h kb_input.h

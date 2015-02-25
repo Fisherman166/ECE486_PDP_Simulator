@@ -10,6 +10,7 @@
 #include "cpu.h"
 #include "kb_input.h"
 #include "branch_trace.h"
+#include "debugger.h"
 
 #define OP_CODE_MASK 07000		// bits 0,1,2
 
@@ -357,6 +358,7 @@ void init_system(int argc, char* argv[]) {
 	mem_init();
 	fill_memory(argc, argv);
 	mem_print_valid();
+	debugger_init(argc, argv);
 
 	for(i = 0; i < OPCODE_NUM; i++) {
 		opcode_freq[i] = 0;
@@ -390,7 +392,7 @@ void fill_memory(int argc, char* argv[]) {
 	int return1, return2;
 	return1 = return2 = 0;
 
-	if(argc == 3) {
+	if(argc == 3 || argc == 4) {
 		program_file = fopen(argv[1], "r");
 		trace_name = argv[2];
 	}
