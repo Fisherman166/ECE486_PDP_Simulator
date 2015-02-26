@@ -85,10 +85,9 @@ void step_button_click(GtkButton *button, gpointer   data)
     g_items * obj;
     char buff[4];
     obj = (g_items *) data;
-    ++(obj->c);
-    sprintf(buff, "%d", obj->c);
+    sprintf(buff, "%04o", obj->regs_cpy->PC);
 
-  //  gtk_label_set_text(GTK_LABEL (obj->Memory_Buffer_value),buff);
+    gtk_label_set_text(GTK_LABEL (obj->Memory_Buffer_value),buff);
 
 
 }

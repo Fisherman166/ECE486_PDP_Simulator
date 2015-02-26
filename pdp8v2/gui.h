@@ -40,8 +40,6 @@ typedef struct g_tag
 // dont like it but don' thave ,uch time to think a better way
    struct keyboard local_kb;
 
-
-
 } g_items;
 
 
