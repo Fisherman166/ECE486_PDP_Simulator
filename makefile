@@ -20,7 +20,7 @@ clean:
 
 branch_trace.o: branch_trace.c branch_trace.h
 cpu.o: cpu.c cpu.h kb_input.h memory.h branch_trace.h
-debugger.o: debugger.c debugger.h
+debugger.o: debugger.c debugger.h cpu.h
 kb_input.o: kb_input.c kb_input.h
 main.o: main.c main.h memory.h cpu.h kb_input.h branch_trace.h debugger.h
 memory.o: memory.c memory.h cpu.h kb_input.h
