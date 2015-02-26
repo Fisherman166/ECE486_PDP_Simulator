@@ -75,60 +75,67 @@ void* run_program(void* keyboard_object){
 	regs registers;
 	struct keyboard* local_kb = (struct keyboard*)keyboard_object;
 	unsigned int running;
+	unsigned int run_at_least_once = 1;
+
 	reset_regs(&registers);		// initialize the CPU 
 
-	running = 1;
-	while(running){
-		current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// Has status bits still
-		registers.PC++;																	// increment the PC
+	while (debugger_running() || run_at_least_once){
+		run_at_least_once = 0;
+		running = 1;
+		while(running){
+			if (debugger_running()){
+				debugger_pre_instruction_fetch(&registers);
+			}
+			current_instruction = mem_read(registers.PC, INSTRUCTION_FETCH);	// Has status bits still
+			registers.PC++;																	// increment the PC
 		
-		registers.IR = (current_instruction >> 9) & 0x7;						// Put the opcode in here
+			registers.IR = (current_instruction >> 9) & 0x7;						// Put the opcode in here
 
-		//Microinstructions don't have indirect or auto increment modes
-		//Set the addressing mode to direct to not add additional cycles onto micro ops
-		if(registers.IR != microinstruction) {
-			addressing_mode = EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
-		}
-		else {
-			addressing_mode = DIRECT_MODE;
-		}
+			//Microinstructions don't have indirect or auto increment modes
+			//Set the addressing mode to direct to not add additional cycles onto micro ops
+			if(registers.IR != microinstruction) {
+				addressing_mode = EffAddCalc(current_instruction, &registers);		// Load the CPMA with effective address
+			}
+			else {
+				addressing_mode = DIRECT_MODE;
+			}
 
-		/* !update trace file here for instruction read! */
-		switch(current_instruction & OP_CODE_MASK){
-		case OP_CODE_AND:
-			AND(&registers);
-			strcpy(instruct_text, "AND");
-			opcode_freq[0]++;
-			break;
-		case OP_CODE_TAD:
-			TAD(&registers);
-			strcpy(instruct_text, "TAD");
-			opcode_freq[1]++;
-			break;
-		case OP_CODE_ISZ:
-			ISZ(&registers);
-			strcpy(instruct_text, "ISZ");
-			opcode_freq[2]++;
-			break;
-		case OP_CODE_DCA:
-			DCA(&registers);
-			strcpy(instruct_text, "DCA");
-			opcode_freq[3]++;
-			break;
-		case OP_CODE_JMS:
-			JMS(&registers);
-			strcpy(instruct_text, "JMS");
-			opcode_freq[4]++;
-			break;
-		case OP_CODE_JMP:
-			JMP(&registers);
-			strcpy(instruct_text, "JMP");
-			opcode_freq[5]++;
-			break;
-		case OP_CODE_IO:
-			opcode_freq[6]++;
+			/* !update trace file here for instruction read! */
+			switch(current_instruction & OP_CODE_MASK){
+			case OP_CODE_AND:
+				AND(&registers);
+				strcpy(instruct_text, "AND");
+				opcode_freq[0]++;
+				break;
+			case OP_CODE_TAD:
+				TAD(&registers);
+				strcpy(instruct_text, "TAD");
+				opcode_freq[1]++;
+				break;
+			case OP_CODE_ISZ:
+				ISZ(&registers);
+				strcpy(instruct_text, "ISZ");
+				opcode_freq[2]++;
+				break;
+			case OP_CODE_DCA:
+				DCA(&registers);
+				strcpy(instruct_text, "DCA");
+				opcode_freq[3]++;
+				break;
+			case OP_CODE_JMS:
+				JMS(&registers);
+				strcpy(instruct_text, "JMS");
+				opcode_freq[4]++;
+				break;
+			case OP_CODE_JMP:
+				JMP(&registers);
+				strcpy(instruct_text, "JMP");
+				opcode_freq[5]++;
+				break;
+			case OP_CODE_IO:
+				opcode_freq[6]++;
 		
-			switch(current_instruction & IO_OPCODE_BITS_MASK) {
+				switch(current_instruction & IO_OPCODE_BITS_MASK) {
 				case IO_OPCODE_KCF_BITS:
 					KCF(local_kb);
 					strcpy(instruct_text, "KCF");
@@ -169,180 +176,184 @@ void* run_program(void* keyboard_object){
 					TLS(&registers);
 					strcpy(instruct_text, "TLS");
 					break;
-			}
-			break;
-		case OP_CODE_MICRO:
-			opcode_freq[7]++;
-			instruct_text[0] = '\0'; // intialize string as empty
-			switch(current_instruction & MICRO_INSTRUCTION_GROUP_BIT){
-			case 0:	// Group 1
-				// Go through the bits and exeucute in sequence if high
-				if((current_instruction & MICRO_INSTRUCTION_BITS_MASK) == 0){
-					break;	// NOP instruction
-				}
-				if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
-					CLA(&registers);
-					strcat(instruct_text, "CLA ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_CLL_BITS) == MICRO_INSTRUCTION_CLL_BITS){
-					CLL(&registers);
-					strcat(instruct_text, "CLL ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_CMA_BITS) == MICRO_INSTRUCTION_CMA_BITS){
-					CMA(&registers);
-					strcat(instruct_text, "CMA ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_CML_BITS) == MICRO_INSTRUCTION_CML_BITS){
-					CML(&registers);
-					strcat(instruct_text, "CML ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_IAC_BITS) == MICRO_INSTRUCTION_IAC_BITS){
-					IAC(&registers);
-					strcat(instruct_text, "IAC ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_RAR_BITS) == MICRO_INSTRUCTION_RAR_BITS){
-					if((current_instruction & MICRO_INSTRUCTION_RTR_BITS) == MICRO_INSTRUCTION_RTR_BITS){
-						RTR(&registers);
-						strcat(instruct_text, "RTR ");
-					} else {
-						RAR(&registers);
-						strcat(instruct_text, "RAR ");
-					}
-				}
-				if((current_instruction & MICRO_INSTRUCTION_RAL_BITS) == MICRO_INSTRUCTION_RAL_BITS){
-					if((current_instruction & MICRO_INSTRUCTION_RTL_BITS) == MICRO_INSTRUCTION_RTL_BITS){
-						RTL(&registers);
-						strcat(instruct_text, "RTL ");
-					} else {
-						RAL(&registers);
-						strcat(instruct_text, "RAL ");
-					}
 				}
 				break;
+			case OP_CODE_MICRO:
+				opcode_freq[7]++;
+				instruct_text[0] = '\0'; // intialize string as empty
+				switch(current_instruction & MICRO_INSTRUCTION_GROUP_BIT){
+				case 0:	// Group 1
+					// Go through the bits and exeucute in sequence if high
+					if((current_instruction & MICRO_INSTRUCTION_BITS_MASK) == 0){
+						break;	// NOP instruction
+					}
+					if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
+						CLA(&registers);
+						strcat(instruct_text, "CLA ");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_CLL_BITS) == MICRO_INSTRUCTION_CLL_BITS){
+						CLL(&registers);
+						strcat(instruct_text, "CLL ");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_CMA_BITS) == MICRO_INSTRUCTION_CMA_BITS){
+						CMA(&registers);
+						strcat(instruct_text, "CMA ");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_CML_BITS) == MICRO_INSTRUCTION_CML_BITS){
+						CML(&registers);
+						strcat(instruct_text, "CML ");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_IAC_BITS) == MICRO_INSTRUCTION_IAC_BITS){
+						IAC(&registers);
+						strcat(instruct_text, "IAC ");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_RAR_BITS) == MICRO_INSTRUCTION_RAR_BITS){
+						if((current_instruction & MICRO_INSTRUCTION_RTR_BITS) == MICRO_INSTRUCTION_RTR_BITS){
+							RTR(&registers);
+							strcat(instruct_text, "RTR ");
+						} else {
+							RAR(&registers);
+							strcat(instruct_text, "RAR ");
+						}
+					}
+					if((current_instruction & MICRO_INSTRUCTION_RAL_BITS) == MICRO_INSTRUCTION_RAL_BITS){
+						if((current_instruction & MICRO_INSTRUCTION_RTL_BITS) == MICRO_INSTRUCTION_RTL_BITS){
+							RTL(&registers);
+							strcat(instruct_text, "RTL ");
+						} else {
+							RAL(&registers);
+							strcat(instruct_text, "RAL ");
+						}
+					}
+					break;
 
-			case MICRO_INSTRUCTION_GROUP_BIT:	// Group 2
+				case MICRO_INSTRUCTION_GROUP_BIT:	// Group 2
 		   		//OR subgroup if bit 3 is not set and bits 0-2 are not set
-				if( !(current_instruction & MICRO_GROUP2_SUBGROUP_BIT) && !(current_instruction & 07) ) {
-					// Set returns to 0 initially
-					subgroup_returns[0] = subgroup_returns[1] = subgroup_returns[2] = 0;
-					if((current_instruction & MICRO_INSTRUCTION_SMA_BITS) == MICRO_INSTRUCTION_SMA_BITS){
-						subgroup_returns[0] = SMA(&registers);
-						strcat(instruct_text, "SMA ");
+					if( !(current_instruction & MICRO_GROUP2_SUBGROUP_BIT) && !(current_instruction & 07) ) {
+						// Set returns to 0 initially
+						subgroup_returns[0] = subgroup_returns[1] = subgroup_returns[2] = 0;
+						if((current_instruction & MICRO_INSTRUCTION_SMA_BITS) == MICRO_INSTRUCTION_SMA_BITS){
+							subgroup_returns[0] = SMA(&registers);
+							strcat(instruct_text, "SMA ");
+						}
+						if((current_instruction & MICRO_INSTRUCTION_SZA_BITS) == MICRO_INSTRUCTION_SZA_BITS){
+							subgroup_returns[1] = SZA(&registers);
+							strcat(instruct_text, "SZA ");
+						}
+						if((current_instruction & MICRO_INSTRUCTION_SNL_BITS) == MICRO_INSTRUCTION_SNL_BITS){
+							subgroup_returns[2] = SNL(&registers);
+							strcat(instruct_text, "SNL ");
+						}
+						subgroup_taken = 0;
+						current_PC = registers.PC;
+						//If any in a sequence would skip, then skip
+						if(subgroup_returns[0] || subgroup_returns[1] || subgroup_returns[2]) {
+							registers.PC++;
+							subgroup_taken = 1;
+						}
+						write_branch_trace(current_PC-1, current_PC + 1, conditional_text, subgroup_taken);
 					}
-					if((current_instruction & MICRO_INSTRUCTION_SZA_BITS) == MICRO_INSTRUCTION_SZA_BITS){
-						subgroup_returns[1] = SZA(&registers);
-						strcat(instruct_text, "SZA ");
-					}
-					if((current_instruction & MICRO_INSTRUCTION_SNL_BITS) == MICRO_INSTRUCTION_SNL_BITS){
-						subgroup_returns[2] = SNL(&registers);
-						strcat(instruct_text, "SNL ");
-					}
-					subgroup_taken = 0;
-					current_PC = registers.PC;
-					//If any in a sequence would skip, then skip
-					if(subgroup_returns[0] || subgroup_returns[1] || subgroup_returns[2]) {
-						registers.PC++;
-						subgroup_taken = 1;
-					}
-					write_branch_trace(current_PC-1, current_PC + 1, conditional_text, subgroup_taken);
-				}
-				//AND subgroup if bit 3 is set and bits 0-2 are not set
-				else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {
-					//Set to 1 initially so it passes the AND at the end
-					subgroup_returns[0] = 1;
-					subgroup_returns[1] = 1;
-					subgroup_returns[2] = 1;
+					//AND subgroup if bit 3 is set and bits 0-2 are not set
+					else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {
+						//Set to 1 initially so it passes the AND at the end
+						subgroup_returns[0] = 1;
+						subgroup_returns[1] = 1;
+						subgroup_returns[2] = 1;
 					
-					if((current_instruction & MICRO_INSTRUCTION_SPA_BITS) == MICRO_INSTRUCTION_SPA_BITS){
-						subgroup_returns[0] = SPA(&registers);
-						strcat(instruct_text, "SPA ");
-					}
-					if((current_instruction & MICRO_INSTRUCTION_SNA_BITS) == MICRO_INSTRUCTION_SNA_BITS){
-						subgroup_returns[1] = SNA(&registers);
-						strcat(instruct_text, "SNA ");
-					}
-					if((current_instruction & MICRO_INSTRUCTION_SZL_BITS) == MICRO_INSTRUCTION_SZL_BITS){
-						subgroup_returns[2] = SZL(&registers);
-						strcat(instruct_text, "SZL ");
+						if((current_instruction & MICRO_INSTRUCTION_SPA_BITS) == MICRO_INSTRUCTION_SPA_BITS){
+							subgroup_returns[0] = SPA(&registers);
+							strcat(instruct_text, "SPA ");
+						}
+						if((current_instruction & MICRO_INSTRUCTION_SNA_BITS) == MICRO_INSTRUCTION_SNA_BITS){
+							subgroup_returns[1] = SNA(&registers);
+							strcat(instruct_text, "SNA ");
+						}
+						if((current_instruction & MICRO_INSTRUCTION_SZL_BITS) == MICRO_INSTRUCTION_SZL_BITS){
+							subgroup_returns[2] = SZL(&registers);
+							strcat(instruct_text, "SZL ");
+						}
+
+						subgroup_taken = 0;
+						current_PC = registers.PC;
+						//If all in sequence are skip, then skip
+						if(subgroup_returns[0] && subgroup_returns[1] && subgroup_returns[2]) {
+							registers.PC++;
+							subgroup_taken = 1;
+						}
+						write_branch_trace(current_PC-1, current_PC + 1, conditional_text, subgroup_taken);
 					}
 
-					subgroup_taken = 0;
-					current_PC = registers.PC;
-					//If all in sequence are skip, then skip
-					if(subgroup_returns[0] && subgroup_returns[1] && subgroup_returns[2]) {
-						registers.PC++;
-						subgroup_taken = 1;
+					//SKP will run along with SPA, SNA or SZL if bits 3-5 are not checked
+					if((current_instruction & 07770) == MICRO_INSTRUCTION_SKP_BITS){
+						SKP(&registers);
+						strcat(instruct_text, "SKP ");
 					}
-					write_branch_trace(current_PC-1, current_PC + 1, conditional_text, subgroup_taken);
-				}
-
-				//SKP will run along with SPA, SNA or SZL if bits 3-5 are not checked
-				if((current_instruction & 07770) == MICRO_INSTRUCTION_SKP_BITS){
-					SKP(&registers);
-					strcat(instruct_text, "SKP ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
-					CLA(&registers);
-					strcat(instruct_text, "CLA ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_OSR_BITS) == MICRO_INSTRUCTION_OSR_BITS){
-					OSR(&registers);
-					strcat(instruct_text, "OSR ");
-				}
-				if((current_instruction & MICRO_INSTRUCTION_HLT_BITS) == MICRO_INSTRUCTION_HLT_BITS){
-					HLT(local_kb);
-					strcat(instruct_text, "HLT ");
-					running = 0; // stop further execution
+					if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
+						CLA(&registers);
+						strcat(instruct_text, "CLA ");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_OSR_BITS) == MICRO_INSTRUCTION_OSR_BITS){
+						OSR(&registers);
+						strcat(instruct_text, "OSR ");
+					}
+					if((current_instruction & MICRO_INSTRUCTION_HLT_BITS) == MICRO_INSTRUCTION_HLT_BITS){
+						HLT(local_kb);
+						strcat(instruct_text, "HLT ");
+						running = 0; // stop further execution
+					}
+					break;
 				}
 				break;
 			}
-			break;
-		}
-		//printf("Instruction = %s\n", instruct_text);
+			//printf("Instruction = %s\n", instruct_text);
 
-		#ifdef MEMORY_DEBUG
+#ifdef MEMORY_DEBUG
 			switch (addressing_mode){
 			case 0:
-			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,0, "Direct Mode, \tZero Page");
-			break;
+				printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,0, "Direct Mode, \tZero Page");
+				break;
 			case 1:
-			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,1, "Direct Mode, \tCurrent Page");
-			break;
+				printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,1, "Direct Mode, \tCurrent Page");
+				break;
 			case 2:
-			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,2, "Indirect Mode, \tZero Page");
-			break;
+				printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,2, "Indirect Mode, \tZero Page");
+				break;
 			case 3:
-			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,3, "Indirect Mode, \tCurrent Page");
-			break;
+				printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,3, "Indirect Mode, \tCurrent Page");
+				break;
 			case 4:
-			printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,4, "Indirect Mode, \tAuto Indexing");
-			break;
+				printf("Opcode: %u Addressing mode: %u %s\n", registers.IR,4, "Indirect Mode, \tAuto Indexing");
+				break;
 			default:
-			break;
+				break;
 			}
-		#endif
+#endif
 
-		#ifdef DEBUG
-		printf("Cycles Before = %u, ", clock_cycles);
-		#endif
+#ifdef DEBUG
+			printf("Cycles Before = %u, ", clock_cycles);
+#endif
 
-		if(addressing_mode == DIRECT_MODE ||addressing_mode == (DIRECT_MODE +1)  ) {
-			clock_cycles += opcode_cycles[registers.IR];
-		}
-		else if(addressing_mode == INDIRECT_MODE || addressing_mode == (INDIRECT_MODE+1)) {
-			clock_cycles += opcode_cycles[registers.IR] + 1;
-		}
-		else {	/* Autoincrement mode */
-			clock_cycles += opcode_cycles[registers.IR] + 2;
-		}
+			if(addressing_mode == DIRECT_MODE ||addressing_mode == (DIRECT_MODE +1)  ) {
+				clock_cycles += opcode_cycles[registers.IR];
+			}
+			else if(addressing_mode == INDIRECT_MODE || addressing_mode == (INDIRECT_MODE+1)) {
+				clock_cycles += opcode_cycles[registers.IR] + 1;
+			}
+			else {	/* Autoincrement mode */
+				clock_cycles += opcode_cycles[registers.IR] + 2;
+			}
 
-		#ifdef DEBUG
+#ifdef DEBUG
 			printf("Cycles After = %u\n", clock_cycles);
 			printf("After opcode: %s - %04o, AC: %04o, Link: %01o, MB: %04o, PC: %04o, CPMA: %04o\n\n", instruct_text, current_instruction, registers.AC & CUTOFF_MASK, 
-						registers.link_bit, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
-		#endif
+					 registers.link_bit, registers.MB & CUTOFF_MASK, registers.PC, registers.CPMA);
+#endif
 
-	}
+		} // while(running)
+		if (debugger_running()){
+			debugger_post_program_run();
+		}
+	} // while (debugger_running()) 
 	
 	pthread_exit(0);
 } // end run_program
