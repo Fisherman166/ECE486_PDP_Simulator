@@ -29,13 +29,25 @@
 #include "branch_trace.h"
 
 #define OPCODE_NUM 8
+#define STEP 1
+#define RUN 0
+
+//This struct holds variables that both the GUI and non GUI versio need
+typedef struct shared_vars {
+	regs *registers_ptr;
+   struct keyboard* kb_ptr;
+	uint8_t breakpoint_reached;
+	uint8_t step_or_run;
+	uint8_t execution_done;
+} shared_vars;
 
 int main(int argc, char* argv[]);
+void run_no_GUI(int, char**);
 void* run_program(void*);
-void execute_opcode(g_items* object);
-void init_system(int argc, char* argv[], g_items*);
+void execute_opcode(struct shared_vars*);
+void init_system(int argc, char* argv[], struct shared_vars*);
 void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */
 void print_stats(void);
-void shutdown_system(g_items*);
+void shutdown_system(struct shared_vars*);
 
 #endif

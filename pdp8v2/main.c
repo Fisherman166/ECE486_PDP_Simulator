@@ -27,33 +27,62 @@ int main(int argc, char* argv[]) {
     g_signal_connect (app, "activate", G_CALLBACK (activate), obj);
     status = g_application_run (G_APPLICATION (app), 0, NULL);
     g_object_unref (app);
+#else
+	run_no_GUI(argc, argv);
 #endif
 
 #ifdef GUI
+	free(obj->coherance_vars);
     free(obj);
 #endif
 	return(0);
 }/*end main*/
 
+void run_no_GUI(int argc, char** argv) {
+	int thread1_return, thread2_return;
+	pthread_t keyboard_thread, simulator_thread;
+	struct shared_vars* shared_items = malloc( sizeof(struct shared_vars) );
+	init_system(argc, argv, shared_items);
+
+	thread1_return = pthread_create(&keyboard_thread, NULL, read_keyboard, (void*)(shared_items->kb_ptr));
+	if(thread1_return) {
+		fprintf(stderr, "Keyboard thread failed\n");
+		exit(-1);
+   }
+
+	thread2_return = pthread_create( &simulator_thread, NULL, run_program, (void*)shared_items);
+	if(thread2_return) {
+		fprintf(stderr, "Simulator thread failed\n");
+		exit(-2);
+   }
+
+	//Run the threads
+	pthread_join(keyboard_thread, NULL);
+	pthread_join(simulator_thread, NULL);
+
+	shutdown_system(shared_items);	
+	free(shared_items);
+}
+
 /******************************************************************************
 ** 	RUN THE PROGRAM UNTIL BREAKPOINT/TRACEPOINT FOUND OR EXECUTION FINISHES 	
 ******************************************************************************/
-void* run_program(void* object)
+void* run_program(void* args)
 {
-	g_items* local_object = (g_items*)(object);
+	struct shared_vars* shared = (struct shared_vars*)args;
 
-	while( (local_object->execution_done != 1) && (local_object->breakpoint_reached != 1) ) {
-		execute_opcode(object);
+	while( (shared->execution_done != 1) && (shared->breakpoint_reached != 1) ) {
+		execute_opcode(shared);
 	}
 
 	pthread_mutex_lock(&keyboard_mux);
-	local_object->kb_ptr->quit = 1;
+	shared->kb_ptr->quit = 1;
 	pthread_mutex_unlock(&keyboard_mux);
 
 	pthread_exit(0);
 }
 
-void execute_opcode(g_items* object){
+void execute_opcode(struct shared_vars* shared){
 	const uint8_t microinstruction = 7;
 	char instruct_text[80];
 	uint8_t subgroup_returns[3];
@@ -66,8 +95,8 @@ void execute_opcode(g_items* object){
 
 	#ifdef GUI
 	//Don't stop on a breakpoint when stepping
-	if( (current_instruction & MEMORY_BREAKPOINT_BIT) && !(object->step_or_run) ) {
-		object->breakpoint_reached = 1;
+	if( (current_instruction & MEMORY_BREAKPOINT_BIT) && !(shared->step_or_run) ) {
+		shared->breakpoint_reached = 1;
 		printf("Breakpoint Reached at address %04o\n", registers->PC);
 		goto EXIT;
 	}
@@ -123,23 +152,23 @@ void execute_opcode(g_items* object){
 	
 		switch(current_instruction & IO_OPCODE_BITS_MASK) {
 			case IO_OPCODE_KCF_BITS:
-				KCF(object->kb_ptr);
+				KCF(shared->kb_ptr);
 				strcpy(instruct_text, "KCF");
 				break;
 			case IO_OPCODE_KSF_BITS:
-				KSF(registers, object->kb_ptr);
+				KSF(registers, shared->kb_ptr);
 				strcpy(instruct_text, "KSF");
 				break;
 			case IO_OPCODE_KCC_BITS:
-				KCC(registers, object->kb_ptr);
+				KCC(registers, shared->kb_ptr);
 				strcpy(instruct_text, "KCC");
 				break;
 			case IO_OPCODE_KRS_BITS:
-				KRS(registers, object->kb_ptr);
+				KRS(registers, shared->kb_ptr);
 				strcpy(instruct_text, "KRS");
 				break;
 			case IO_OPCODE_KRB_BITS:
-				KRB(registers, object->kb_ptr);
+				KRB(registers, shared->kb_ptr);
 				strcpy(instruct_text, "KRB");
 				break;
 			case IO_OPCODE_TFL_BITS:
@@ -283,8 +312,8 @@ void execute_opcode(g_items* object){
 				strcat(instruct_text, "OSR ");
 			}
 			if((current_instruction & MICRO_INSTRUCTION_HLT_BITS) == MICRO_INSTRUCTION_HLT_BITS){
-				HLT(object->kb_ptr);
-				object->execution_done = 1;
+				HLT(shared->kb_ptr);
+				shared->execution_done = 1;
 				strcat(instruct_text, "HLT ");
 			}
 			break;
@@ -335,23 +364,26 @@ void execute_opcode(g_items* object){
 					registers->link_bit, registers->MB & CUTOFF_MASK, registers->PC, registers->CPMA);
 	#endif
 
+#ifdef GUI
 EXIT:
+#endif 
 	return;	//For exiting on breakpoint
 } // end run_program
 
-void init_system(int argc, char* argv[], g_items* object) {
+void init_system(int argc, char* argv[], struct shared_vars* shared) {
 	int trace_return;
 	int i;
 	int branch_trace_open;
 
 	//Malloc structs needed in g_items
 	registers = malloc(sizeof(regs));
-	object->registers_ptr = registers;
-	object->kb_ptr = malloc(sizeof(struct keyboard));
-	object->kb_ptr->input_flag = 0;
-	object->kb_ptr->quit = 0;
-	object->execution_done = 0;
-	object->breakpoint_reached = 0;
+	shared->registers_ptr = registers;
+	shared->kb_ptr = malloc(sizeof(struct keyboard));
+	shared->kb_ptr->input_flag = 0;
+	shared->kb_ptr->quit = 0;
+	shared->execution_done = 0;
+	shared->breakpoint_reached = 0;
+	shared->step_or_run = RUN;
 
 	mem_init();
 	fill_memory(argc, argv);
@@ -471,9 +503,9 @@ void print_stats(void) {
 	printf("The total number of opcodes executed = %u\n", executed_total);
 }
 
-void shutdown_system(g_items* object) {
-		free(object->registers_ptr);
-		free(object->kb_ptr);
+void shutdown_system(struct shared_vars* shared) {
+		free(shared->registers_ptr);
+		free(shared->kb_ptr);
 		mem_print_valid();
 		print_stats();
 		trace_close();

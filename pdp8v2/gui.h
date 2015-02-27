@@ -8,10 +8,6 @@
 #include <stdlib.h>
 #include "cpu.h"
 
-
-#define STEP 1
-#define RUN 0
-
 typedef struct g_tag
 {
     GtkWidget *grid;
@@ -41,14 +37,7 @@ typedef struct g_tag
 	 //Local stuff
     int copy_argc;
     char ** copy_argv;
-    regs *registers_ptr;
-    struct keyboard* kb_ptr;
-	 uint8_t execution_done;
-	 uint8_t breakpoint_reached;
-	 uint8_t step_or_run;
-
-	 int thread1_return, thread2_return;
-	 pthread_t keyboard_thread, simulator_thread;
+    struct shared_vars* coherance_vars; 
 } g_items;
 
 

@@ -339,7 +339,10 @@ void activate (GtkApplication *app, gpointer    data)
     create_buttons_callbacks(obj);
     entry_box_cb(obj);
     set_grid(obj);
-	 init_system(obj->copy_argc, obj->copy_argv, obj);	//Initialize the simulator
+
+	 //Init the system
+	 obj->coherance_vars = malloc( sizeof(struct shared_vars) );
+	 init_system(obj->copy_argc, obj->copy_argv, obj->coherance_vars);	//Initialize the simulator
 
     gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (obj->grid));
     gtk_widget_show_all (window);
@@ -354,12 +357,12 @@ void update_labels(g_items* object) {
 	char Link_text[buffer_size];
 	char MB_text[buffer_size];
 
-	sprintf(PC_text, "%04o", object->registers_ptr->PC);
-	sprintf(AC_text, "%04o", object->registers_ptr->AC);
-	sprintf(CPMA_text, "%04o", object->registers_ptr->CPMA);
-	sprintf(IR_text, "%01o", object->registers_ptr->IR);
-	sprintf(Link_text, "%01o", object->registers_ptr->link_bit);
-	sprintf(MB_text, "%04o", object->registers_ptr->MB);
+	sprintf(PC_text, "%04o", object->coherance_vars->registers_ptr->PC);
+	sprintf(AC_text, "%04o", object->coherance_vars->registers_ptr->AC);
+	sprintf(CPMA_text, "%04o", object->coherance_vars->registers_ptr->CPMA);
+	sprintf(IR_text, "%01o", object->coherance_vars->registers_ptr->IR);
+	sprintf(Link_text, "%01o", object->coherance_vars->registers_ptr->link_bit);
+	sprintf(MB_text, "%04o", object->coherance_vars->registers_ptr->MB);
 
    gtk_label_set_text(GTK_LABEL (object->PC_value), PC_text);
    gtk_label_set_text(GTK_LABEL (object->Accumulator_value), AC_text);

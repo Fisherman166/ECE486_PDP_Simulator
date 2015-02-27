@@ -65,17 +65,15 @@ void run_button_click (GtkButton *button,
 	pthread_t keyboard_thread, simulator_thread;
    g_items* local_object = (g_items*)data;
 
-	local_object->step_or_run = RUN;
+	local_object->coherance_vars->step_or_run = RUN;
 	 
-	thread1_return = pthread_create(&keyboard_thread, NULL,
-	 															read_keyboard, (void*)(local_object->kb_ptr));
+	thread1_return = pthread_create(&keyboard_thread, NULL, read_keyboard, (void*)(local_object->coherance_vars->kb_ptr));
 	if(thread1_return) {
 		fprintf(stderr, "Keyboard thread failed\n");
 		exit(-1);
    }
 
-	thread2_return = pthread_create( &simulator_thread, NULL,
-	 															run_program, (void*)local_object);
+	thread2_return = pthread_create( &simulator_thread, NULL, run_program, (void*)(local_object->coherance_vars));
 	if(thread2_return) {
 		fprintf(stderr, "Simulator thread failed\n");
 		exit(-2);
@@ -86,13 +84,13 @@ void run_button_click (GtkButton *button,
 	pthread_join(simulator_thread, NULL);
 
 	//Check after thread exits
-	if(local_object->breakpoint_reached) {
-		local_object->breakpoint_reached = 0;
+	if(local_object->coherance_vars->breakpoint_reached) {
+		local_object->coherance_vars->breakpoint_reached = 0;
 		update_labels(local_object);
 	}
 	
-	if(local_object->execution_done) {
-		shutdown_system(local_object);	
+	if(local_object->coherance_vars->execution_done) {
+		shutdown_system(local_object->coherance_vars);	
 	}
 
   //loadscreen(tptr);
@@ -103,13 +101,13 @@ void run_button_click (GtkButton *button,
 void step_button_click(GtkButton *button, gpointer   data)
 {
    g_items* local_object = (g_items*)data;
-	local_object->step_or_run = STEP;
+	local_object->coherance_vars->step_or_run = STEP;
 
-	execute_opcode(local_object);
+	execute_opcode(local_object->coherance_vars);
 	update_labels(local_object);
 
-	if(local_object->execution_done) {
-		shutdown_system(local_object);	
+	if(local_object->coherance_vars->execution_done) {
+		shutdown_system(local_object->coherance_vars);	
 	}
 }
 
