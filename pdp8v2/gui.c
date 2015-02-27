@@ -2,6 +2,7 @@
 
 #include "gui.h"
 #include "callback.h"
+#include "main.h"
 
 // compile with
 // gcc projgui.c -o proj $(pkg-config --cflags --libs gtk+-3.0)
@@ -295,7 +296,6 @@ void radio_button_callbacks( g_items * obj)
 }
 
 
-
 void create_buttons_callbacks(g_items* obj)
 {
     /*Connecting the clicked signal to the callback function*/
@@ -311,25 +311,12 @@ void create_buttons_callbacks(g_items* obj)
                       obj);
 }
 
-
-
-
-
-
-
-
-
-
 void activate (GtkApplication *app, gpointer    data)
 {
     GtkWidget *window;
 
     g_items * obj;
-
     obj = (g_items *) data;
-
-    obj->c =0;
-
 
     /******************************************************************
                         create window and set size
@@ -352,8 +339,7 @@ void activate (GtkApplication *app, gpointer    data)
     create_buttons_callbacks(obj);
     entry_box_cb(obj);
     set_grid(obj);
-
-
+	 init_system(obj->copy_argc, obj->copy_argv, obj);	//Initialize the simulator
 
     gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (obj->grid));
     gtk_widget_show_all (window);

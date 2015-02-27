@@ -61,21 +61,36 @@ void loadscreen(g_items* obj)
 void run_button_click (GtkButton *button,
                        gpointer   data)
 {
-    g_items * tptr;
-   
-    tptr = (g_items *) data;
-    ++(tptr->c);
-// store int into buffer
-   
+	int thread1_return, thread2_return;
+	pthread_t keyboard_thread, simulator_thread;
+   g_items* local_object = (g_items*)data;
+	 
+	thread1_return = pthread_create(&keyboard_thread, NULL,
+	 															read_keyboard, (void*)(local_object->kb_ptr));
+	if(thread1_return) {
+		fprintf(stderr, "Keyboard thread failed\n");
+		exit(-1);
+   }
+
+	thread2_return = pthread_create( &simulator_thread, NULL,
+	 															run_program, (void*)local_object);
+															
+	if(thread2_return) {
+		fprintf(stderr, "Simulator thread failed\n");
+		exit(-2);
+   }
+
+	//Run the threads
+	pthread_join(keyboard_thread, NULL);
+	pthread_join(simulator_thread, NULL);
 
 
-
-   run_main(tptr->copy_argc, tptr->copy_argv, tptr);
-   char buff[4];
+  //char buff[4];
   //  sprintf(buff, "%d", tptr->regs_cpy.AC);
   //  gtk_label_set_text(GTK_LABEL (tptr->Accumulator_value),buff);
+	printf("BLOOP\n");
 
-  loadscreen(tptr);
+  //loadscreen(tptr);
 }
 
 
@@ -85,9 +100,9 @@ void step_button_click(GtkButton *button, gpointer   data)
     g_items * obj;
     char buff[4];
     obj = (g_items *) data;
-    sprintf(buff, "%04o", obj->regs_cpy->PC);
+    //sprintf(buff, "%04o", obj->regs_cpy->PC);
 
-    gtk_label_set_text(GTK_LABEL (obj->Memory_Buffer_value),buff);
+    //gtk_label_set_text(GTK_LABEL (obj->Memory_Buffer_value),buff);
 
 
 }

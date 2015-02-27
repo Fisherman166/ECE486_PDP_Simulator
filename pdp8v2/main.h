@@ -9,9 +9,9 @@
 #define MAIN_H
 
 //#define FILL_DEBUG
-#define DEBUG
+//#define DEBUG
 #define DEBUG_GUI
-#define GUI
+//#define GUI
 
 #ifdef GUI
 #include <gtk/gtk.h>
@@ -37,7 +37,8 @@ typedef struct run_args {
 
 int main(int argc, char* argv[]);
 void* run_program(void*);
-void init_system(int argc, char* argv[]);
+void execute_opcode(g_items* object);
+void init_system(int argc, char* argv[], g_items*);
 void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */
 void print_stats(void);
 void run_main( int argc, char*argv[], g_items * obj);

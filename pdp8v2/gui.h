@@ -33,13 +33,17 @@ typedef struct g_tag
 // file descripto for screen
     GFile *FP;
     gchar *fname;
+
+	 //Local stuff
     int copy_argc;
     char ** copy_argv;
-    int c;
-    regs *regs_cpy;
-// dont like it but don' thave ,uch time to think a better way
-   struct keyboard local_kb;
+    regs *registers_ptr;
+    struct keyboard* kb_ptr;
+	 uint8_t execution_done;
+	 uint8_t breakpoint_reached;
 
+	 int thread1_return, thread2_return;
+	 pthread_t keyboard_thread, simulator_thread;
 } g_items;
 
 

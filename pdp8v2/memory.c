@@ -6,7 +6,6 @@
 ** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
 ******************************************************************************/
 #include "memory.h"
-//#define MEMORY_DEBUG
 
 /******************************************************************************
 ** 	READ FROM MEMORY
