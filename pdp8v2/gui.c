@@ -344,3 +344,28 @@ void activate (GtkApplication *app, gpointer    data)
     gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (obj->grid));
     gtk_widget_show_all (window);
 }
+
+void update_labels(g_items* object) {
+	uint8_t buffer_size = 4;
+	char PC_text[buffer_size];
+	char AC_text[buffer_size];
+	char CPMA_text[buffer_size];
+	char IR_text[buffer_size];
+	char Link_text[buffer_size];
+	char MB_text[buffer_size];
+
+	sprintf(PC_text, "%04o", object->registers_ptr->PC);
+	sprintf(AC_text, "%04o", object->registers_ptr->AC);
+	sprintf(CPMA_text, "%04o", object->registers_ptr->CPMA);
+	sprintf(IR_text, "%01o", object->registers_ptr->IR);
+	sprintf(Link_text, "%01o", object->registers_ptr->link_bit);
+	sprintf(MB_text, "%04o", object->registers_ptr->MB);
+
+   gtk_label_set_text(GTK_LABEL (object->PC_value), PC_text);
+   gtk_label_set_text(GTK_LABEL (object->Accumulator_value), AC_text);
+   gtk_label_set_text(GTK_LABEL (object->CPMA_value), CPMA_text);
+   gtk_label_set_text(GTK_LABEL (object->IR_value), IR_text);
+   gtk_label_set_text(GTK_LABEL (object->Link_value), Link_text);
+   gtk_label_set_text(GTK_LABEL (object->Memory_Buffer_value), MB_text);
+}
+	

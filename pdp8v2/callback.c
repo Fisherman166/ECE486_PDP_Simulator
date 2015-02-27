@@ -64,6 +64,8 @@ void run_button_click (GtkButton *button,
 	int thread1_return, thread2_return;
 	pthread_t keyboard_thread, simulator_thread;
    g_items* local_object = (g_items*)data;
+
+	local_object->step_or_run = RUN;
 	 
 	thread1_return = pthread_create(&keyboard_thread, NULL,
 	 															read_keyboard, (void*)(local_object->kb_ptr));
@@ -74,7 +76,6 @@ void run_button_click (GtkButton *button,
 
 	thread2_return = pthread_create( &simulator_thread, NULL,
 	 															run_program, (void*)local_object);
-															
 	if(thread2_return) {
 		fprintf(stderr, "Simulator thread failed\n");
 		exit(-2);
@@ -84,11 +85,15 @@ void run_button_click (GtkButton *button,
 	pthread_join(keyboard_thread, NULL);
 	pthread_join(simulator_thread, NULL);
 
-
-  //char buff[4];
-  //  sprintf(buff, "%d", tptr->regs_cpy.AC);
-  //  gtk_label_set_text(GTK_LABEL (tptr->Accumulator_value),buff);
-	printf("BLOOP\n");
+	//Check after thread exits
+	if(local_object->breakpoint_reached) {
+		local_object->breakpoint_reached = 0;
+		update_labels(local_object);
+	}
+	
+	if(local_object->execution_done) {
+		shutdown_system(local_object);	
+	}
 
   //loadscreen(tptr);
 }
@@ -97,18 +102,16 @@ void run_button_click (GtkButton *button,
 
 void step_button_click(GtkButton *button, gpointer   data)
 {
-    g_items * obj;
-    char buff[4];
-    obj = (g_items *) data;
-    //sprintf(buff, "%04o", obj->regs_cpy->PC);
+   g_items* local_object = (g_items*)data;
+	local_object->step_or_run = STEP;
 
-    //gtk_label_set_text(GTK_LABEL (obj->Memory_Buffer_value),buff);
+	execute_opcode(local_object);
+	update_labels(local_object);
 
-
+	if(local_object->execution_done) {
+		shutdown_system(local_object);	
+	}
 }
-
-
-
 
 
 /******************************************************************* *
@@ -180,12 +183,9 @@ void new_breakpoint(GtkEntry *entry,
     }
 
 
-// clear screen to confiem entry
+// clear screen to confirm entry
     gtk_entry_set_text (entry,"\0");
 }
-
-
-
 
 void breakpoint_to_set(int breakpoint_address, g_items * obj)
 {
@@ -203,18 +203,10 @@ void breakpoint_to_set(int breakpoint_address, g_items * obj)
         set_breakpoint( (uint16_t)(breakpoint_address & 0xFFFF) );
         g_print ("Breakpoint entered at %04o!\n", breakpoint_address);
 
-        //  gtk_text_buffer_get_iter_at_line (obj->msgbuff,obj->iter,1);
-
         obj->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (obj->messages_txt));
         gtk_text_buffer_set_text (obj->msgbuff, "Hello, this is some text\0",-1);
     }
-
-
 }
-
-
-
-
 
 void new_tracepoint(GtkEntry *entry,
                     gpointer  user_data)

@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 }/*end main*/
 
 /******************************************************************************
-** 	RUN THE PROGRAM UNTIL BREAKPOINT/TRACEPOINT MET OR EXECUTION FINISHES 	
+** 	RUN THE PROGRAM UNTIL BREAKPOINT/TRACEPOINT FOUND OR EXECUTION FINISHES 	
 ******************************************************************************/
 void* run_program(void* object)
 {
@@ -63,8 +63,19 @@ void execute_opcode(g_items* object){
 	uint8_t addressing_mode;
 
 	current_instruction = mem_read(registers->PC, INSTRUCTION_FETCH);	// load the next instruction
+
+	#ifdef GUI
+	//Don't stop on a breakpoint when stepping
+	if( (current_instruction & MEMORY_BREAKPOINT_BIT) && !(object->step_or_run) ) {
+		object->breakpoint_reached = 1;
+		printf("Breakpoint Reached at address %04o\n", registers->PC);
+		goto EXIT;
+	}
+	#endif
+
 	registers->PC++;																	// increment the PC
 	registers->IR = (current_instruction >> 9) & 0x7;						// Only grab the 3 opcode bits
+
 
 	//Microinstructions don't have indirect or auto increment modes
 	//Set the addressing mode to direct to not add additional cycles onto micro ops
@@ -324,6 +335,8 @@ void execute_opcode(g_items* object){
 					registers->link_bit, registers->MB & CUTOFF_MASK, registers->PC, registers->CPMA);
 	#endif
 
+EXIT:
+	return;	//For exiting on breakpoint
 } // end run_program
 
 void init_system(int argc, char* argv[], g_items* object) {
@@ -458,6 +471,14 @@ void print_stats(void) {
 	printf("The total number of opcodes executed = %u\n", executed_total);
 }
 
+void shutdown_system(g_items* object) {
+		free(object->registers_ptr);
+		free(object->kb_ptr);
+		mem_print_valid();
+		print_stats();
+		trace_close();
+		close_branch_trace();
+}	
 /******************************************************************************
 **	EOF
 ******************************************************************************/

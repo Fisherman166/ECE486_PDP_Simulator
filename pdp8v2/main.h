@@ -30,17 +30,12 @@
 
 #define OPCODE_NUM 8
 
-typedef struct run_args {
-	struct keyboard local_kb;
-	g_items* object;
-} run_args;
-
 int main(int argc, char* argv[]);
 void* run_program(void*);
 void execute_opcode(g_items* object);
 void init_system(int argc, char* argv[], g_items*);
 void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */
 void print_stats(void);
-void run_main( int argc, char*argv[], g_items * obj);
+void shutdown_system(g_items*);
 
 #endif

@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include "cpu.h"
 
+
+#define STEP 1
+#define RUN 0
+
 typedef struct g_tag
 {
     GtkWidget *grid;
@@ -41,6 +45,7 @@ typedef struct g_tag
     struct keyboard* kb_ptr;
 	 uint8_t execution_done;
 	 uint8_t breakpoint_reached;
+	 uint8_t step_or_run;
 
 	 int thread1_return, thread2_return;
 	 pthread_t keyboard_thread, simulator_thread;
@@ -60,5 +65,5 @@ void entry_box_cb(g_items *obj);
 void radio_button_callbacks( g_items * obj);
 void create_buttons_callbacks(g_items* obj);
 void activate (GtkApplication *app, gpointer    data);
-int stall_execution;
+void update_labels(g_items*);
 #endif
