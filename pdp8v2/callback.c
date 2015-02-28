@@ -5,7 +5,7 @@
 #include "memory.h"
 #include "main.h"
 
-/******************************************************************* *
+/********************************************************************
                              Buttons
 ********************************************************************/
 
@@ -23,7 +23,6 @@ void loadscreen(g_items* obj)
     gsize length;
 
     obj->FP = g_file_new_for_path ("test1.txt");
-// obj->fname = g_file_get_basename (obj->FP);
 
     if (g_file_load_contents (obj->FP, NULL, &contents, &length, NULL, NULL))
     {
@@ -37,8 +36,6 @@ void loadscreen(g_items* obj)
     contents = (gchar*) data1;
     printf( " my msg: %s ", data1);
     g_print ("\nGprint: %s", contents);
-
-
 
 // Prolems loaing txt to 2nd screen without using file system
 // as above
@@ -63,7 +60,7 @@ void run_button_click (GtkButton *button,
 {
 	int thread1_return, thread2_return;
 	pthread_t keyboard_thread, simulator_thread;
-   g_items* local_object = (g_items*)data;
+        g_items* local_object = (g_items*)data;
 
 	local_object->coherance_vars->step_or_run = RUN;
 	 
@@ -118,7 +115,7 @@ void step_button_click(GtkButton *button, gpointer   data)
 // Note: Must likely we are not going to use them but I thought
 // Seeing the function iside the if was useful mostlike to be used
 // in conjunction with trace and breakpoint input
-
+/*
 void set_breakpt_cb(GtkWidget *button,
                     gpointer   user_data)
 {
@@ -158,7 +155,7 @@ void clear_tracepoint(GtkWidget *button, gpointer   user_data)
         g_print ("\nClear Tracepoint!\n");
     }
 }
-
+*/
 
 /******************************************************************* *
                              Text Boxes
@@ -179,6 +176,12 @@ void new_breakpoint(GtkEntry *entry,
     {
         breakpoint_to_set(breakpoint_address, temp_ptr);
     }
+ 	else{
+     /* define clear breakpoint here if is not one is the other
+      by default
+      alternatively you can else if if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (temp_ptr->radio_clear_BP)
+      but the buttons are true or false so it does not make much difference*/
+     }
 
 
 // clear screen to confirm entry
@@ -206,14 +209,28 @@ void breakpoint_to_set(int breakpoint_address, g_items * obj)
     }
 }
 
+
 void new_tracepoint(GtkEntry *entry,
-                    gpointer  user_data)
+                    gpointer  data)
 {
     const char *val;
+    g_items* local_object = (g_items*)data;
     val = gtk_entry_get_text (entry);
-
     g_print ("\nTrace point entered %d!\n\n", atoi(val));
     gtk_entry_set_text (entry,"\0");
+
+        if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (local_object->radioB_SetTr)))
+    {
+       // set tracefile
+    }
+ 	else{
+     /* define clear breakpoint here 
+       currently they are defined as one true with opposite values 
+      if is not one is the other
+      alternatively you can make them the same value and test for the variable using
+      else if if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (temp_ptr->radioB_ClrTr)
+      but the buttons are true or false so it does not make any difference*/
+     }
 
 }
 

@@ -277,7 +277,7 @@ void entry_box_cb(g_items *obj)
                       G_CALLBACK (new_tracepoint), obj);
 
 }
-
+/*
 void radio_button_callbacks( g_items * obj)
 {
 
@@ -294,7 +294,7 @@ void radio_button_callbacks( g_items * obj)
 
 
 }
-
+*/
 
 void create_buttons_callbacks(g_items* obj)
 {
@@ -335,7 +335,7 @@ void activate (GtkApplication *app, gpointer    data)
     set_radio_buttons(obj);
     create_text_boxes(obj);
     create_entrybox (obj);
-    radio_button_callbacks(obj);
+  //  radio_button_callbacks(obj);
     create_buttons_callbacks(obj);
     entry_box_cb(obj);
     set_grid(obj);

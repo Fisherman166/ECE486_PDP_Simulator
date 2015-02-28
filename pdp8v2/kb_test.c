@@ -73,7 +73,7 @@ void* read_keyboard(void* kb_layout) {
     printf("\n you hit %c. \n", new_char);
     nonblock(NB_DISABLE);
 
-    pthread_exit(0);gcc -pthread -o test test2.c
+    pthread_exit(0);
 }
 
 void* print_stuff(void* kb_layout) {

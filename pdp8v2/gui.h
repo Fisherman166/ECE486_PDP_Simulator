@@ -12,24 +12,27 @@ typedef struct g_tag
 {
     GtkWidget *grid;
     GtkWidget  * run_button, *step;
-// name of all label not to be changed change next group
-    GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label, *Mesages_label, *IR_label, *Link_label, *Memory_Buffer_label;
+// name of all labels
+    GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label;
+    GtkWidget *Mesages_label, *IR_label, *Link_label, *Memory_Buffer_label;
 
 // name if labels to be changed with the values of the registers
-    GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value, *IR_value, *Link_value, *Memory_Buffer_value;
+    GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value;
+    GtkWidget *IR_value, *Link_value, *Memory_Buffer_value;
 
-
-// windows, buffers  buttons and misc stuff
+// windows, buffers
     GtkWidget *scrolled_window, * scrolled_msg;
     GtkEntryBuffer * breakpoints;
     GtkTextBuffer *buffer, *msgbuff;
-    GtkWidget *text_view, *BreakP_entry,*Trace_entry, *messages_txt;
-    GtkWidget *spin_button;
-    GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;
-    GtkAdjustment *adjustment;
-    //GtkTextMark * mark;    unsuccesfully try to use to change txt in mesage box
-    //GtkTextIter *iter;
 
+// Breakpoint and Tace windows
+    GtkWidget *text_view, *BreakP_entry,*Trace_entry, *messages_txt;
+
+// Buttons 
+    GtkWidget *spin_button;
+    GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;   // radio buttons
+    GtkAdjustment *adjustment;
+  
 // file descripto for screen
     GFile *FP;
     gchar *fname;
