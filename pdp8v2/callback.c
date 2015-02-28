@@ -15,8 +15,8 @@ extern uint8_t tracepoint_number;	//From memory.h
 void spin_clicked (GtkSpinButton *spinbutton,
                    gpointer       user_data)
 {
-    int value = gtk_spin_button_get_value_as_int (spinbutton);
-
+    int page_number = gtk_spin_button_get_value_as_int (spinbutton);
+	 print_memory_page(page_number);
 }
 
 void loadscreen(g_items* obj)
@@ -112,6 +112,7 @@ void run_button_click (GtkButton *button,
 		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	 	sprintf(buffer_text, "Execution of program complete");
 		gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
+		update_labels(local_object);
 		shutdown_system(local_object->coherance_vars);	
 	}
 }

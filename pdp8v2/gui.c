@@ -35,13 +35,13 @@ FALSE the text gets cut off by the edge of the widget*/
 void create_labels(g_items * obj)
 {
     obj->pagenum= gtk_label_new ("Select a Page Number");
-    obj->label = gtk_label_new ("Registers");
+    obj->label = gtk_label_new ("Register");
     obj->PC_label= gtk_label_new ("PC");
     obj->Accumulator_label= gtk_label_new ("AC");
     obj->CPMA_label= gtk_label_new ("CPMA");
     obj->IR_label= gtk_label_new ("IR");
     obj->Link_label= gtk_label_new ("Link");
-    obj->Memory_Buffer_label= gtk_label_new ("Memory");
+    obj->Memory_Buffer_label= gtk_label_new ("Memory Buffer");
 
     obj->Mesages_label= gtk_label_new ("Messages");
 
@@ -54,13 +54,13 @@ void create_labels(g_items * obj)
 
 // values
 
-    obj->value = gtk_label_new ("values");
+    obj->value = gtk_label_new ("Contents");
     obj->PC_value= gtk_label_new ("0");
-    obj->Accumulator_value= gtk_label_new ("1");
-    obj->CPMA_value = gtk_label_new ("2");
-    obj->IR_value= gtk_label_new ("3");
-    obj->Link_value= gtk_label_new ("4");
-    obj->Memory_Buffer_value= gtk_label_new ("5");
+    obj->Accumulator_value= gtk_label_new ("0");
+    obj->CPMA_value = gtk_label_new ("0");
+    obj->IR_value= gtk_label_new ("0");
+    obj->Link_value= gtk_label_new ("0");
+    obj->Memory_Buffer_value= gtk_label_new ("0");
 
     gtk_label_set_justify (GTK_LABEL (obj->value), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify (GTK_LABEL (obj->PC_value), GTK_JUSTIFY_RIGHT);
