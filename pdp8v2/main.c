@@ -14,6 +14,7 @@ static uint32_t opcode_freq[OPCODE_NUM];
 static uint8_t opcode_cycles[OPCODE_NUM] = {2,2,2,2,2,1,0,1};
 static const char *opcode_text[OPCODE_NUM];
 
+extern uint8_t tracepoint_reached;
 regs* registers;
 
 int main(int argc, char* argv[]) {
@@ -38,6 +39,9 @@ int main(int argc, char* argv[]) {
 	return(0);
 }/*end main*/
 
+/******************************************************************************
+** RUNS THE PROGRAM WITHOUT THE GUI	
+******************************************************************************/
 void run_no_GUI(int argc, char** argv) {
 	int thread1_return, thread2_return;
 	pthread_t keyboard_thread, simulator_thread;
@@ -71,7 +75,7 @@ void* run_program(void* args)
 {
 	struct shared_vars* shared = (struct shared_vars*)args;
 
-	while( (shared->execution_done != 1) && (shared->breakpoint_reached != 1) ) {
+	while( (shared->execution_done != 1) && (shared->breakpoint_reached != 1)  && (tracepoint_reached != 1) ) {
 		execute_opcode(shared);
 	}
 
@@ -82,6 +86,9 @@ void* run_program(void* args)
 	pthread_exit(0);
 }
 
+/******************************************************************************
+**		EXECUTES A SINGLE OPCODE AND RETURNS	
+******************************************************************************/
 void execute_opcode(struct shared_vars* shared){
 	const uint8_t microinstruction = 7;
 	char instruct_text[80];
@@ -370,6 +377,9 @@ EXIT:
 	return;	//For exiting on breakpoint
 } // end run_program
 
+/******************************************************************************
+** 	MALLOCS STRUCTS, INITS MEMORY, AND OPENS TRACE FILES
+******************************************************************************/
 void init_system(int argc, char* argv[], struct shared_vars* shared) {
 	int trace_return;
 	int i;
@@ -486,6 +496,9 @@ void fill_memory(int argc, char* argv[]) {
 	fclose(program_file);
 }
 
+/******************************************************************************
+**		PRINTS THE REQUESTED STATS	
+******************************************************************************/
 void print_stats(void) {
 	int i;
 	uint32_t executed_total = 0;
@@ -503,6 +516,9 @@ void print_stats(void) {
 	printf("The total number of opcodes executed = %u\n", executed_total);
 }
 
+/******************************************************************************
+**		FREES MEMORY, CLOSES TRACE FILES AND PRINTS INFORMATION
+******************************************************************************/
 void shutdown_system(struct shared_vars* shared) {
 		free(shared->registers_ptr);
 		free(shared->kb_ptr);

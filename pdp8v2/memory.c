@@ -7,6 +7,9 @@
 ******************************************************************************/
 #include "memory.h"
 
+uint8_t tracepoint_reached;
+uint8_t tracepoint_number;
+
 /******************************************************************************
 ** 	READ FROM MEMORY
 **	FOR READ_OR_FETCH VARIABLE: 0 = DATA READ		1 = INSTRUCTION_FETCH
@@ -32,8 +35,15 @@ uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch){
 
 	//Print to trace file and handle the fetch accordingly
 	if(read_or_fetch == DATA_READ) {
+		//First check if a tracepoint has been reached
+		retval = memory[converted];
+		if(retval & MEMORY_TRACEPOINT_BIT) {
+			tracepoint_reached = 1;
+			tracepoint_number = converted;
+		}
+
 		//Remove internal state bits for read
-		retval = memory[converted] & CUTOFF_MASK;
+		retval &= CUTOFF_MASK;
 		fprintf( trace_file, "DR %04o\n", converted);
 	}
 	else if(read_or_fetch == INSTRUCTION_FETCH) {
@@ -69,14 +79,12 @@ void mem_write(uint16_t to_convert, uint16_t data){
 
 	/* Write to trace file */
 	fprintf( trace_file, "DW %04o\n", converted);
+		
+	//Check if tracepoint is set
+	if(memory[converted] & MEMORY_TRACEPOINT_BIT) tracepoint_reached = 1;
 
-	//Make sure to make the location in memory valid
-	if(memory[converted] & MEMORY_BREAKPOINT_BIT) {
-		memory[converted] = MEMORY_VALID_BIT | data | MEMORY_BREAKPOINT_BIT;
-	}
-	else {
-		memory[converted] = MEMORY_VALID_BIT | data;
-	}	
+	memory[converted] &= ~MEMORY_MASK;	//Clear the data field
+	memory[converted] |= data & MEMORY_MASK;
 
 	#ifdef MEMORY_DEBUG
 		printf("CALLEE->WROTE: %o to: %o IN OCTAL\n", data, converted);
@@ -231,10 +239,24 @@ void set_breakpoint(uint16_t breakpoint_address) {
 }
 
 /******************************************************************************
-**	REMOVES A BREAKPOINT IN MEMORY
+**	REMOVES A BREAKPOINT FROM MEMORY
 ******************************************************************************/
 void remove_breakpoint(uint16_t breakpoint_address) {
 	memory[breakpoint_address] &= ~MEMORY_BREAKPOINT_BIT;
+}
+
+/******************************************************************************
+**	SETS A TRACEPOINT IN MEMORY
+******************************************************************************/
+void set_tracepoint(uint16_t tracepoint_address) {
+	memory[tracepoint_address] |= MEMORY_TRACEPOINT_BIT;
+}
+
+/******************************************************************************
+**	REMOVES A TRACEPOINT FROM MEMORY
+******************************************************************************/
+void remove_tracepoint(uint16_t tracepoint_address) {
+	memory[tracepoint_address] &= ~MEMORY_TRACEPOINT_BIT;
 }
 
 /******************************************************************************

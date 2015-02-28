@@ -24,6 +24,7 @@
 #define MEMORY_MASK				0xFFF	/*Only 12 bits needed for address or a data*/
 #define MEMORY_VALID_BIT 		0x8000
 #define MEMORY_BREAKPOINT_BIT	0x4000
+#define MEMORY_TRACEPOINT_BIT 0x2000
 
 /* For trace files */
 #define DATA_READ 0
@@ -55,8 +56,12 @@ uint16_t zeropage(uint16_t);
 uint16_t currentpage(uint16_t, regs*);
 //uint16_t getaddress(uint16_t, regs*);
 uint8_t EffAddCalc(uint16_t, regs*);
+
+//GUI functions
 void set_breakpoint(uint16_t);
 void remove_breakpoint(uint16_t);
+void set_tracepoint(uint16_t);
+void remove_tracepoint(uint16_t);
 
 /******************************************************************************
 **	EOF

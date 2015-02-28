@@ -271,10 +271,10 @@ void set_radio_buttons( g_items *obj)
 void entry_box_cb(g_items *obj)
 {
     g_signal_connect (GTK_ENTRY (obj->BreakP_entry), "activate",
-                      G_CALLBACK (new_breakpoint), obj);
+                      G_CALLBACK (breakpoint_handler), obj);
 
     g_signal_connect (GTK_ENTRY (obj->Trace_entry), "activate",
-                      G_CALLBACK (new_tracepoint), obj);
+                      G_CALLBACK (tracepoint_handler), obj);
 
 }
 /*
