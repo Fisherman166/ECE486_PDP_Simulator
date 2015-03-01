@@ -54,7 +54,6 @@ uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch);
 void mem_write(uint16_t to_convert, uint16_t data);
 uint16_t zeropage(uint16_t);
 uint16_t currentpage(uint16_t, regs*);
-//uint16_t getaddress(uint16_t, regs*);
 uint8_t EffAddCalc(uint16_t, regs*);
 
 //GUI functions

@@ -192,8 +192,11 @@ uint16_t getaddress(uint16_t instruction,regs* reg, uint8_t * page)
 
 /******************************************************************************
 **	CALCULATE THE EFFECTIVE ADDRESS
-**	RETURNS 0 FOR DIRECT ADDRESSING, 1 FOR INDIRECT ADDRESSING,
-** AND 2 FOR AUTOINCREMENT
+**	RETURNS 0 FOR DIRECT ADDRESSING page 0
+**              1 FOR DIRECT ADDRESSING CURRENT PAGE
+**              2 FOR INDIRECT ADDRESSING PAGE O 
+**              3 FOR INDIRECT CURRENT PAGE,
+**              4 FOR AUTOINCREMENT
 ******************************************************************************/
 uint8_t EffAddCalc(uint16_t instruction, regs* reg)
 {
@@ -279,10 +282,10 @@ void print_memory_page(int page_number) {
 		page_base_address = (page_number & 0x1F) << 7;
 		page_max_address = ((page_number + 1) & 0x3F) << 7;
 
-		fprintf(memory_print_file, "    | LSB OCTAL DIGIT OF ADDRESS             |\n");
-		fprintf(memory_print_file, "    |----------------------------------------|\n");
-		fprintf(memory_print_file, "    |  0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  |\n");
-		fprintf(memory_print_file, "MSB |----------------------------------------|\n");
+		fprintf(memory_print_file, "    \t|            LSB OCTAL DIGIT OF ADDRESS             |\n");
+		fprintf(memory_print_file, "    \t|-----------------------------------------------------------------------|\n");
+		fprintf(memory_print_file, "    \t|   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |\n");
+		fprintf(memory_print_file, "MSB  |----------------------------------------------------------------------|\n");
 		for(index = page_base_address; index < page_max_address; index += 8) {
 			//Grab the data values from memory
 			data_values[0] = memory[index] & MEMORY_MASK;
@@ -299,7 +302,7 @@ void print_memory_page(int page_number) {
 					data_values[3], data_values[4], data_values[5], data_values[6], 
 					data_values[7]);
 		}
-		fprintf(memory_print_file, "    |----------------------------------------|\n");
+		fprintf(memory_print_file, "       |-------------------------------------------------------------------------|\n");
 	}
 
 	fclose(memory_print_file);

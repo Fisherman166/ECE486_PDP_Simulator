@@ -17,15 +17,17 @@ void spin_clicked (GtkSpinButton *spinbutton,
 {
     int page_number = gtk_spin_button_get_value_as_int (spinbutton);
 	 print_memory_page(page_number);
+    loadscreen((g_items*)user_data);
 }
 
-void loadscreen(g_items* obj)
+
+void loadscreen( g_items *obj)
 {
     gchar *contents;
-    char * data1;
+    //char * data1;
     gsize length;
 
-    obj->FP = g_file_new_for_path ("test1.txt");
+    obj->FP = g_file_new_for_path ("MEMORY_PAGE.txt");
 
     if (g_file_load_contents (obj->FP, NULL, &contents, &length, NULL, NULL))
     {
@@ -33,27 +35,6 @@ void loadscreen(g_items* obj)
         g_free (contents);
     }
     g_free (obj->fname);
-
-// c``reading a txt to test msg txt box
-    data1="my txt\n";
-    contents = (gchar*) data1;
-    printf( " my msg: %s ", data1);
-    g_print ("\nGprint: %s", contents);
-
-// Prolems loaing txt to 2nd screen without using file system
-// as above
-
-//    obj->mark = gtk_text_buffer_get_insert (obj->msgbuff);
-//    gtk_text_buffer_get_iter_at_mark (buffer, &obj->iter, obj->mark);
-//    gtk_text_buffer_insert (buffer, &iter, text, -1);
-
-//obj->mark = gtk_text_buffer_get_mark (contents,TRUE);
-// gtk_text_buffer_get_iter_at_mark (obj->buffer, &obj->iter, obj->mark);
-
-
-//gtk_text_buffer_insert (obj->msgbuff,obj->mark, contents, sizeof(contents));
-    //gtk_text_buffer_insert(contents, contents, sizeof(contents));
-//obj-> = gtk_text_buffer_new ("new txt");   //input buffer
 
 }
 
@@ -215,6 +196,33 @@ void breakpoint_handler(GtkEntry *entry,
     gtk_entry_set_text (entry,"\0");
 }
 
+void print_memory_location (GtkEntry *entry, gpointer  user_data)
+{
+    const int maximum_address = 07777;	//Maximum address allowed in PDP8
+    const char *memory_text;
+    char buffer_text[100];
+    g_items * local_object = (g_items *) user_data; 
+    int memory_address;
+    // gets the entry
+    memory_text = gtk_entry_get_text(entry);
+    memory_address = strtol(memory_text, NULL, 8);	//Use octal base
+    // clear after getting the value 
+    gtk_entry_set_text (entry,"\0");
+     // get the buffer to be used
+    local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
+    if( memory_address > maximum_address)
+    {
+	 	sprintf(buffer_text, "Memory address %o is not valid", memory_address);
+      gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
+    }
+    else
+    {
+	     sprintf(buffer_text, "Memory at location %04o is:\t %04o", memory_address, memory[memory_address]);
+        gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
+    }
+}
+
+
 /******************************************************************************
 ** THIS FUNCTION ADDS A BREAKPOINT TO MEMORY
 ******************************************************************************/
@@ -320,7 +328,7 @@ void tracepoint_to_remove(int tracepoint_address, g_items * obj)
     else
     {
         remove_tracepoint( (uint16_t)(tracepoint_address & 0xFFFF) );
-	 	  sprintf(buffer_text, "Tracepoint removed at address %04o", tracepoint_address);
+	sprintf(buffer_text, "Tracepoint removed at address %04o", tracepoint_address);
         gtk_text_buffer_set_text (obj->msgbuff, buffer_text, -1);
     }
 }

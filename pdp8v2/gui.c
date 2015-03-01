@@ -42,7 +42,7 @@ void create_labels(g_items * obj)
     obj->IR_label= gtk_label_new ("IR");
     obj->Link_label= gtk_label_new ("Link");
     obj->Memory_Buffer_label= gtk_label_new ("Memory Buffer");
-
+    obj->memory_entry_label= gtk_label_new ("Address Content");  // re-name 
     obj->Mesages_label= gtk_label_new ("Messages");
 
     gtk_label_set_justify (GTK_LABEL (obj->pagenum), GTK_JUSTIFY_CENTER);
@@ -51,6 +51,7 @@ void create_labels(g_items * obj)
     gtk_label_set_justify (GTK_LABEL (obj->Accumulator_label), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify (GTK_LABEL (obj->CPMA_label), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify (GTK_LABEL (obj->Mesages_label), GTK_JUSTIFY_CENTER);
+    gtk_label_set_justify (GTK_LABEL (obj->Mesages_label), GTK_JUSTIFY_LEFT);
 
 // values
 
@@ -98,6 +99,7 @@ void create_entrybox (g_items* obj)
 {
     obj->BreakP_entry = gtk_entry_new();
     obj->Trace_entry = gtk_entry_new();
+    obj->memory_entry= gtk_entry_new();
 }
 
 
@@ -166,15 +168,18 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_set_BP, obj->Memory_Buffer_value,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_clear_BP, obj->radio_set_BP,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->BreakP_entry,obj->radio_clear_BP, GTK_POS_BOTTOM, 1,1);
-
-
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_entry,obj->BreakP_entry, GTK_POS_BOTTOM, 1,1);
+    
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_entry_label, obj->memory_entry ,GTK_POS_LEFT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_SetTr, obj->Memory_Buffer_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_ClrTr, obj->radioB_SetTr,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Trace_entry, obj->radioB_ClrTr,GTK_POS_BOTTOM,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Mesages_label, obj->Trace_entry,GTK_POS_BOTTOM,2,1);
+   
 
 
 // message window
+    
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Mesages_label, obj->memory_entry_label ,GTK_POS_BOTTOM,2,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->scrolled_msg, obj->Mesages_label,GTK_POS_BOTTOM,2,1);
 }
 
@@ -275,6 +280,8 @@ void entry_box_cb(g_items *obj)
 
     g_signal_connect (GTK_ENTRY (obj->Trace_entry), "activate",
                       G_CALLBACK (tracepoint_handler), obj);
+     g_signal_connect (GTK_ENTRY (obj->memory_entry), "activate",
+                      G_CALLBACK (print_memory_location), obj);
 
 }
 /*
