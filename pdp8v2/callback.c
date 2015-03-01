@@ -4,6 +4,7 @@
 #include "gui.h"
 #include "memory.h"
 #include "main.h"
+#include <errno.h>
 
 extern uint8_t tracepoint_reached;	//From memory.h
 extern uint8_t tracepoint_number;	//From memory.h
@@ -176,13 +177,12 @@ void clear_tracepoint(GtkWidget *button, gpointer   user_data)
 void breakpoint_handler(GtkEntry *entry,
                     gpointer  user_data)
 {
-    g_items * temp_ptr;
-    const char *breakpoint_text;
-    breakpoint_text = gtk_entry_get_text(entry);
-    int breakpoint_address = strtol(breakpoint_text, NULL, 8);	//Use octal base
+   g_items * temp_ptr;
+   const char *breakpoint_text;
+   breakpoint_text = gtk_entry_get_text(entry);
+   temp_ptr = (g_items *) user_data;
 
-    temp_ptr = (g_items *) user_data;
-
+   int breakpoint_address = strtol(breakpoint_text, NULL, 8);	//Use octal base
 
    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (temp_ptr->radio_set_BP)))
    {
@@ -203,21 +203,23 @@ void print_memory_location (GtkEntry *entry, gpointer  user_data)
     char buffer_text[100];
     g_items * local_object = (g_items *) user_data; 
     int memory_address;
+
     // gets the entry
     memory_text = gtk_entry_get_text(entry);
     memory_address = strtol(memory_text, NULL, 8);	//Use octal base
     // clear after getting the value 
     gtk_entry_set_text (entry,"\0");
+
      // get the buffer to be used
     local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
     if( memory_address > maximum_address)
     {
-	 	sprintf(buffer_text, "Memory address %o is not valid", memory_address);
+	 	sprintf(buffer_text, "Memory address %04o is not valid", memory_address);
       gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
     }
     else
     {
-	     sprintf(buffer_text, "Memory at location %04o is:\t %04o", memory_address, memory[memory_address]);
+	     sprintf(buffer_text, "The memory value at address %04o is: %04o", memory_address, (memory[memory_address] & MEMORY_MASK));
         gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
     }
 }

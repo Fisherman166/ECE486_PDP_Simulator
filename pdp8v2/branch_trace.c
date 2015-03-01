@@ -47,7 +47,7 @@ void write_branch_trace(uint16_t PC, uint16_t target_address, const char* opcode
 	if(taken) strcpy(result_text, "Taken");
 	else strcpy(result_text, "Not Taken");
 
-	fprintf(branch_file, "Current PC: %04o, Target: %04o, Type: %s, Result: %s\n", PC,
+	fprintf(branch_file, "Current PC: %04o, Target: %04o, Type: %s, Result: %s\n", PC - 1,
 				target_address, opcode, result_text);
 }
 

@@ -1,0 +1,2 @@
+Current PC: 0201, Target: 0204, Type: Subroutine, Result: Taken
+Current PC: 0207, Target: 0202, Type: Unconditional, Result: Taken

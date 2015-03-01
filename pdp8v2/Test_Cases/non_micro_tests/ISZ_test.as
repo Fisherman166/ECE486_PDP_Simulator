@@ -13,7 +13,6 @@ Main,
 	tad Y					/ If this is executed, ISZ is wrong
 	isz Y					/ Increment and don't skip
 	hlt					/ Halt the system
-	jmp Main				/Incase something goes wrong
 		
 /
 / Data Section

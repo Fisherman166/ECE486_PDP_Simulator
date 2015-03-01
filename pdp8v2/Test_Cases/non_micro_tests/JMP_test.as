@@ -1,19 +1,19 @@
 / Program : JMP_test.as
 / Date : Feb 11, 2015
-/ Should take 7 cycles
+/ Should take 8 cycles
+/ 2 JMPS, 2 TADs, 2 uOps
 /-------------------------------------------
 /
 / Code Section
 /
 *0200			/ start at address 0200
 Main, 	
+	cla cll		/ Clear link and accum
 	tad A		/ Put 2 in accum
 	jmp Add	/ Goto add
 
 Halt,
 	hlt 		/ Halt program
-	jmp Main	/ To continue - goto Main
-
 
 ADD, 
 	tad B		/ Add 3 to accum

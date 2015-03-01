@@ -20,13 +20,12 @@ regs* registers;
 int main(int argc, char* argv[]) {
 #ifdef GUI
     GtkApplication *app;
-    int status;
     g_items *obj = malloc(sizeof(*obj));
     obj->copy_argv= argv;
     obj->copy_argc = argc;
     app = gtk_application_new ("ECE.Project", G_APPLICATION_FLAGS_NONE);
     g_signal_connect (app, "activate", G_CALLBACK (activate), obj);
-    status = g_application_run (G_APPLICATION (app), 0, NULL);
+    g_application_run (G_APPLICATION (app), 0, NULL);
     g_object_unref (app);
 #else
 	run_no_GUI(argc, argv);
@@ -367,8 +366,8 @@ void execute_opcode(struct shared_vars* shared){
 
 	#ifdef DEBUG
 		printf("Cycles After = %u\n", clock_cycles);
-		printf("After opcode: %s - %04o, AC: %04o, Link: %01o, MB: %04o, PC: %04o, CPMA: %04o\n\n", instruct_text, current_instruction, registers->AC & CUTOFF_MASK, 
-					registers->link_bit, registers->MB & CUTOFF_MASK, registers->PC, registers->CPMA);
+		printf("After opcode: %s - %04o, AC: %04o, Link: %01o, MB: %04o, PC: %04o, CPMA: %04o\n\n", instruct_text, current_instruction & MEMORY_MASK, 
+				registers->AC & CUTOFF_MASK, registers->link_bit, registers->MB & CUTOFF_MASK, registers->PC, registers->CPMA);
 	#endif
 
 #ifdef GUI

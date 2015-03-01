@@ -1,0 +1,2 @@
+Current PC: 0202, Target: 0204, Type: Unconditional, Result: Taken
+Current PC: 0205, Target: 0203, Type: Unconditional, Result: Taken

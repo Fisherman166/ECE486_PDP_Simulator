@@ -1,0 +1,14 @@
+Tests passed with GUI:
+1. AND
+2. ISZ
+3. TAD
+4. JMS_DCA
+5. JMP
+
+Tests passed with no GUI:
+1. AND
+2. ISZ
+3. TAD
+4. JMS_DCA
+5. JMP
+

@@ -42,7 +42,7 @@ void create_labels(g_items * obj)
     obj->IR_label= gtk_label_new ("IR");
     obj->Link_label= gtk_label_new ("Link");
     obj->Memory_Buffer_label= gtk_label_new ("Memory Buffer");
-    obj->memory_entry_label= gtk_label_new ("Address Content");  // re-name 
+    obj->memory_entry_label= gtk_label_new ("Memory Value At Address");  // re-name 
     obj->Mesages_label= gtk_label_new ("Messages");
 
     gtk_label_set_justify (GTK_LABEL (obj->pagenum), GTK_JUSTIFY_CENTER);
@@ -250,14 +250,14 @@ void create_text_boxes (g_items * obj)
 
 void create_radio_buttons(g_items* obj)
 {
-    obj->radio_set_BP=gtk_radio_button_new_with_label(NULL, "Set Breakpoints");
+    obj->radio_set_BP=gtk_radio_button_new_with_label(NULL, "Set Breakpoint");
 
     obj->radio_clear_BP=gtk_radio_button_new_with_label_from_widget
-                        (GTK_RADIO_BUTTON (obj->radio_set_BP), "Clear Breakpoints");
+                        (GTK_RADIO_BUTTON (obj->radio_set_BP), "Clear Breakpoint");
 
-    obj->radioB_SetTr =gtk_radio_button_new_with_label(NULL, "Set Trace");
+    obj->radioB_SetTr =gtk_radio_button_new_with_label(NULL, "Set Tracepoint");
 
-    obj->radioB_ClrTr =gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (obj->radioB_SetTr), "Clear Trace");
+    obj->radioB_ClrTr =gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (obj->radioB_SetTr), "Clear Tracepoint");
 
 
 }

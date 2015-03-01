@@ -10,7 +10,6 @@ Main,
 	cla cll 	/ clear AC and Link
 	jms Add	/ Go to sub
 	hlt 		/ Halt program
-	jmp Main	/ To continue - goto Main
 
 Add, 			/ C = A + B
 	nop			/ Space for return address
