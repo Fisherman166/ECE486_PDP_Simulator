@@ -69,6 +69,8 @@ void run_button_click (GtkButton *button,
 	//Don't do anything if execution is complete
 	if(local_object->coherance_vars->execution_done) goto EXECUTION_DONE;
 
+	//Tell the GUI we have ran at least once and that we intend to run, not step
+	local_object->coherance_vars->ran_once = 1;
 	local_object->coherance_vars->step_or_run = RUN;
 	 
 	thread1_return = pthread_create(&keyboard_thread, NULL, read_keyboard, (void*)(local_object->coherance_vars->kb_ptr));
@@ -124,8 +126,11 @@ EXECUTION_DONE:
 void step_button_click(GtkButton *button, gpointer   data)
 {
    g_items* local_object = (g_items*)data;
-	local_object->coherance_vars->step_or_run = STEP;
 	char buffer_text[60];
+
+	//Tell the GUI we have ran at least once and that we intend to step
+	local_object->coherance_vars->ran_once = 1;
+	local_object->coherance_vars->step_or_run = STEP;
 
 	//Don't do anything if execution is complete
 	if(local_object->coherance_vars->execution_done) goto EXECUTION_DONE;

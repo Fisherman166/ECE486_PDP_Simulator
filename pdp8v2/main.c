@@ -521,8 +521,10 @@ void print_stats(void) {
 void shutdown_system(struct shared_vars* shared) {
 		free(shared->registers_ptr);
 		free(shared->kb_ptr);
-		mem_print_valid();
-		print_stats();
+		if(shared->ran_once) {
+			mem_print_valid();
+			print_stats();
+		}
 		trace_close();
 		close_branch_trace();
 }	

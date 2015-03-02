@@ -39,6 +39,7 @@ typedef struct shared_vars {
 	uint8_t breakpoint_reached;
 	uint8_t step_or_run;
 	uint8_t execution_done;
+	uint8_t ran_once;
 } shared_vars;
 
 int main(int argc, char* argv[]);
