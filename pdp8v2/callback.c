@@ -13,6 +13,9 @@ extern uint8_t tracepoint_number;	//From memory.h
                              Buttons
 ********************************************************************/
 
+/******************************************************************************
+** CHOSES THE PAGE OF MEMORY VALUES TO PRINT OUT
+******************************************************************************/
 void spin_clicked (GtkSpinButton *spinbutton,
                    gpointer       user_data)
 {
@@ -22,10 +25,12 @@ void spin_clicked (GtkSpinButton *spinbutton,
 }
 
 
+/******************************************************************************
+** LOADS MEMORY PAGE DATA FROM TEXT FILE TO BUFFER
+******************************************************************************/
 void loadscreen( g_items *obj)
 {
     gchar *contents;
-    //char * data1;
     gsize length;
 
     obj->FP = g_file_new_for_path ("MEMORY_PAGE.txt");
@@ -39,16 +44,15 @@ void loadscreen( g_items *obj)
 
 }
 
-
+/******************************************************************************
+** CLOSES THE SIMULATOR AND PRINTS STATS
+******************************************************************************/
 void exit_button_click(GtkButton *button, gpointer   data)
 {
   g_items* local_object = (g_items*)data;
   shutdown_system(local_object->coherance_vars);
   gtk_widget_destroy(GTK_WIDGET(local_object->window));
 }
-
-
-
 
 
 /******************************************************************************
@@ -61,6 +65,9 @@ void run_button_click (GtkButton *button,
 	pthread_t keyboard_thread, simulator_thread;
         g_items* local_object = (g_items*)data;
 	char buffer_text[60];
+
+	//Don't do anything if execution is complete
+	if(local_object->coherance_vars->execution_done) goto EXECUTION_DONE;
 
 	local_object->coherance_vars->step_or_run = RUN;
 	 
@@ -102,12 +109,12 @@ void run_button_click (GtkButton *button,
       gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
 	}
 	
+EXECUTION_DONE:
 	if(local_object->coherance_vars->execution_done) {
 		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	 	sprintf(buffer_text, "Execution of program complete");
 		gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
 		update_labels(local_object);
-		//shutdown_system(local_object->coherance_vars);	
 	}
 }
 
@@ -120,14 +127,17 @@ void step_button_click(GtkButton *button, gpointer   data)
 	local_object->coherance_vars->step_or_run = STEP;
 	char buffer_text[60];
 
+	//Don't do anything if execution is complete
+	if(local_object->coherance_vars->execution_done) goto EXECUTION_DONE;
+
 	execute_opcode(local_object->coherance_vars);
 	update_labels(local_object);
 
+EXECUTION_DONE:
 	if(local_object->coherance_vars->execution_done) {
 		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	 	sprintf(buffer_text, "Execution of program complete");
 		gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
-		//shutdown_system(local_object->coherance_vars);	
 	}
 }
 
