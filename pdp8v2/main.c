@@ -46,6 +46,7 @@ void run_no_GUI(int argc, char** argv) {
 	pthread_t keyboard_thread, simulator_thread;
 	struct shared_vars* shared_items = malloc( sizeof(struct shared_vars) );
 	init_system(argc, argv, shared_items);
+	shared_items->ran_once = 1;
 
 	thread1_return = pthread_create(&keyboard_thread, NULL, read_keyboard, (void*)(shared_items->kb_ptr));
 	if(thread1_return) {
@@ -393,6 +394,7 @@ void init_system(int argc, char* argv[], struct shared_vars* shared) {
 	shared->execution_done = 0;
 	shared->breakpoint_reached = 0;
 	shared->step_or_run = RUN;
+	shared->ran_once = 0;
 
 	mem_init();
 	fill_memory(argc, argv);
