@@ -13,11 +13,8 @@
 void spin_clicked (GtkSpinButton *spinbutton, gpointer user_data);
 void loadscreen(g_items* obj);
 void run_button_click (GtkButton *button1, gpointer   data);
-//void set_breakpt_cb(GtkWidget *button, gpointer   user_data);
-//void clear_breakpt_cb(GtkWidget *button, gpointer   user_data);
-//void set_tracepoint (GtkWidget *button, gpointer   user_data);
-//void clear_tracepoint(GtkWidget *button, gpointer   user_data);
 void step_button_click(GtkButton *button, gpointer   data);
+void exit_button_click(GtkButton *button, gpointer   data);
 void print_memory_location (GtkEntry *entry, gpointer  user_data);
 //Tracepoint and breakpoint functions
 void breakpoint_handler(GtkEntry *entry, gpointer  user_data);

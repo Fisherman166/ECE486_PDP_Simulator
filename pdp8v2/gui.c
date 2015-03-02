@@ -79,9 +79,10 @@ void create_buttons(g_items* obj)
 
     obj->run_button = gtk_button_new_with_label ("RUN");
 
-    //  obj->button3 = gtk_button_new_with_label ("Continue");
+     obj->exit_button = gtk_button_new_with_label ("Exit");
 
     obj->step = gtk_button_new_with_label ("Step");
+   
 
     /* Create an adjustment representing an adjustable bounded value */
     obj->adjustment = gtk_adjustment_new (0, 0, 31, 1, 0, 0);
@@ -104,8 +105,7 @@ void create_entrybox (g_items* obj)
 
 
 /********************************************************************
-  Create a grid and attach the button and progress bar
-  accordingly
+  Create a grid and attach the button 
 ********************************************************************/
 
 void set_grid(g_items * obj)
@@ -129,8 +129,8 @@ void set_grid(g_items * obj)
 
     /* set button location on the grid */
     gtk_grid_attach (GTK_GRID (obj->grid), obj->run_button ,1, 1, 1, 1);
-    //gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->button3, obj->run_button,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->step, obj->run_button,GTK_POS_RIGHT,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->exit_button, obj->step,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->run_button,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->spin_button, obj->pagenum,GTK_POS_BOTTOM,1,1);
 
@@ -312,6 +312,9 @@ void create_buttons_callbacks(g_items* obj)
     g_signal_connect (GTK_BUTTON (obj->step), "clicked",
                       G_CALLBACK (step_button_click), obj);
 
+   g_signal_connect (GTK_BUTTON (obj->exit_button), "clicked",
+                      G_CALLBACK (exit_button_click), obj);
+
     g_signal_connect (obj->spin_button,
                       "value-changed",
                       G_CALLBACK (spin_clicked),
@@ -320,17 +323,16 @@ void create_buttons_callbacks(g_items* obj)
 
 void activate (GtkApplication *app, gpointer    data)
 {
-    GtkWidget *window;
-
+    
     g_items * obj;
     obj = (g_items *) data;
 
     /******************************************************************
                         create window and set size
     ******************************************************************/
-    window = gtk_application_window_new (app);
-    gtk_window_set_default_size (GTK_WINDOW (window), 900, 800);
-    gtk_window_set_title (GTK_WINDOW (window), "ECE486/586 PDP8 Project");
+    obj->window = gtk_application_window_new (app);
+    gtk_window_set_default_size (GTK_WINDOW (obj->window), 900, 800);
+    gtk_window_set_title (GTK_WINDOW (obj->window), "ECE486/586 PDP8 Project");
 
 
 // call funtion that makes labels
@@ -351,8 +353,8 @@ void activate (GtkApplication *app, gpointer    data)
 	 obj->coherance_vars = malloc( sizeof(struct shared_vars) );
 	 init_system(obj->copy_argc, obj->copy_argv, obj->coherance_vars);	//Initialize the simulator
 
-    gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (obj->grid));
-    gtk_widget_show_all (window);
+    gtk_container_add (GTK_CONTAINER (obj->window), GTK_WIDGET (obj->grid));
+    gtk_widget_show_all (obj->window);
 }
 
 void update_labels(g_items* object) {

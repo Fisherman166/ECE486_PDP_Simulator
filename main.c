@@ -11,7 +11,7 @@
 #include "kb_input.h"
 #include "branch_trace.h"
 #include "debugger.h"
-
+#define MEMORY_DEBUG
 #define OP_CODE_MASK 07000		// bits 0,1,2
 
 static uint32_t clock_cycles = 0;

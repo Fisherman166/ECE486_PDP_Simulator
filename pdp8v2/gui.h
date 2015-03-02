@@ -9,9 +9,10 @@
 #include "cpu.h"
 
 typedef struct g_tag
-{
+{   
+    GtkWidget *window;
     GtkWidget *grid;
-    GtkWidget  * run_button, *step;
+    GtkWidget  * run_button, *step, * exit_button;
 // name of all labels
     GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label;
     GtkWidget *Mesages_label, *IR_label, *Link_label, *Memory_Buffer_label;

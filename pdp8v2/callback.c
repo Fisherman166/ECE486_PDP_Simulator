@@ -39,6 +39,18 @@ void loadscreen( g_items *obj)
 
 }
 
+
+void exit_button_click(GtkButton *button, gpointer   data)
+{
+  g_items* local_object = (g_items*)data;
+  shutdown_system(local_object->coherance_vars);
+  gtk_widget_destroy(GTK_WIDGET(local_object->window));
+}
+
+
+
+
+
 /******************************************************************************
 ** RUNS UNTIL A BREAKPOINT OR TRACEPOINT IS HIT
 ******************************************************************************/
@@ -95,7 +107,7 @@ void run_button_click (GtkButton *button,
 	 	sprintf(buffer_text, "Execution of program complete");
 		gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
 		update_labels(local_object);
-		shutdown_system(local_object->coherance_vars);	
+		//shutdown_system(local_object->coherance_vars);	
 	}
 }
 
@@ -115,7 +127,7 @@ void step_button_click(GtkButton *button, gpointer   data)
 		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	 	sprintf(buffer_text, "Execution of program complete");
 		gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
-		shutdown_system(local_object->coherance_vars);	
+		//shutdown_system(local_object->coherance_vars);	
 	}
 }
 
@@ -192,7 +204,7 @@ void breakpoint_handler(GtkEntry *entry,
 		breakpoint_to_remove(breakpoint_address, temp_ptr);
    }
 
-// clear screen to confirm entry
+   // clear screen to confirm entry
     gtk_entry_set_text (entry,"\0");
 }
 
