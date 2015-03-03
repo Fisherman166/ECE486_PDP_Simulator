@@ -137,7 +137,7 @@ void KRB(regs* registers, struct keyboard* kb_state) {
 	registers->AC = 0;
 	pthread_mutex_lock(&keyboard_mux);
 		kb_state->input_flag = 0;
-		registers->AC |= kb_state->input_char << 4;
+		if(kb_state->input_char != '~') registers->AC |= kb_state->input_char << 4;
 	pthread_mutex_unlock(&keyboard_mux);
 }
 

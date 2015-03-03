@@ -37,7 +37,7 @@ void* read_keyboard(void* kb_layout) {
       }
 
 		pthread_mutex_lock(&keyboard_mux);
-		if(local_kb->quit) break;
+		if(local_kb->quit) kb_return = 1;
 		pthread_mutex_unlock(&keyboard_mux);
 	}
    nonblocking(NB_DISABLE);
