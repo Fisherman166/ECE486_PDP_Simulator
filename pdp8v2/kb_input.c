@@ -15,7 +15,6 @@
 void* read_keyboard(void* kb_layout) {
    struct keyboard* local_kb = (struct keyboard*)kb_layout;
    int kb_return = 0;
-   int local_key_press = 0;
    char inputted_char;
 
 	//Enable reading chars without hitting enter
@@ -23,35 +22,22 @@ void* read_keyboard(void* kb_layout) {
 
 	//Begin the main reading loop
    while(!kb_return) {
-   	usleep(2);
       kb_return = kbhit();	//Check if key pressed
 
-		//Clear the keyboard flag to simulate missing input
-		if(local_key_press) {
-			local_key_press = 0;
-		
-			pthread_mutex_lock(&keyboard_mux);
-			local_kb->input_flag = 0;
-			pthread_mutex_unlock(&keyboard_mux);
-		}
-	
 		//Check to see if key was pressed
       if (kb_return != 0) {
-	   	local_key_press = 1;
 	   	inputted_char = fgetc(stdin);
 
 	   	pthread_mutex_lock(&keyboard_mux);
          local_kb->input_char = inputted_char;
 	    	local_kb->input_flag = 1;
 	    	pthread_mutex_unlock(&keyboard_mux);
-	    	//printf("\b");
-			//fflush(stdout);
 
          kb_return = 0;
       }
 
 		pthread_mutex_lock(&keyboard_mux);
-		if(local_kb->quit) kb_return = 1;
+		if(local_kb->quit) break;
 		pthread_mutex_unlock(&keyboard_mux);
 	}
    nonblocking(NB_DISABLE);
