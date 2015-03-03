@@ -364,6 +364,9 @@ void activate (GtkApplication *app, gpointer    data)
 	 //Init the system
 	 obj->coherance_vars = malloc( sizeof(struct shared_vars) );
 	 init_system(obj->copy_argc, obj->copy_argv, obj->coherance_vars);	//Initialize the simulator
+	 //Start the memory page window at page 0
+	 print_memory_page(0);
+    loadscreen(obj);
 
     gtk_container_add (GTK_CONTAINER (obj->window), GTK_WIDGET (obj->grid));
     gtk_widget_show_all (obj->window);

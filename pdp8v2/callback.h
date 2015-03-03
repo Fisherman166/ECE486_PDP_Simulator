@@ -16,6 +16,8 @@ void run_button_click (GtkButton *button1, gpointer   data);
 void step_button_click(GtkButton *button, gpointer   data);
 void exit_button_click(GtkButton *button, gpointer   data);
 void print_memory_location (GtkEntry *entry, gpointer  user_data);
+void loadscreen_trace(g_items*);
+void loadscreen_mem_trace(g_items*);
 
 //Tracepoint and breakpoint functions
 void breakpoint_handler(GtkEntry *entry, gpointer  user_data);

@@ -395,6 +395,7 @@ void init_system(int argc, char* argv[], struct shared_vars* shared) {
 	shared->breakpoint_reached = 0;
 	shared->step_or_run = RUN;
 	shared->ran_once = 0;
+	shared->branch_trace = 1;
 
 	mem_init();
 	fill_memory(argc, argv);

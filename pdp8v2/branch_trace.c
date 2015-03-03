@@ -51,6 +51,25 @@ void write_branch_trace(uint16_t PC, uint16_t target_address, const char* opcode
 				target_address, opcode, result_text);
 }
 
+/******************************************************************************
+** WRITES TO THE BRANCH TRACE FILE IN THE MIDDLE OF THE PROGRAM
+******************************************************************************/
+void update_branch_trace(void) {
+	const char* trace_name = "branch_trace.txt";
+
+	fclose(branch_file);
+	branch_file = fopen(trace_name, "a");
+		
+	#ifdef TRACE_DEBUG
+	if(branch_file == NULL) {
+		printf("ERROR: Failed to open branch trace file for append.\n");
+	}
+	else {
+		printf("Branch trace file opened successfully for append\n");
+	}
+	#endif
+}
+
 int close_branch_trace(void) {
 	int retval;
 

@@ -21,6 +21,7 @@ extern const char* const sub_text;
 
 int branch_trace_init(void);
 void write_branch_trace(uint16_t, uint16_t, const char*, uint8_t);
+void update_branch_trace(void);
 int close_branch_trace(void);
 
 #endif

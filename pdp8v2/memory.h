@@ -49,6 +49,7 @@ FILE *trace_file;
 void mem_init(void);
 void mem_print_valid(void);
 int trace_init();
+void update_memory_trace(void);
 int trace_close();
 uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch);
 void mem_write(uint16_t to_convert, uint16_t data);

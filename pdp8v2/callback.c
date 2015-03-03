@@ -19,9 +19,9 @@ extern uint8_t tracepoint_number;	//From memory.h
 void spin_clicked (GtkSpinButton *spinbutton,
                    gpointer       user_data)
 {
-    int page_number = gtk_spin_button_get_value_as_int (spinbutton);
-	 print_memory_page(page_number);
-    loadscreen((g_items*)user_data);
+   int memory_page = gtk_spin_button_get_value_as_int (spinbutton);
+	print_memory_page(memory_page);
+   loadscreen((g_items*)user_data);
 }
 
 
@@ -63,7 +63,7 @@ void run_button_click (GtkButton *button,
 {
 	int thread1_return, thread2_return;
 	pthread_t keyboard_thread, simulator_thread;
-        g_items* local_object = (g_items*)data;
+   g_items* local_object = (g_items*)data;
 	char buffer_text[60];
 
 	//Don't do anything if execution is complete
@@ -90,9 +90,11 @@ void run_button_click (GtkButton *button,
 	pthread_join(simulator_thread, NULL);
 
 	//Check after thread exits
+	loadscreen_trace(local_object);	//update the trace window
+	update_labels(local_object);
+
 	if(local_object->coherance_vars->breakpoint_reached) {
 		local_object->coherance_vars->breakpoint_reached = 0;
-		update_labels(local_object);
 
 		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	 	sprintf(buffer_text, "Breakpoint reached at address %04o", 
@@ -102,7 +104,6 @@ void run_button_click (GtkButton *button,
 
 	if(tracepoint_reached) {
 		tracepoint_reached = 0;
-		update_labels(local_object);
 
 		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	 	sprintf(buffer_text, "Tracepoint at address %04o touched by instruction at address %04o",
@@ -136,6 +137,7 @@ void step_button_click(GtkButton *button, gpointer   data)
 	if(local_object->coherance_vars->execution_done) goto EXECUTION_DONE;
 
 	execute_opcode(local_object->coherance_vars);
+	loadscreen_trace(local_object);	//update the trace window
 	update_labels(local_object);
 
 EXECUTION_DONE:
@@ -146,54 +148,62 @@ EXECUTION_DONE:
 	}
 }
 
+/******************************************************************************
+** PRINT OUT THE BRANCH TRACE FILE TO TEXT WINDOW
+******************************************************************************/
+void loadscreen_trace(g_items* local_object) {
+	gchar *contents;
+   gsize length;
+	
+	if(local_object->coherance_vars->branch_trace) {
+		update_branch_trace();
+		local_object->FP = g_file_new_for_path ("branch_trace.txt");
+	}
+	else {
+		update_memory_trace();
+		local_object->FP = g_file_new_for_path ("memory_trace.txt");
+	}
+
+	if (g_file_load_contents (local_object->FP, NULL, &contents, &length, NULL, NULL))
+   {
+   	gtk_text_buffer_set_text (local_object->trace_text_buffer, contents, length);
+      g_free (contents); 
+   }
+   g_free (local_object->fname); 
+}
+
 /******************************************************************* *
                              Radio Buttons
 ********************************************************************/
-/* Sean below rou hace two option
-  1) you can have a different callback for each button
-      - if that is the case you must same default values 
-        in gui.c line 288
-  2) you can have the same call back and test the button 
-     - for that approach you need if(button)... else if(button2)
-       and values must be different in gui.c 288 ELSE IF is important
-
-  to change callback functions go to gui.c line 305
-*/
 void Display_Mem_trace (GtkWidget *button, gpointer   user_data)
 {
+    g_items* local_object = (g_items *) user_data;
+
     if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
     {
+		  local_object->coherance_vars->branch_trace = 0;
+		  loadscreen_trace(local_object);
+		  #ifdef GUI_DEBUG
         g_print ("\nDisplay MEM Trace!\n");
+		  #endif
     }
 
 }
-
 
 void Diplay_branch_trace(GtkWidget *button, gpointer   user_data)
 {
-    gchar *contents;
-    gsize length;
-    g_items * local_object;
-    local_object = (g_items *) user_data;
+    g_items* local_object = (g_items *) user_data;
 
- if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
-    {
-    local_object->FP = g_file_new_for_path ("MEMORY_PAGE.txt");
-
-    if (g_file_load_contents (local_object->FP, NULL, &contents, &length, NULL, NULL))
-    {
-        gtk_text_buffer_set_text (local_object->trace_text_buffer, contents, length);
-        g_free (contents); 
-      g_print ("\nDisplay Branch Trace!\n");
-    }
-    g_free (local_object->fname);      
-   
-    }
+ 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button))) {
+		local_object->coherance_vars->branch_trace = 1;
+		loadscreen_trace(local_object);
+		#ifdef GUI_DEBUG
+     	g_print ("\nDisplay Branch Trace!\n");
+		#endif
+  	}
 }
 
-
-
-/******************************************************************* *
+/********************************************************************
                              Text Boxes
 ********************************************************************/
 
@@ -222,6 +232,9 @@ void breakpoint_handler(GtkEntry *entry,
     gtk_entry_set_text (entry,"\0");
 }
 
+/******************************************************************************
+** OUTPUTS THE MEMORY VALUE AT A SPECIFIED LOCATION IN THE MESSAGE BOX
+******************************************************************************/
 void print_memory_location (GtkEntry *entry, gpointer  user_data)
 {
     const int maximum_address = 07777;	//Maximum address allowed in PDP8

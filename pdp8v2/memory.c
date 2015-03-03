@@ -143,6 +143,23 @@ return ret_val;
 }/*end trace_init()*/
 
 /******************************************************************************
+** WRITES TO THE MEMORY TRACE FILE IN THE MIDDLE OF THE PROGRAM
+******************************************************************************/
+void update_memory_trace(void) {
+	fclose(trace_file);
+	trace_file = fopen(trace_name, "a");
+		
+	#ifdef TRACE_DEBUG
+	if(trace_file == NULL) {
+		printf("ERROR: Failed to open memory trace file for append.\n");
+	}
+	else {
+		printf("Branch trace file opened successfully for append\n");
+	}
+	#endif
+}
+
+/******************************************************************************
 ** CALL THIS FUNCTION AT COMPLETION OF PROGRAM TO CLOSE TRACEFILE
 ** TODO: MAY NOT BE A BAD IDEA TO OPEN/CLOSE EACH TIME WE WRITE OUT?
 ******************************************************************************/
