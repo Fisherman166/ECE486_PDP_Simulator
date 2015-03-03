@@ -40,6 +40,7 @@ typedef struct shared_vars {
 	uint8_t step_or_run;
 	uint8_t execution_done;
 	uint8_t ran_once;
+	uint8_t branch_trace;	//Will be a 1 if branch trace last screen loaded
 } shared_vars;
 
 int main(int argc, char* argv[]);
