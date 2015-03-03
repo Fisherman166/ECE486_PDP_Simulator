@@ -149,50 +149,49 @@ EXECUTION_DONE:
 /******************************************************************* *
                              Radio Buttons
 ********************************************************************/
-// Note: Must likely we are not going to use them but I thought
-// Seeing the function iside the if was useful mostlike to be used
-// in conjunction with trace and breakpoint input
-/*
-void set_breakpt_cb(GtkWidget *button,
-                    gpointer   user_data)
-{
-    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
-    {
-        g_print ("\nSET BKP!\n");
-    }
+/* Sean below rou hace two option
+  1) you can have a different callback for each button
+      - if that is the case you must same default values 
+        in gui.c line 288
+  2) you can have the same call back and test the button 
+     - for that approach you need if(button)... else if(button2)
+       and values must be different in gui.c 288 ELSE IF is important
 
-}
-
-
-void clear_breakpt_cb(GtkWidget *button,
-                      gpointer   user_data)
-{
-    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
-    {
-        g_print ("\nClear BKP!\n");
-    }
-}
-
-
-void set_tracepoint (GtkWidget *button,
-                     gpointer   user_data)
-{
-    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
-    {
-        g_print ("\nSET tracepoint!\n");
-    }
-
-}
-
-
-void clear_tracepoint(GtkWidget *button, gpointer   user_data)
-{
-    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
-    {
-        g_print ("\nClear Tracepoint!\n");
-    }
-}
+  to change callback functions go to gui.c line 305
 */
+void Display_Mem_trace (GtkWidget *button, gpointer   user_data)
+{
+    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
+    {
+        g_print ("\nDisplay MEM Trace!\n");
+    }
+
+}
+
+
+void Diplay_branch_trace(GtkWidget *button, gpointer   user_data)
+{
+    gchar *contents;
+    gsize length;
+    g_items * local_object;
+    local_object = (g_items *) user_data;
+
+ if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
+    {
+    local_object->FP = g_file_new_for_path ("MEMORY_PAGE.txt");
+
+    if (g_file_load_contents (local_object->FP, NULL, &contents, &length, NULL, NULL))
+    {
+        gtk_text_buffer_set_text (local_object->trace_text_buffer, contents, length);
+        g_free (contents); 
+      g_print ("\nDisplay Branch Trace!\n");
+    }
+    g_free (local_object->fname);      
+   
+    }
+}
+
+
 
 /******************************************************************* *
                              Text Boxes

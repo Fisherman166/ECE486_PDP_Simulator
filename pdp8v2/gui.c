@@ -124,7 +124,7 @@ void set_grid(g_items * obj)
 
 //***********************************************************(left ,Top, width, height)
     gtk_widget_set_vexpand (obj->scrolled_window, TRUE);
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_window ,1, 4, 2, 10);
+    gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_window ,1, 4, 2, 5);
 
 
     /* set button location on the grid */
@@ -174,8 +174,11 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_SetTr, obj->Memory_Buffer_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_ClrTr, obj->radioB_SetTr,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Trace_entry, obj->radioB_ClrTr,GTK_POS_BOTTOM,1,1);
-   
 
+// buttons at the buttom of text window
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->branch_trace, obj->scrolled_window,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_trace, obj->branch_trace,GTK_POS_RIGHT,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->trace_text_window, obj->branch_trace,GTK_POS_BOTTOM,2,10); 
 
 // message window
     
@@ -204,12 +207,15 @@ void create_buffers(g_items * obj)
     obj->messages_txt = gtk_text_view_new_with_buffer (obj->msgbuff);
     gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (obj->messages_txt), GTK_WRAP_WORD);
 
+    obj->trace_text_buffer = gtk_text_buffer_new (NULL);   //input buffer
+    obj->trace_text_view = gtk_text_view_new_with_buffer (obj->trace_text_buffer);
+    gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (obj->trace_text_view), GTK_WRAP_WORD);
+
 }
 
 
 void create_text_boxes (g_items * obj)
 {
-// main box to the left
     /* Create the scrolled window. Usually NULL is passed for both parameters so
      * that it creates the horizontal/vertical adjustments automatically. Setting
      * the scrollbar policy to automatic allows the scrollbars to only show up
@@ -235,15 +241,18 @@ void create_text_boxes (g_items * obj)
                                     GTK_POLICY_AUTOMATIC,
                                     GTK_POLICY_AUTOMATIC);
 
-
-    /* The function directly below is used to add children to the scrolled window
-     * with scrolling capabilities (e.g text_view), otherwise,
-     * gtk_scrolled_window_add_with_viewport() would have been used
-     */
     gtk_container_add (GTK_CONTAINER (obj->scrolled_msg), obj->messages_txt);
     gtk_container_set_border_width (GTK_CONTAINER (obj->scrolled_msg), 5);
 
 
+   // here set trace memory and branch trace memory text window
+    obj->trace_text_window = gtk_scrolled_window_new (NULL, NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (obj->trace_text_window),
+                                    GTK_POLICY_AUTOMATIC,
+                                    GTK_POLICY_AUTOMATIC);
+
+    gtk_container_add (GTK_CONTAINER (obj->trace_text_window), obj->trace_text_view);
+    gtk_container_set_border_width (GTK_CONTAINER (obj->trace_text_window), 5);
 
 
 }
@@ -256,9 +265,11 @@ void create_radio_buttons(g_items* obj)
                         (GTK_RADIO_BUTTON (obj->radio_set_BP), "Clear Breakpoint");
 
     obj->radioB_SetTr =gtk_radio_button_new_with_label(NULL, "Set Tracepoint");
-
     obj->radioB_ClrTr =gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (obj->radioB_SetTr), "Clear Tracepoint");
 
+
+    obj->memory_trace =gtk_radio_button_new_with_label(NULL, "Memory Trace");
+    obj->branch_trace =gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (obj->memory_trace), "Branch Trace");
 
 }
 
@@ -272,6 +283,12 @@ void set_radio_buttons( g_items *obj)
 
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radioB_SetTr), TRUE);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->radioB_ClrTr), FALSE);
+
+  
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->memory_trace), TRUE);
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->branch_trace), TRUE);
+
+
 }
 void entry_box_cb(g_items *obj)
 {
@@ -284,24 +301,18 @@ void entry_box_cb(g_items *obj)
                       G_CALLBACK (print_memory_location), obj);
 
 }
-/*
+
 void radio_button_callbacks( g_items * obj)
 {
+  // trace points
+   g_signal_connect (GTK_TOGGLE_BUTTON (obj->memory_trace), "toggled",
+                      G_CALLBACK (Display_Mem_trace),  obj);
 
-    g_signal_connect (GTK_TOGGLE_BUTTON (obj->radio_set_BP), "toggled",
-                      G_CALLBACK (set_breakpt_cb),  obj);
-    g_signal_connect (GTK_TOGGLE_BUTTON (obj->radio_clear_BP), "toggled",
-                      G_CALLBACK (clear_breakpt_cb),  obj);
-
-// trace points
-    g_signal_connect (GTK_TOGGLE_BUTTON (obj->radioB_SetTr), "toggled",
-                      G_CALLBACK (set_tracepoint),  obj);
-    g_signal_connect (GTK_TOGGLE_BUTTON (obj->radioB_ClrTr), "toggled",
-                      G_CALLBACK (clear_tracepoint),  obj);
-
-
+   
+    g_signal_connect (GTK_TOGGLE_BUTTON (obj->branch_trace), "toggled",
+                      G_CALLBACK (Diplay_branch_trace),  obj);
 }
-*/
+
 
 void create_buttons_callbacks(g_items* obj)
 {
@@ -312,13 +323,14 @@ void create_buttons_callbacks(g_items* obj)
     g_signal_connect (GTK_BUTTON (obj->step), "clicked",
                       G_CALLBACK (step_button_click), obj);
 
-   g_signal_connect (GTK_BUTTON (obj->exit_button), "clicked",
+    g_signal_connect (GTK_BUTTON (obj->exit_button), "clicked",
                       G_CALLBACK (exit_button_click), obj);
 
     g_signal_connect (obj->spin_button,
                       "value-changed",
                       G_CALLBACK (spin_clicked),
                       obj);
+
 }
 
 void activate (GtkApplication *app, gpointer    data)
@@ -344,7 +356,7 @@ void activate (GtkApplication *app, gpointer    data)
     set_radio_buttons(obj);
     create_text_boxes(obj);
     create_entrybox (obj);
-  //  radio_button_callbacks(obj);
+    radio_button_callbacks(obj);
     create_buttons_callbacks(obj);
     entry_box_cb(obj);
     set_grid(obj);

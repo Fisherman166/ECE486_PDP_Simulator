@@ -23,17 +23,20 @@ typedef struct g_tag
     GtkWidget *IR_value, *Link_value, *Memory_Buffer_value;
 
 // windows, buffers
-    GtkWidget *scrolled_window, * scrolled_msg;
+    GtkWidget *scrolled_window, * scrolled_msg, *text_view, *messages_txt;
+    GtkWidget *trace_text_window, *trace_text_view;
     GtkEntryBuffer * breakpoints;
-    GtkTextBuffer *buffer, *msgbuff;
+    GtkTextBuffer *buffer, *msgbuff, *trace_text_buffer;
+    
 
-// Breakpoint and Tace windows
-    GtkWidget *text_view, *BreakP_entry,*Trace_entry;
-    GtkWidget *messages_txt, *memory_entry;
+// Breakpoint and Trace windows
+    GtkWidget  *BreakP_entry,*Trace_entry;
+    GtkWidget  *memory_entry;
 
 // Buttons 
     GtkWidget *spin_button;
     GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;   // radio buttons
+    GtkWidget * memory_pages, *memory_trace, *branch_trace;
     GtkAdjustment *adjustment;
   
 // file descripto for screen

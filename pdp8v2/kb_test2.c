@@ -23,28 +23,28 @@ int main(int argc, char* argv[])
     int fevdev = 0;
     int result = 0;
     int size = sizeof(struct input_event);
-   // int rd;
+    int req;
     int value;
     char name[256] = "Unknown";
     char *device = "/dev/input/event2";
     char inputted_char;
+    int opt=1;
     uint8_t test;
 //    int kb_request= 0;
-
+    req=1;
     fevdev = open(device, O_RDONLY, O_NONBLOCK );
     if (fevdev == -1) {
         printf("Failed to open event device.\n");
         exit(1);
     }
-
+    
     result = ioctl(fevdev, EVIOCGNAME(sizeof(name)), name);
     printf ("Reading From : %s (%s)\n", device, name);
+        result= ioctl(fevdev, FIONBIO, &opt);
+     printf("value of req: %d\n",req);
 
-  
-   //   printf ( "enter kb value: \n");
-   //   scanf( "%d", & kb_request);
     
-      while (1)
+      while (req==1)
       {
         if ((read(fevdev, ev, size * 64)) < size) {
             break;
@@ -55,10 +55,10 @@ int main(int argc, char* argv[])
         if (value != ' ' && ev[1].value == 1 && ev[1].type == EV_KEY) {
             
 	    printf ("\t code: %d ", ev[1].code);
-            
-            result = ioctl(fevdev, EVIOCGKEY(sizeof(test)), &test);
-        
- 	    printf ("\t type: %d \t result %d \n", test,result);
+            result=getchar();
+           // result = ioctl(fevdev, EVIOCGKEY(sizeof(test)), &test);
+            req=0;
+ 	    printf ("\t type: %d \t result %c \n", test,result);
         }
  
      }
