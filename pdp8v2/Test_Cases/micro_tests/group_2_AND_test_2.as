@@ -44,9 +44,9 @@ Main,			/ Test skips working first
 / Data Section
 /
 *0250 			/ place data at address 0250
-A, 0	 		/ will get 1 if spa fails
-B, 0 			/ will get 1 if sna fails
-C, 0			/ will get 1 if szl fails
+A, 0	 		/ should not change
+B, 0 			/ should not change
+C, 0			/ should not change
 D, 77			/ will get 7777 when spa fails
 E, 77			/ will get 0 when sna fails
 F, 77			/ will get 0 when szl fails	

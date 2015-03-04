@@ -29,7 +29,7 @@ Main,			/ Test skips working first
 / Data Section
 /
 *0250 			/ place data at address 0250
-A, 0	 		/ will get 1 if spa fails
+A, 0	 		/ should not change
 B, 77 			/ will get 7777 when sna fails
 C, 77			/ will get 0 when szl fails
 D, 77			/ will get 1 when spa fails

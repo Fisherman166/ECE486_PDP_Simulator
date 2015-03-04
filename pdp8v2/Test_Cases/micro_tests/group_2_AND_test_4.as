@@ -30,10 +30,10 @@ Main,			/ Test SKP
 / Data Section
 /
 *0250 			/ place data at address 0250
-A, 0	 		/ will get 1 if spa fails
+A, 0	 		/ should not change
 B, 77 			/ will get 0 when sma fails
 C, 77			/ will get OCR contents
-D, 77			/ will not change due to halt
-E, 77			/ will not change due to halt
+D, 77			/ should not change
+E, 77			/ should not change
 
 $Main 			/ End of Program; Main is entry point

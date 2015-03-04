@@ -26,9 +26,9 @@ Main,			/ Test combos sma sza snl at the same time
 / Data Section
 /
 *0250 			/ place data at address 0250
-B, 0 			/ will get -1 if sma sza snl fails
-C, 1			/ will get 0 if sma sza snl fails
-D, 2			/ will get 1 if sma sza snl fails
+B, 0 			/ should not change
+C, 1			/ should not change
+D, 2			/ should not change
 E, 3			/ will get 1 when sma sza snl fails
 
 

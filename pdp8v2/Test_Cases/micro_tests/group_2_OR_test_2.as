@@ -42,14 +42,14 @@ Main,			/ Test combos of sma and sza
 / Data Section
 /
 *0250 			/ place data at address 0250
-B, 0 			/ will get -1 if sma sza fails
-C, 1			/ will get 0 if sma sza fails
-D, 2			/ will get 1 if sma sza fails
-E, 3			/ will get -1 when sma snl fails
-F, 4			/ will get 0 when sma snl fails	
+B, 0 			/ should not change
+C, 1			/ should not change
+D, 2			/ will get 1 when sma sza fails
+E, 3			/ should not change
+F, 4			/ should not change
 G, 5			/ will get 1 when sma snl fails
-H, 6
-I, 7
-J, 10
+H, 6			/ should not change
+I, 7			/ should not change
+J, 10			/ will get 1 when sza snl fails
 
 $Main 			/ End of Program; Main is entry point
