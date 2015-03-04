@@ -37,6 +37,7 @@ typedef struct shared_vars {
 	regs *registers_ptr;
    struct keyboard* kb_ptr;
 	uint8_t breakpoint_reached;
+	uint8_t breakpoint_serviced;	//Used to run again after a breakpoint was reached
 	uint8_t step_or_run;
 	uint8_t execution_done;
 	uint8_t ran_once;

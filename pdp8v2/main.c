@@ -102,10 +102,14 @@ void execute_opcode(struct shared_vars* shared){
 
 	#ifdef GUI
 	//Don't stop on a breakpoint when stepping
-	if( (current_instruction & MEMORY_BREAKPOINT_BIT) && !(shared->step_or_run) ) {
+	//Breakpoint serviced allows a user to run again a after a breakpoint was reached
+	if( (current_instruction & MEMORY_BREAKPOINT_BIT) && !(shared->step_or_run) &&
+			!(shared->breakpoint_serviced) ) {
 		shared->breakpoint_reached = 1;
-		printf("Breakpoint Reached at address %04o\n", registers->PC);
 		goto EXIT;
+	}
+	else {
+		shared->breakpoint_serviced = 0;
 	}
 	#endif
 

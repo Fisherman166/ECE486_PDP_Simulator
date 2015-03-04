@@ -95,6 +95,7 @@ void run_button_click (GtkButton *button,
 
 	if(local_object->coherance_vars->breakpoint_reached) {
 		local_object->coherance_vars->breakpoint_reached = 0;
+		local_object->coherance_vars->breakpoint_serviced = 1;
 
 		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	 	sprintf(buffer_text, "Breakpoint reached at address %04o", 
