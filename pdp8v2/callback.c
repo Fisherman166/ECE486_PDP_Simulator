@@ -19,9 +19,10 @@ extern uint8_t tracepoint_number;	//From memory.h
 void spin_clicked (GtkSpinButton *spinbutton,
                    gpointer       user_data)
 {
-   int memory_page = gtk_spin_button_get_value_as_int (spinbutton);
-	print_memory_page(memory_page);
-   loadscreen((g_items*)user_data);
+	g_items* local_object = (g_items*)user_data;
+   local_object->coherance_vars->last_mem_page= gtk_spin_button_get_value_as_int (spinbutton);
+	print_memory_page(local_object->coherance_vars->last_mem_page);
+   loadscreen(local_object);
 }
 
 
@@ -90,8 +91,11 @@ void run_button_click (GtkButton *button,
 	pthread_join(simulator_thread, NULL);
 
 	//Check after thread exits
+	//Update the screen values
 	loadscreen_trace(local_object);	//update the trace window
 	update_labels(local_object);
+	print_memory_page(local_object->coherance_vars->last_mem_page);
+   loadscreen(local_object);
 
 	if(local_object->coherance_vars->breakpoint_reached) {
 		local_object->coherance_vars->breakpoint_reached = 0;
@@ -138,8 +142,12 @@ void step_button_click(GtkButton *button, gpointer   data)
 	if(local_object->coherance_vars->execution_done) goto EXECUTION_DONE;
 
 	execute_opcode(local_object->coherance_vars);
+
+	//Update the screen values
 	loadscreen_trace(local_object);	//update the trace window
 	update_labels(local_object);
+	print_memory_page(local_object->coherance_vars->last_mem_page);
+   loadscreen(local_object);
 
 EXECUTION_DONE:
 	if(local_object->coherance_vars->execution_done) {

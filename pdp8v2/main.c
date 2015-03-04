@@ -400,6 +400,7 @@ void init_system(int argc, char* argv[], struct shared_vars* shared) {
 	shared->step_or_run = RUN;
 	shared->ran_once = 0;
 	shared->branch_trace = 1;
+	shared->last_mem_page = 0;
 
 	mem_init();
 	fill_memory(argc, argv);
