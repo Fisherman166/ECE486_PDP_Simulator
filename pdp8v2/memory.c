@@ -6,9 +6,11 @@
 ** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
 ******************************************************************************/
 #include "memory.h"
+#include "cpu.h"
 
 uint8_t tracepoint_reached;
 uint8_t tracepoint_number;
+extern regs* registers;
 
 /******************************************************************************
 ** 	READ FROM MEMORY
@@ -300,17 +302,45 @@ void print_memory_page(int page_number) {
 	uint16_t data_values[8];
 	FILE* memory_print_file;
 	char* memory_print_file_name = "MEMORY_PAGE.txt";
-
+#ifdef USE_LIST_FILE
+	unsigned int i;
+#endif
+	
 	memory_print_file = fopen(memory_print_file_name, "w");
 	
 	if(memory_print_file == NULL) {
 		printf("Error opening MEMORY_PAGE.txt\n");
 	}
 	else {
+#ifdef USE_LIST_FILE
+		for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
+			if(memory[i] & MEMORY_VALID_BIT){
+				// first print breakpoint, tracepoint bits
+				if(memory[i] & MEMORY_BREAKPOINT_BIT){
+					fprintf(memory_print_file, "b");
+				} else {
+					fprintf(memory_print_file, "   ");
+				}
+				if(memory[i] & MEMORY_TRACEPOINT_BIT){
+					fprintf(memory_print_file, "t ");
+				} else {
+					fprintf(memory_print_file, "   ");
+				}
+				// print current PC indicator, or a bunch of spaces
+				if(i == registers->PC){
+					fprintf(memory_print_file, "==> ");
+				} else {
+					fprintf(memory_print_file, "         ");
+				}
+				
+				fprintf(memory_print_file, "%04o %04o\n", i, memory[i] & MEMORY_MASK);
+			}
+		}
+#else
 		//Move the 5 bit page number to the page bits a PDP8 address
 		page_base_address = (page_number & 0x1F) << 7;
 		page_max_address = ((page_number + 1) & 0x3F) << 7;
-
+		
 		fprintf(memory_print_file, "    \t|            LSB OCTAL DIGIT OF ADDRESS             |\n");
 		fprintf(memory_print_file, "    \t|-----------------------------------------------------------------------|\n");
 		fprintf(memory_print_file, "    \t|   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |\n");
@@ -332,6 +362,7 @@ void print_memory_page(int page_number) {
 					data_values[7]);
 		}
 		fprintf(memory_print_file, "       |------------------------------------------------------------------------|\n");
+#endif
 	}
 
 	fclose(memory_print_file);

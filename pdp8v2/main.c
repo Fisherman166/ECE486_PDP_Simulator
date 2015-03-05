@@ -450,7 +450,7 @@ void fill_memory(int argc, char* argv[]) {
 	FILE* program_file;
 	uint16_t high_byte, low_byte, word_value;
 	static uint16_t address = 0;
-	char list_file[80];
+	char list_filename[256];
 
 	int return1, return2;
 	return1 = return2 = 0;
@@ -460,9 +460,10 @@ void fill_memory(int argc, char* argv[]) {
 		trace_name = argv[2];
 		
 		// Ken's code, will move to a better spot shortly
-		strcpy(list_file, argv[1]);
-		strcpy(list_file + strlen(argv[1]) - 3, "lst");
-		printf("list file name is: %s\n", list_file);
+		// Determine lst filename by replacing .obj with .lst
+		strcpy(list_filename, argv[1]);
+		strcpy(list_filename + strlen(argv[1]) - 3, "lst");
+		printf("list file name is: %s\n", list_filename);
 	}
 	else {
 		printf("Please provide a valid program filename to use with the simulator.\n");
@@ -508,6 +509,8 @@ void fill_memory(int argc, char* argv[]) {
 			printf("\n");
 		#endif
 	}/*end for*/
+
+	// Load in list file
 
 	fclose(program_file);
 }
