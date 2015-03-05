@@ -239,5 +239,37 @@ void remove_breakpoint(uint16_t breakpoint_address) {
 }
 
 /******************************************************************************
+ * 	PRINT BREAKPOINTS
+ * 	TODO: MOVE THIS TO MEMORY.C?
+ *****************************************************************************/
+void print_breakpoints(uint16_t *memory, char *breakpoint_file){
+	//FILE * b_points;	//declare locally or in memory.h?
+	int index=0;
+	//open file
+	b_points = fopen(breakpoint_file, "w");
+			
+	if(b_points==NULL){
+	#ifdef DEBUG
+		printf("File open error, does it exist?\n");
+	#endif
+	}else{
+	#ifdef DEBUG
+		printf("File opened successfully!\n");
+	#endif
+	//walk memory 	
+		for(index; index<(PAGES*WORDS_PER_PAGE); index++){
+			//if BREAKPOINT bit set, write to file
+			if((memory[index] & MEMORY_BREAKPOINT_BIT)){
+				fprintf(b_points, "%o,", memory[index]);
+			#ifdef DEBUG
+				printf("Wrote: %u to: %s\n", memory[index], breakpoint_file);
+			#endif
+			}//end if
+		}//end for
+	//close file
+	fclose(b_points);
+	}//end else
+}//end print_breakpoints
+/******************************************************************************
  * 	EOF
  *****************************************************************************/
