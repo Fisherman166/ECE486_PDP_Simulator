@@ -44,6 +44,7 @@
 uint16_t memory[PAGES * WORDS_PER_PAGE];
 char *trace_name;
 FILE *trace_file;
+FILE *b_points;
 
 // Prototypes
 void mem_init(void);
@@ -58,7 +59,7 @@ uint16_t currentpage(uint16_t, regs*);
 uint8_t EffAddCalc(uint16_t, regs*);
 void set_breakpoint(uint16_t);
 void remove_breakpoint(uint16_t);
-
+void print_breakpoints(uint16_t *, char *);
 /******************************************************************************
 **	EOF
 ******************************************************************************/
