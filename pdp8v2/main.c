@@ -402,6 +402,9 @@ void init_system(int argc, char* argv[], struct shared_vars* shared) {
 	shared->branch_trace = 1;
 	shared->last_mem_page = 0;
 
+	//For RAND in TSF
+	srand(time(NULL));
+
 	mem_init();
 	fill_memory(argc, argv);
 

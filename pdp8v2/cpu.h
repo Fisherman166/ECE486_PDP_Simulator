@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <time.h>
 #include "kb_input.h"
 
 #define CUTOFF_MASK 0xFFF	/* Bitmask to keep registers/memory at 12 bits */

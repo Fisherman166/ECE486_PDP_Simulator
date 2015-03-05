@@ -154,13 +154,22 @@ void TFL(regs* registers) {
 void TSF(regs* registers) {
 	uint8_t taken = 0;
 	uint16_t current_PC = registers->PC;
+	static int printer_counter = 0;	//Initalize at 0 only
 
-	if(registers->print_flag) {
-		registers->PC++;
-		taken = 1;
+	//If printer counter is 0, then choose random number
+	//for it to countdown to 0 with.  When 0 is reached, then
+	//the printer flag is "set"
+	if(!printer_counter) {
+		printer_counter = (rand() % 10) + 1; //1 to 10 
 	}
-
-	write_branch_trace(current_PC, current_PC + 1, conditional_text, taken);
+	else {
+		printer_counter--;
+		if(!printer_counter) {
+			registers->PC++;
+			taken = 1;
+			write_branch_trace(current_PC, current_PC + 1, conditional_text, taken);
+		}
+	}
 }
 
 /******************************************************************************
@@ -186,6 +195,7 @@ void TLS(regs* registers) {
 	registers->print_flag = 0;
 	char to_print = (registers->AC >> 4) & 0xFF;
 	printf("%c", to_print);
+	fflush(stdout);
 }
 
 /******************************************************************************

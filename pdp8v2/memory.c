@@ -44,11 +44,19 @@ uint16_t mem_read(uint16_t to_convert, uint8_t read_or_fetch){
 
 		//Remove internal state bits for read
 		retval &= CUTOFF_MASK;
+		#ifdef PRETTY_PRINT
 		fprintf( trace_file, "DR %04o\n", converted);
+		#else
+		fprintf( trace_file, "0 %04o\n", converted);
+		#endif
 	}
 	else if(read_or_fetch == INSTRUCTION_FETCH) {
 		retval = memory[converted];
+		#ifdef PRETTY_PRINT
 		fprintf( trace_file, "IF %04o\n", converted);
+		#else
+		fprintf( trace_file, "2 %04o\n", converted);
+		#endif
 	}
 	else {
 		fprintf( trace_file, "Read type not recognized\n");
@@ -78,7 +86,11 @@ void mem_write(uint16_t to_convert, uint16_t data){
 	#endif
 
 	/* Write to trace file */
+	#ifdef PRETTY_PRINT
 	fprintf( trace_file, "DW %04o\n", converted);
+	#else
+	fprintf( trace_file, "1 %04o\n", converted);
+	#endif
 		
 	//Check if tracepoint is set
 	if(memory[converted] & MEMORY_TRACEPOINT_BIT) tracepoint_reached = 1;

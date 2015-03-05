@@ -19,7 +19,9 @@ printGreeting,
 	cla
 printLoop,
 	tad i gPtr			/ Put next character in accumulator
-	tpc					/ Print the character
+poll,	tsf				/ Check printer flag
+	jmp poll			/ Loop until we can print
+	tls				/ Print the character
 	cla					/ Clear accumulator
 	isz gPtr				/ Move to the next character
 	isz gLen				/ Used to end loop
@@ -61,7 +63,9 @@ printResponse,
 	cla
 resLoop,
 	tad i oPtr			/ Put next character in accumulator
-	tpc					/ Print the character
+pLoop,	tsf				/ Check printer flag
+	jmp pLoop			/ Loop until we can print
+	tls					/ Print the character
 	cla					/ Clear accumulator
 	isz oPtr				/ Move to the next character
 	isz oLen				/ Used to end loop
@@ -72,7 +76,9 @@ resLoop,
 	
 printName,
 	tad i tempPtr		/ Load in name char
-	tpc					/ Print the char
+nLoop,	tsf			/ Check printer flag
+	jmp nLoop		/ Loop until printer ready
+	tls					/ Print the char
 	cla					/ Clear accum
 	isz tempPtr			/ Increment character address
 	isz numChars		/ Check to see if all chars printed
