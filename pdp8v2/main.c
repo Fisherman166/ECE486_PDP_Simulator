@@ -476,7 +476,7 @@ void fill_memory(int argc, char* argv[]) {
 	uint16_t high_byte, low_byte, word_value;
 	static uint16_t address = 0;
 	char list_filename[256], assembly_string[256];
-	unsigned int i, addr, value, line_number;
+	unsigned int i, j, addr, value, line_number;
 
 	int return1, return2, c;
 	return1 = return2 = 0;
@@ -560,6 +560,11 @@ void fill_memory(int argc, char* argv[]) {
 				assembly_string[strlen(assembly_string) - 1] = '\0'; // remove terminating '\n'
 				assembly_list[addr] = (char*) malloc(strlen(assembly_string) + 1 * sizeof(char));
 				strcpy(assembly_list[addr], assembly_string);
+				for(j=0; j < strlen(assembly_list[addr]); j++){ // convert tabs to spaces
+					if(assembly_list[addr][j] == '\t'){
+						assembly_list[addr][j] = ' ';
+					}
+				}
 //				printf("%s\n", assembly_list[addr]);
 			} else {  // otherwise read the rest of the line, ignore it, and continue
 				fgets(assembly_string, 255, list_file);

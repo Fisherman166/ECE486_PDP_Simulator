@@ -335,7 +335,7 @@ void print_memory_page(int page_number) {
 				
 				fprintf(memory_print_file, "%04o %04o", i, memory[i] & MEMORY_MASK);
 				if (assembly_list[i] != NULL){
-					fprintf(memory_print_file, "%s", assembly_list[i]);
+					fprintf(memory_print_file, "  %s", assembly_list[i]);
 				}
 				fprintf(memory_print_file, "\n");
 			}
