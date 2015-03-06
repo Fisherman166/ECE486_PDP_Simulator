@@ -11,14 +11,13 @@
 ********************************************************************/
 
 void spin_clicked (GtkSpinButton *spinbutton, gpointer user_data);
-void loadscreen(g_items* obj);
+void load_buffer(g_items*, const char*, GtkTextBuffer*);
 void run_button_click (GtkButton *button1, gpointer   data);
 void step_button_click(GtkButton *button, gpointer   data);
 void exit_button_click(GtkButton *button, gpointer   data);
 void show_breakpoints_click(GtkButton *button, gpointer   data);
 void print_memory_location (GtkEntry *entry, gpointer  user_data);
 void loadscreen_trace(g_items*);
-void loadscreen_mem_trace(g_items*);
 
 //Tracepoint and breakpoint functions
 void breakpoint_handler(GtkEntry *entry, gpointer  user_data);

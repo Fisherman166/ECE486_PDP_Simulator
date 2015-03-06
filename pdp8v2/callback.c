@@ -22,43 +22,25 @@ void spin_clicked (GtkSpinButton *spinbutton,
 	g_items* local_object = (g_items*)user_data;
    local_object->coherance_vars->last_mem_page= gtk_spin_button_get_value_as_int (spinbutton);
 	print_memory_page(local_object->coherance_vars->last_mem_page);
-   loadscreen(local_object);
+   load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
 }
 
 /******************************************************************************
-** LOADS MEMORY PAGE DATA FROM TEXT FILE TO BUFFER
+** LOADS A BUFFER ON THE GUI WITH TEXT FROM A TEXTFILE
 ******************************************************************************/
-void loadscreen( g_items *obj)
+void load_buffer(g_items *object, const char* text_name, GtkTextBuffer* text_buffer)
 {
     gchar *contents;
     gsize length;
 
-    obj->FP = g_file_new_for_path ("MEMORY_PAGE.txt");
+    object->FP = g_file_new_for_path (text_name);
 
-    if (g_file_load_contents (obj->FP, NULL, &contents, &length, NULL, NULL))
+    if (g_file_load_contents (object->FP, NULL, &contents, &length, NULL, NULL))
     {
-        gtk_text_buffer_set_text (obj->buffer, contents, length);
+        gtk_text_buffer_set_text (text_buffer, contents, length);
         g_free (contents);
     }
-    g_free (obj->fname);
-}
-
-/******************************************************************************
-** LOADS THE MESSAGE WINDOW WITH CURRENT BREAKPOINTS
-******************************************************************************/
-void loadscreen_breakpoints( g_items *obj)
-{
-    gchar *contents;
-    gsize length;
-
-    obj->FP = g_file_new_for_path ("breakpoints.txt");
-
-    if (g_file_load_contents (obj->FP, NULL, &contents, &length, NULL, NULL))
-    {
-        gtk_text_buffer_set_text (obj->msgbuff, contents, length);
-        g_free (contents);
-    }
-    g_free (obj->fname);
+    g_free (object->fname);
 }
 
 /******************************************************************************
@@ -69,7 +51,7 @@ void show_breakpoints_click (GtkButton *button, gpointer   data)
 	g_items* local_object = (g_items*)data;
 
 	print_breakpoints();
-	loadscreen_breakpoints(local_object);
+	load_buffer(local_object, "breakpoints.txt", local_object->msgbuff);
 }
 
 /******************************************************************************
@@ -121,7 +103,7 @@ void run_button_click (GtkButton *button,
 	loadscreen_trace(local_object);	//update the trace window
 	update_labels(local_object);
 	print_memory_page(local_object->coherance_vars->last_mem_page);
-   loadscreen(local_object);
+   load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
 
 	if(local_object->coherance_vars->breakpoint_reached) {
 		local_object->coherance_vars->breakpoint_reached = 0;
@@ -173,7 +155,7 @@ void step_button_click(GtkButton *button, gpointer   data)
 	loadscreen_trace(local_object);	//update the trace window
 	update_labels(local_object);
 	print_memory_page(local_object->coherance_vars->last_mem_page);
-   loadscreen(local_object);
+   load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
 
 EXECUTION_DONE:
 	if(local_object->coherance_vars->execution_done) {
