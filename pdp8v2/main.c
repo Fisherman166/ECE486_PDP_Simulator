@@ -35,6 +35,10 @@ int main(int argc, char* argv[]) {
 #ifdef GUI
 	free(obj->coherance_vars);
     free(obj);
+
+   remove_text_files("MEMORY_PAGE.txt");
+   remove_text_files("memory_trace.txt");
+
 #endif
 
 	// Free allocated list file memory
@@ -46,6 +50,17 @@ int main(int argc, char* argv[]) {
 	
 	return(0);
 }/*end main*/
+
+void remove_text_files(char * buffer)
+{
+	if(remove(buffer) == 0)
+	 printf("File %s  deleted.\n", buffer);
+	else
+	 fprintf(stderr, "Error deleting the file %s.\n", buffer);
+
+}
+
+
 
 /******************************************************************************
 ** RUNS THE PROGRAM WITHOUT THE GUI	

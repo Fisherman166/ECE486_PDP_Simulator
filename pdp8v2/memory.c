@@ -343,6 +343,7 @@ void print_memory_page(int page_number) {
 		page_base_address = (page_number & 0x1F) << 7;
 		page_max_address = ((page_number + 1) & 0x3F) << 7;
 		
+		fprintf(memory_print_file, "    \t|                              PAGE: %o           \t\t        |\n", page_number);
 		fprintf(memory_print_file, "    \t|            LSB OCTAL DIGIT OF ADDRESS             |\n");
 		fprintf(memory_print_file, "    \t|-----------------------------------------------------------------------|\n");
 		fprintf(memory_print_file, "    \t|   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |\n");

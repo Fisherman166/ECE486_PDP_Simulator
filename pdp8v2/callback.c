@@ -40,7 +40,7 @@ void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
 	}
 
    // clear screen to confirm entry
- //   gtk_entry_set_text (entry,"\0");
+    gtk_entry_set_text (entry,"\0");
 //**************************************************************************************
 
 

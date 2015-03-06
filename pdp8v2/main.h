@@ -53,5 +53,6 @@ void init_system(int argc, char* argv[], struct shared_vars*);
 void fill_memory(int argc, char* argv[]);	/* Fills memory at bootup */
 void print_stats(void);
 void shutdown_system(struct shared_vars*);
+void remove_text_files(char * buffer);
 
 #endif

@@ -62,7 +62,6 @@ void create_buffers(g_items * obj);
 void create_text_boxes (g_items * obj);
 void create_radio_buttons(g_items* obj);
 void set_radio_buttons( g_items *obj);
-//void entry_box_cb(g_items *obj);
 void radio_button_callbacks( g_items * obj);
 void create_buttons_callbacks(g_items* obj);
 void activate (GtkApplication *app, gpointer    data);
