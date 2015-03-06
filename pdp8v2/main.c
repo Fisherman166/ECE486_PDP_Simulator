@@ -549,15 +549,18 @@ void fill_memory(int argc, char* argv[]) {
 			} while(c == ' ' || c == '\t');
 			ungetc(c, list_file);  // put the non-space character back
 			if (c >= '0' && c <= '9'){  // if this starts with a number, then it's valid data or code
-				printf("%i ", line_number);
+//				printf("%i ", line_number);
 				fscanf(list_file, "%o %o", &addr, &value);
-				printf("%o %o ", addr, value);
+//				printf("%o %o ", addr, value);
 				do {  // read the next character that isn't a space
 					c = fgetc(list_file);
 				} while(c == ' ' || c == '\t');
 				ungetc(c, list_file);  // put the non-space character back
 				fgets(assembly_string, 255, list_file);
-				printf("%s\n", assembly_string);
+				assembly_string[strlen(assembly_string) - 1] = '\0'; // remove terminating '\n'
+				assembly_list[addr] = (char*) malloc(strlen(assembly_string) + 1 * sizeof(char));
+				strcpy(assembly_list[addr], assembly_string);
+//				printf("%s\n", assembly_list[addr]);
 			} else {  // otherwise read the rest of the line, ignore it, and continue
 				fgets(assembly_string, 255, list_file);
 			}

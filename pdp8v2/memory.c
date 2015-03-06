@@ -333,9 +333,7 @@ void print_memory_page(int page_number) {
 					fprintf(memory_print_file, "         ");
 				}
 				
-				fprintf(memory_print_file, "%04o %04o", i, memory[i] & MEMORY_MASK);
-//				fprint_dissassembled_instruction(memory_print_file);
-				fprintf(memory_print_file, "\n");
+				fprintf(memory_print_file, "%04o %04o %s\n", i, memory[i] & MEMORY_MASK, assembly_list[i]);
 			}
 		}
 #else
