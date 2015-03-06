@@ -83,15 +83,6 @@ void create_buttons(g_items* obj)
     obj->show_breakpoints = gtk_button_new_with_label ("Show Breakpoints");
     obj->exit_button = gtk_button_new_with_label ("Exit");
     obj->step = gtk_button_new_with_label ("Step");
-   
-    /* Create an adjustment representing an adjustable bounded value */
-    obj->adjustment = gtk_adjustment_new (0, 0, 31, 1, 0, 0);
-
-    /* Create a spin button that is to be as wide as possible */
-    obj->spin_button = gtk_spin_button_new (obj->adjustment, 1, 0);
-// gtk_widget_set_hexpand (spin_button, TRUE);
-
-
 }
 /****************************************************************************
                       entry box
@@ -102,6 +93,8 @@ void create_entrybox (g_items* obj)
     obj->Trace_entry = gtk_entry_new();
     obj->memory_entry= gtk_entry_new();
     obj->SR_entry= gtk_entry_new();
+    obj->page_number_entry= gtk_entry_new();
+
 }
 
 
@@ -134,7 +127,7 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->show_breakpoints, obj->step,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->exit_button, obj->show_breakpoints,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->run_button,GTK_POS_BOTTOM,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->spin_button, obj->pagenum,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->page_number_entry, obj->pagenum,GTK_POS_BOTTOM,1,1);
 
 
 
@@ -307,6 +300,9 @@ void entry_box_cb(g_items *obj)
     g_signal_connect (GTK_ENTRY (obj->SR_entry), "activate",
                       G_CALLBACK (sr_entry_callback), obj);
 
+ g_signal_connect (GTK_ENTRY (obj->page_number_entry), "activate",
+                      G_CALLBACK (page_number_entry_callback), obj);
+
 }
 
 void radio_button_callbacks( g_items * obj)
@@ -336,10 +332,7 @@ void create_buttons_callbacks(g_items* obj)
     g_signal_connect (GTK_BUTTON (obj->exit_button), "clicked",
                       G_CALLBACK (exit_button_click), obj);
 
-    g_signal_connect (obj->spin_button,
-                      "value-changed",
-                      G_CALLBACK (spin_clicked),
-                      obj);
+  
 }
 
 void activate (GtkApplication *app, gpointer    data)
