@@ -16,13 +16,34 @@ extern uint8_t tracepoint_number;	//From memory.h
 /******************************************************************************
 ** CHOSES THE PAGE OF MEMORY VALUES TO PRINT OUT
 ******************************************************************************/
-void spin_clicked (GtkSpinButton *spinbutton,
-                   gpointer       user_data)
+void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
 {
-	g_items* local_object = (g_items*)user_data;
-   local_object->coherance_vars->last_mem_page= gtk_spin_button_get_value_as_int (spinbutton);
-	print_memory_page(local_object->coherance_vars->last_mem_page);
-   load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
+
+   g_items * local_object;
+   const char *pagenumber_text;
+	const char *octal_error = "The inputted address is not a valid octal address";
+	static int valid_octal;
+//   int page_number; 
+   pagenumber_text = gtk_entry_get_text(entry);
+   local_object = (g_items *) user_data;
+
+	check_if_octal( atoi(pagenumber_text), &valid_octal );
+
+	if(valid_octal) {
+   	local_object->coherance_vars->last_mem_page = strtol(pagenumber_text, NULL, 8);	//Use octal base
+        print_memory_page(local_object->coherance_vars->last_mem_page);
+        load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
+	}
+	else {
+		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
+      gtk_text_buffer_set_text (local_object->msgbuff, octal_error, -1);
+	}
+
+   // clear screen to confirm entry
+ //   gtk_entry_set_text (entry,"\0");
+//**************************************************************************************
+
+
 }
 
 /******************************************************************************
@@ -327,6 +348,9 @@ void sr_entry_callback (GtkEntry *entry, gpointer  user_data)
 	gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
  	gtk_entry_set_text (entry,"\0");
 }
+
+
+
 
 /******************************************************************************
 ** THIS FUNCTION ADDS A BREAKPOINT TO MEMORY

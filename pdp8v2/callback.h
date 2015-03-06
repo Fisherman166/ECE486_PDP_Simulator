@@ -10,8 +10,13 @@
                             PROTOTYPES Buttons
 ********************************************************************/
 
-void spin_clicked (GtkSpinButton *spinbutton, gpointer user_data);
+
+
 void load_buffer(g_items*, const char*, GtkTextBuffer*);
+
+void page_number_entry_callback (GtkEntry *entry, gpointer  user_data);
+//void loadscreen(g_items* obj);
+
 void run_button_click (GtkButton *button1, gpointer   data);
 void step_button_click(GtkButton *button, gpointer   data);
 void exit_button_click(GtkButton *button, gpointer   data);

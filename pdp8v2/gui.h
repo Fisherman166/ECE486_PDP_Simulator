@@ -26,18 +26,21 @@ typedef struct g_tag
 // windows, buffers
     GtkWidget *scrolled_window, * scrolled_msg, *text_view, *messages_txt;
     GtkWidget *trace_text_window, *trace_text_view;
+
+// buffers
     GtkTextBuffer *buffer, *msgbuff, *trace_text_buffer;
     
 // Breakpoint and Trace windows
     GtkWidget  *BreakP_entry,*Trace_entry;
-    GtkWidget  *memory_entry, *SR_entry;
+    GtkWidget  *memory_entry, *SR_entry, *page_number_entry;;
+
+
 
 // Buttons 
-    GtkWidget *spin_button;
     GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;   // radio buttons
     GtkWidget * memory_pages, *memory_trace, *branch_trace;
 
-    GtkAdjustment *adjustment;
+
   
 // file descripto for screen
     GFile *FP;
@@ -59,7 +62,7 @@ void create_buffers(g_items * obj);
 void create_text_boxes (g_items * obj);
 void create_radio_buttons(g_items* obj);
 void set_radio_buttons( g_items *obj);
-void entry_box_cb(g_items *obj);
+//void entry_box_cb(g_items *obj);
 void radio_button_callbacks( g_items * obj);
 void create_buttons_callbacks(g_items* obj);
 void activate (GtkApplication *app, gpointer    data);
