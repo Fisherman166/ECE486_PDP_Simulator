@@ -542,7 +542,7 @@ void fill_memory(int argc, char* argv[]) {
 	
 	// Load in list file
 	list_file = fopen(list_filename, "r");
-	if(list_filename != NULL){
+	if(list_file != NULL){
 		while(fscanf(list_file, "%i", &line_number) != EOF){
 			do {  // read the next character that isn't a space
 				c = fgetc(list_file);
@@ -565,9 +565,9 @@ void fill_memory(int argc, char* argv[]) {
 				fgets(assembly_string, 255, list_file);
 			}
 		}
+		fclose(list_file);
 	}
 	fclose(program_file);
-	fclose(list_file);
 }
 
 /******************************************************************************
