@@ -12,11 +12,12 @@ typedef struct g_tag
 {   
     GtkWidget *window;
     GtkWidget *grid;
-    GtkWidget  * run_button, *step, * exit_button;
+ // top buttons
+    GtkWidget  * run_button, *step, *show_breakpoints, * exit_button;
 // name of all labels
     GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label;
     GtkWidget *Mesages_label, *IR_label, *Link_label, *Memory_Buffer_label;
-    GtkWidget *memory_entry_label;    
+    GtkWidget *memory_entry_label, *OSR_label;    
 
 // name if labels to be changed with the values of the registers
     GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value;
@@ -25,18 +26,17 @@ typedef struct g_tag
 // windows, buffers
     GtkWidget *scrolled_window, * scrolled_msg, *text_view, *messages_txt;
     GtkWidget *trace_text_window, *trace_text_view;
-    GtkEntryBuffer * breakpoints;
     GtkTextBuffer *buffer, *msgbuff, *trace_text_buffer;
     
-
 // Breakpoint and Trace windows
     GtkWidget  *BreakP_entry,*Trace_entry;
-    GtkWidget  *memory_entry;
+    GtkWidget  *memory_entry, *OSR_entry;
 
 // Buttons 
     GtkWidget *spin_button;
     GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;   // radio buttons
     GtkWidget * memory_pages, *memory_trace, *branch_trace;
+
     GtkAdjustment *adjustment;
   
 // file descripto for screen

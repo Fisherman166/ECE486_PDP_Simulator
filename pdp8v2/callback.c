@@ -45,6 +45,15 @@ void loadscreen( g_items *obj)
 }
 
 /******************************************************************************
+** SHOW ALL BREAKPOINTS
+******************************************************************************/
+void show_breakpoints_click (GtkButton *button, gpointer   data)
+{
+    printf( " show breakpoints\n");
+}
+
+
+/******************************************************************************
 ** CLOSES THE SIMULATOR AND PRINTS STATS
 ******************************************************************************/
 void exit_button_click(GtkButton *button, gpointer   data)
@@ -216,8 +225,7 @@ void Diplay_branch_trace(GtkWidget *button, gpointer   user_data)
 /******************************************************************************
 ** DETERMINES IF WE WANT TO ADD OR REMOVE A BREAKPOINT
 ******************************************************************************/
-void breakpoint_handler(GtkEntry *entry,
-                    gpointer  user_data)
+void breakpoint_handler(GtkEntry *entry, gpointer  user_data)
 {
    g_items * local_object;
    const char *breakpoint_text;
@@ -285,6 +293,33 @@ void print_memory_location (GtkEntry *entry, gpointer  user_data)
 	gtk_entry_set_text (entry,"\0");
 }
 
+<<<<<<< Updated upstream
+=======
+/******************************************************************************
+** THIS FUNCTION GETS OSR VALUE FROM GUI
+******************************************************************************/
+void osr_entry_callback (GtkEntry *entry, gpointer  user_data)
+{
+    const int maximum_address = 07777;	//Maximum address allowed in PDP8
+    const char *osr_text;
+    char buffer_text[100];
+    g_items * local_object = (g_items *) user_data; 
+    int osr;
+
+    // gets the entry
+    osr_text = gtk_entry_get_text(entry);
+    osr = strtol(osr_text, NULL, 8);	//Use octal base
+    // clear after getting the value 
+    gtk_entry_set_text (entry,"\0");
+
+     // get the buffer to be used
+      local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
+      sprintf(buffer_text, "OSR entered:  %o \n", osr);
+      gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
+  
+}
+
+>>>>>>> Stashed changes
 /******************************************************************************
 ** THIS FUNCTION ADDS A BREAKPOINT TO MEMORY
 ******************************************************************************/
