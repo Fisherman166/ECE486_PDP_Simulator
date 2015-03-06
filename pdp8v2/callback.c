@@ -41,7 +41,24 @@ void loadscreen( g_items *obj)
         g_free (contents);
     }
     g_free (obj->fname);
+}
 
+/******************************************************************************
+** LOADS THE MESSAGE WINDOW WITH CURRENT BREAKPOINTS
+******************************************************************************/
+void loadscreen_breakpoints( g_items *obj)
+{
+    gchar *contents;
+    gsize length;
+
+    obj->FP = g_file_new_for_path ("breakpoints.txt");
+
+    if (g_file_load_contents (obj->FP, NULL, &contents, &length, NULL, NULL))
+    {
+        gtk_text_buffer_set_text (obj->msgbuff, contents, length);
+        g_free (contents);
+    }
+    g_free (obj->fname);
 }
 
 /******************************************************************************
@@ -49,9 +66,11 @@ void loadscreen( g_items *obj)
 ******************************************************************************/
 void show_breakpoints_click (GtkButton *button, gpointer   data)
 {
-    printf( " show breakpoints\n");
-}
+	g_items* local_object = (g_items*)data;
 
+	print_breakpoints();
+	loadscreen_breakpoints(local_object);
+}
 
 /******************************************************************************
 ** CLOSES THE SIMULATOR AND PRINTS STATS
@@ -293,33 +312,40 @@ void print_memory_location (GtkEntry *entry, gpointer  user_data)
 	gtk_entry_set_text (entry,"\0");
 }
 
-<<<<<<< Updated upstream
-=======
 /******************************************************************************
-** THIS FUNCTION GETS OSR VALUE FROM GUI
+** THIS FUNCTION GETS SR VALUE FROM GUI
 ******************************************************************************/
-void osr_entry_callback (GtkEntry *entry, gpointer  user_data)
+void sr_entry_callback (GtkEntry *entry, gpointer  user_data)
 {
-    const int maximum_address = 07777;	//Maximum address allowed in PDP8
-    const char *osr_text;
-    char buffer_text[100];
-    g_items * local_object = (g_items *) user_data; 
-    int osr;
+   const int maximum_address = 07777;	//Maximum address allowed in PDP8
+   const char *sr_text;
+   char buffer_text[100];
+   g_items *local_object = (g_items *) user_data; 
+   int sr_value;
+	static int valid_octal;
+   sr_text = gtk_entry_get_text(entry);
 
-    // gets the entry
-    osr_text = gtk_entry_get_text(entry);
-    osr = strtol(osr_text, NULL, 8);	//Use octal base
-    // clear after getting the value 
-    gtk_entry_set_text (entry,"\0");
+	check_if_octal( atoi(sr_text), &valid_octal);
+	local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
+	if(valid_octal) {
+		sr_value = strtol(sr_text, NULL, 8);	//Use octal base
+		 
+	 	if(sr_value > maximum_address) {
+			sprintf(buffer_text, "SR value larger than 12 bits");
+		}
+		else {
+			local_object->coherance_vars->registers_ptr->SR = sr_value;
+		 	sprintf(buffer_text, "SR value entered:  %04o", sr_value);
+		}
+	}
+	else {
+	 	sprintf(buffer_text, "Not an octal value");
+	}
 
-     // get the buffer to be used
-      local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
-      sprintf(buffer_text, "OSR entered:  %o \n", osr);
-      gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
-  
+	gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
+ 	gtk_entry_set_text (entry,"\0");
 }
 
->>>>>>> Stashed changes
 /******************************************************************************
 ** THIS FUNCTION ADDS A BREAKPOINT TO MEMORY
 ******************************************************************************/

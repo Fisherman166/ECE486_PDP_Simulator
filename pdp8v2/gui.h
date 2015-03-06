@@ -17,7 +17,7 @@ typedef struct g_tag
 // name of all labels
     GtkWidget *pagenum, *label, *PC_label, *Accumulator_label, *CPMA_label;
     GtkWidget *Mesages_label, *IR_label, *Link_label, *Memory_Buffer_label;
-    GtkWidget *memory_entry_label, *OSR_label;    
+    GtkWidget *memory_entry_label, *SR_label;    
 
 // name if labels to be changed with the values of the registers
     GtkWidget *value, *PC_value, *Accumulator_value, *CPMA_value;
@@ -30,7 +30,7 @@ typedef struct g_tag
     
 // Breakpoint and Trace windows
     GtkWidget  *BreakP_entry,*Trace_entry;
-    GtkWidget  *memory_entry, *OSR_entry;
+    GtkWidget  *memory_entry, *SR_entry;
 
 // Buttons 
     GtkWidget *spin_button;

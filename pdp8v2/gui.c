@@ -44,7 +44,7 @@ void create_labels(g_items * obj)
     obj->Memory_Buffer_label= gtk_label_new ("Memory Buffer");
     obj->memory_entry_label= gtk_label_new ("Memory Value At Address");  // re-name 
     obj->Mesages_label= gtk_label_new ("Messages");
-    obj->OSR_label=gtk_label_new ("OSR"); 
+    obj->SR_label=gtk_label_new ("SR"); 
 
     gtk_label_set_justify (GTK_LABEL (obj->pagenum), GTK_JUSTIFY_CENTER);
     gtk_label_set_justify (GTK_LABEL (obj->label), GTK_JUSTIFY_LEFT);
@@ -53,7 +53,7 @@ void create_labels(g_items * obj)
     gtk_label_set_justify (GTK_LABEL (obj->CPMA_label), GTK_JUSTIFY_LEFT);
     gtk_label_set_justify (GTK_LABEL (obj->Mesages_label), GTK_JUSTIFY_CENTER);
     gtk_label_set_justify (GTK_LABEL (obj->Mesages_label), GTK_JUSTIFY_LEFT);
-    gtk_label_set_justify (GTK_LABEL (obj->OSR_label), GTK_JUSTIFY_LEFT);
+    gtk_label_set_justify (GTK_LABEL (obj->SR_label), GTK_JUSTIFY_LEFT);
 
 // values
 
@@ -101,7 +101,7 @@ void create_entrybox (g_items* obj)
     obj->BreakP_entry = gtk_entry_new();
     obj->Trace_entry = gtk_entry_new();
     obj->memory_entry= gtk_entry_new();
-    obj->OSR_entry= gtk_entry_new();
+    obj->SR_entry= gtk_entry_new();
 }
 
 
@@ -153,7 +153,7 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->IR_label, obj->CPMA_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Link_label, obj->IR_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Memory_Buffer_label, obj->Link_label,GTK_POS_BOTTOM,1,1);
-     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->OSR_label, obj->Memory_Buffer_label,GTK_POS_BOTTOM,1,1);
+     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->SR_label, obj->Memory_Buffer_label,GTK_POS_BOTTOM,1,1);
 
 //*IR_label *Link_label, Memory_Buffer_label
 
@@ -164,17 +164,17 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->IR_value, obj->CPMA_value,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Link_value, obj->IR_value,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Memory_Buffer_value, obj->Link_value,GTK_POS_BOTTOM,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->OSR_entry, obj->Memory_Buffer_value,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->SR_entry, obj->Memory_Buffer_value,GTK_POS_BOTTOM,1,1);
 
 
 // radio Buttons placement
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_set_BP, obj->OSR_entry,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_set_BP, obj->SR_entry,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_clear_BP, obj->radio_set_BP,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->BreakP_entry,obj->radio_clear_BP, GTK_POS_BOTTOM, 1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_entry,obj->BreakP_entry, GTK_POS_BOTTOM, 1,1);
     
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_entry_label, obj->memory_entry ,GTK_POS_LEFT,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_SetTr, obj->OSR_label,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_SetTr, obj->SR_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_ClrTr, obj->radioB_SetTr,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Trace_entry, obj->radioB_ClrTr,GTK_POS_BOTTOM,1,1);
 
@@ -304,8 +304,8 @@ void entry_box_cb(g_items *obj)
      g_signal_connect (GTK_ENTRY (obj->memory_entry), "activate",
                       G_CALLBACK (print_memory_location), obj);
      
-    g_signal_connect (GTK_ENTRY (obj->OSR_entry), "activate",
-                      G_CALLBACK (osr_entry_callback), obj);
+    g_signal_connect (GTK_ENTRY (obj->SR_entry), "activate",
+                      G_CALLBACK (sr_entry_callback), obj);
 
 }
 
