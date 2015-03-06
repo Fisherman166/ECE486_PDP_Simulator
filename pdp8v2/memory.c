@@ -371,5 +371,37 @@ void print_memory_page(int page_number) {
 }
 
 /******************************************************************************
+ * 	PRINT BREAKPOINTS
+ *****************************************************************************/
+void print_breakpoints(void){
+	const char* breakpoint_filename = "breakpoints.txt";
+	FILE * breakpoint_file;
+	int index = 0;
+	breakpoint_file = fopen(breakpoint_filename, "w");
+
+	#ifdef TRACE_DEBUG			
+	if(breakpoint_file == NULL){
+		printf("File open error, does it exist?\n");
+	}else{
+		printf("File opened successfully!\n");
+	}//end else
+	#endif
+
+	fprintf(breakpoint_file, "Breakpoints set at addresses: ");
+	//walk memory 	
+	for(; index<(PAGES*WORDS_PER_PAGE); index++){
+		//if BREAKPOINT bit set, write to file
+		if((memory[index] & MEMORY_BREAKPOINT_BIT)){
+			fprintf(breakpoint_file, " %04o,", index);
+			#ifdef TRACE_DEBUG
+			printf("Wrote: %04o to: %s\n", index, breakpoint_filename);
+			#endif
+		}//end if
+	}//end for
+
+	fclose(breakpoint_file);
+}//end print_breakpoints
+
+/******************************************************************************
  * 	EOF
  *****************************************************************************/

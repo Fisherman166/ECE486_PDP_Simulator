@@ -7,7 +7,6 @@
 @CHANGELOG:
 	JSP:
 	-added tracefile open/close functions
-	-TODO: talk to Luis about args passed for mem read/writes
 ******************************************************************************/
 #include <inttypes.h>
 #include <unistd.h>
@@ -66,6 +65,7 @@ void remove_breakpoint(uint16_t);
 void set_tracepoint(uint16_t);
 void remove_tracepoint(uint16_t);
 void print_memory_page(int);
+void print_breakpoints(void);
 
 /******************************************************************************
 **	EOF
