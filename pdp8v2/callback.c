@@ -25,7 +25,6 @@ void spin_clicked (GtkSpinButton *spinbutton,
    loadscreen(local_object);
 }
 
-
 /******************************************************************************
 ** LOADS MEMORY PAGE DATA FROM TEXT FILE TO BUFFER
 ******************************************************************************/
@@ -54,7 +53,6 @@ void exit_button_click(GtkButton *button, gpointer   data)
   shutdown_system(local_object->coherance_vars);
   gtk_widget_destroy(GTK_WIDGET(local_object->window));
 }
-
 
 /******************************************************************************
 ** RUNS UNTIL A BREAKPOINT OR TRACEPOINT IS HIT
@@ -181,9 +179,9 @@ void loadscreen_trace(g_items* local_object) {
    g_free (local_object->fname); 
 }
 
-/******************************************************************* *
-                             Radio Buttons
-********************************************************************/
+/******************************************************************************
+** PRINTS THE BRANCH TRACE FILE TO THE GUI WINDOW
+******************************************************************************/
 void Display_Mem_trace (GtkWidget *button, gpointer   user_data)
 {
     g_items* local_object = (g_items *) user_data;
@@ -199,6 +197,9 @@ void Display_Mem_trace (GtkWidget *button, gpointer   user_data)
 
 }
 
+/******************************************************************************
+** PRINTS THE BRANCH TRACE FILE TO THE GUI WINDOW
+******************************************************************************/
 void Diplay_branch_trace(GtkWidget *button, gpointer   user_data)
 {
     g_items* local_object = (g_items *) user_data;
@@ -212,30 +213,37 @@ void Diplay_branch_trace(GtkWidget *button, gpointer   user_data)
   	}
 }
 
-/********************************************************************
-                             Text Boxes
-********************************************************************/
-
 /******************************************************************************
 ** DETERMINES IF WE WANT TO ADD OR REMOVE A BREAKPOINT
 ******************************************************************************/
 void breakpoint_handler(GtkEntry *entry,
                     gpointer  user_data)
 {
-   g_items * temp_ptr;
+   g_items * local_object;
    const char *breakpoint_text;
+	const char *octal_error = "The inputted address is not a valid octal address";
+	static int valid_octal;
+   int breakpoint_address; 
    breakpoint_text = gtk_entry_get_text(entry);
-   temp_ptr = (g_items *) user_data;
+   local_object = (g_items *) user_data;
 
-   int breakpoint_address = strtol(breakpoint_text, NULL, 8);	//Use octal base
+	check_if_octal( atoi(breakpoint_text), &valid_octal );
 
-   if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (temp_ptr->radio_set_BP)))
-   {
-		breakpoint_to_set(breakpoint_address, temp_ptr);
+	if(valid_octal) {
+   	breakpoint_address = strtol(breakpoint_text, NULL, 8);	//Use octal base
+
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (local_object->radio_set_BP)))
+		{
+			breakpoint_to_set(breakpoint_address, local_object);
+		}
+		else{
+			breakpoint_to_remove(breakpoint_address, local_object);
+		}
 	}
- 	else{
-		breakpoint_to_remove(breakpoint_address, temp_ptr);
-   }
+	else {
+		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
+      gtk_text_buffer_set_text (local_object->msgbuff, octal_error, -1);
+	}
 
    // clear screen to confirm entry
     gtk_entry_set_text (entry,"\0");
@@ -248,30 +256,34 @@ void print_memory_location (GtkEntry *entry, gpointer  user_data)
 {
     const int maximum_address = 07777;	//Maximum address allowed in PDP8
     const char *memory_text;
+	 const char *octal_error = "The inputted address is not a valid octal address";
     char buffer_text[100];
     g_items * local_object = (g_items *) user_data; 
     int memory_address;
-
-    // gets the entry
+	 static int valid_octal;
     memory_text = gtk_entry_get_text(entry);
-    memory_address = strtol(memory_text, NULL, 8);	//Use octal base
-    // clear after getting the value 
-    gtk_entry_set_text (entry,"\0");
+	
+	 check_if_octal( atoi(memory_text), &valid_octal );
 
-     // get the buffer to be used
-    local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
-    if( memory_address > maximum_address)
-    {
-	 	sprintf(buffer_text, "Memory address %04o is not valid", memory_address);
-      gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
-    }
-    else
-    {
-	     sprintf(buffer_text, "The memory value at address %04o is: %04o", memory_address, (memory[memory_address] & MEMORY_MASK));
-        gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
-    }
+	 local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
+	 if(valid_octal) {
+		 memory_address = strtol(memory_text, NULL, 8);	//Use octal base
+		 if( memory_address > maximum_address)
+		 {
+			sprintf(buffer_text, "Memory address %04o is out of range", memory_address);
+			gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
+		 }
+		 else
+		 {
+			  sprintf(buffer_text, "The memory value at address %04o is: %04o", memory_address, (memory[memory_address] & MEMORY_MASK));
+			  gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
+		 }
+	}
+	else {
+      gtk_text_buffer_set_text (local_object->msgbuff, octal_error, -1);
+	}
+	gtk_entry_set_text (entry,"\0");
 }
-
 
 /******************************************************************************
 ** THIS FUNCTION ADDS A BREAKPOINT TO MEMORY
@@ -284,7 +296,7 @@ void breakpoint_to_set(int breakpoint_address, g_items * obj)
     obj->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (obj->messages_txt));
     if(breakpoint_address > maximum_address)
     {
-	 	sprintf(buffer_text, "Breakpoint address %o is not valid", breakpoint_address);
+	 	sprintf(buffer_text, "Breakpoint address %o is out of range", breakpoint_address);
       gtk_text_buffer_set_text (obj->msgbuff, buffer_text,-1);
     }
     else
@@ -306,7 +318,7 @@ void breakpoint_to_remove(int breakpoint_address, g_items * obj)
     obj->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (obj->messages_txt));
     if(breakpoint_address > maximum_address)
     {
-	 	sprintf(buffer_text, "Not a valid address");
+	 	sprintf(buffer_text, "Breakpoint address %04o is out of range", breakpoint_address);
       gtk_text_buffer_set_text (obj->msgbuff, buffer_text, -1);
     }
     else
@@ -324,16 +336,27 @@ void tracepoint_handler(GtkEntry *entry,
                     gpointer  data)
 {
    const char *tracepoint_text;
+	const char *octal_error = "The inputted address is not a valid octal address";
+	static int valid_octal;
    g_items* local_object = (g_items*)data;
    tracepoint_text = gtk_entry_get_text(entry);
-   int tracepoint_address = strtol(tracepoint_text, NULL, 8);	//Use octal base
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (local_object->radioB_SetTr))) {
-		tracepoint_to_set(tracepoint_address, local_object);
-   }
- 	else {
-    	tracepoint_to_remove(tracepoint_address, local_object); 
-   }
+	check_if_octal( atoi(tracepoint_text), &valid_octal );
+
+	if(valid_octal) {
+		int tracepoint_address = strtol(tracepoint_text, NULL, 8);	//Use octal base
+
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (local_object->radioB_SetTr))) {
+			tracepoint_to_set(tracepoint_address, local_object);
+		}
+		else {
+			tracepoint_to_remove(tracepoint_address, local_object); 
+		}
+	}
+	else {
+		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
+      gtk_text_buffer_set_text (local_object->msgbuff, octal_error, -1);
+	}
 
 	// clear screen to confirm entry
    gtk_entry_set_text (entry,"\0");
@@ -381,5 +404,25 @@ void tracepoint_to_remove(int tracepoint_address, g_items * obj)
 	sprintf(buffer_text, "Tracepoint removed at address %04o", tracepoint_address);
         gtk_text_buffer_set_text (obj->msgbuff, buffer_text, -1);
     }
+}	
+
+/******************************************************************************
+** CHECKS TO SEE IF THE INPUTTED VALUE FROM THE USER IS VALID OCTAL VALUE
+** RETURNS 1 IF INPUT IS A VALID OCTAL VALUE
+** RETURNS 0 IF INPUT IS NOT A VALID OCTAL VALUE
+******************************************************************************/
+void check_if_octal(int input, int* value_good) {
+	int tens_place = input / 10;	//Checks if number is less than 10
+	int mod_value = input % 10;
+
+ 	if ( (tens_place == 0) && (mod_value < 8) ) { // less than 10 and valid octal 
+    	*value_good = 1;
+   }
+  	else if(mod_value > 7) { //Not a valid octal value
+    	*value_good = 0;
+   }
+   else if (tens_place > 0) {
+   	check_if_octal(tens_place, value_good);
+  	}
 }
 

@@ -29,6 +29,7 @@ void tracepoint_to_remove(int, g_items*);
 
 void Diplay_branch_trace(GtkWidget *button, gpointer   user_data);
 void Display_Mem_trace (GtkWidget *button, gpointer   user_data);
+void check_if_octal(int, int*);
 
 #endif
 
