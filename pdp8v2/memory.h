@@ -44,6 +44,7 @@
 #define PAGE_MASK	0XF80
 
 uint16_t memory[PAGES * WORDS_PER_PAGE];
+char * assembly_list[PAGES * WORDS_PER_PAGE];
 char *trace_name;
 FILE *trace_file;
 

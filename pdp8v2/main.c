@@ -18,6 +18,7 @@ extern uint8_t tracepoint_reached;
 regs* registers;
 
 int main(int argc, char* argv[]) {
+	unsigned int i;
 #ifdef GUI
     GtkApplication *app;
     g_items *obj = malloc(sizeof(*obj));
@@ -35,6 +36,14 @@ int main(int argc, char* argv[]) {
 	free(obj->coherance_vars);
     free(obj);
 #endif
+
+	// Free allocated list file memory
+	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
+		if (assembly_list[i] != NULL){
+			free(assembly_list[i]);
+		}
+	}
+	
 	return(0);
 }/*end main*/
 
@@ -448,22 +457,18 @@ void fill_memory(int argc, char* argv[]) {
 	const uint8_t address_mask = 0x40;	/* Mask to check the address bit */
 	const uint8_t high_shift	= 6;		/* Shifts the high byte */
 	FILE* program_file;
+	FILE* list_file;
 	uint16_t high_byte, low_byte, word_value;
 	static uint16_t address = 0;
-	char list_filename[256];
+	char list_filename[256], assembly_string[256];
+	unsigned int i, addr, value, line_number;
 
-	int return1, return2;
+	int return1, return2, c;
 	return1 = return2 = 0;
 
 	if(argc == 3) {
 		program_file = fopen(argv[1], "r");
 		trace_name = argv[2];
-		
-		// Ken's code, will move to a better spot shortly
-		// Determine lst filename by replacing .obj with .lst
-		strcpy(list_filename, argv[1]);
-		strcpy(list_filename + strlen(argv[1]) - 3, "lst");
-		printf("list file name is: %s\n", list_filename);
 	}
 	else {
 		printf("Please provide a valid program filename to use with the simulator.\n");
@@ -510,9 +515,41 @@ void fill_memory(int argc, char* argv[]) {
 		#endif
 	}/*end for*/
 
-	// Load in list file
+	// Initialize array of list file strings to NULL
+	for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
+		assembly_list[i] = NULL;
+	}
 
+	// Determine list filename by replacing .obj with .lst
+	strcpy(list_filename, argv[1]);
+	strcpy(list_filename + strlen(argv[1]) - 3, "lst");
+//	printf("list file name is: %s\n", list_filename);
+	
+	// Load in list file
+	list_file = fopen(list_filename, "r");
+	if(list_filename != NULL){
+		while(fscanf(list_file, "%i", &line_number) != EOF){
+			do {  // read the next character that isn't a space
+				c = fgetc(list_file);
+			} while(c == ' ' || c == '\t');
+			ungetc(c, list_file);  // put the non-space character back
+			if (c >= '0' && c <= '9'){  // if this starts with a number, then it's valid data or code
+				printf("%i ", line_number);
+				fscanf(list_file, "%o %o", &addr, &value);
+				printf("%o %o ", addr, value);
+				do {  // read the next character that isn't a space
+					c = fgetc(list_file);
+				} while(c == ' ' || c == '\t');
+				ungetc(c, list_file);  // put the non-space character back
+				fgets(assembly_string, 255, list_file);
+				printf("%s\n", assembly_string);
+			} else {  // otherwise read the rest of the line, ignore it, and continue
+				fgets(assembly_string, 255, list_file);
+			}
+		}
+	}
 	fclose(program_file);
+	fclose(list_file);
 }
 
 /******************************************************************************
