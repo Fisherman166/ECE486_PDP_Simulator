@@ -2,8 +2,8 @@
 ** ECE486/586 PDP-8 Simulator
 ** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
 ** 
-** 21 JANUARY 2015
-** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
+** 12 FEB 2015
+** kb_input.h
 ******************************************************************************/
 
 #ifndef KB_INPUT_H

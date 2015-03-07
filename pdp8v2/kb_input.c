@@ -2,8 +2,13 @@
 ** ECE486/586 PDP-8 Simulator
 ** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
 ** 
-** 21 JANUARY 2015
-** MEMORY.C 	IMPLEMENTATION FILE FOR MEMORY OP FUNCTIONS
+** 12 FEB 2015
+** kb_input.c - Implements non-blocking keyboard I/O
+**
+** The functions in this file were created from these references:
+** http://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html#CREATIONTERMINATION
+** http://cc.byexamples.com/2007/04/08/non-blocking-user-input-in-loop-without-ncurses/
+** http://stackoverflow.com/questions/717572/how-do-you-do-non-blocking-console-i-o-on-linux-in-c
 ******************************************************************************/
 
 #include "kb_input.h"
