@@ -17,7 +17,6 @@
 #define MEMORY_H
 
 //#define PRETTY_PRINT
-#define USE_LIST_FILE
 
 /* Total memory size is 4K */
 #define WORDS_PER_PAGE 128

@@ -302,9 +302,6 @@ void print_memory_page(int page_number) {
 	uint16_t data_values[8];
 	FILE* memory_print_file;
 	char* memory_print_file_name = "MEMORY_PAGE.txt";
-#ifdef USE_LIST_FILE
-	unsigned int i;
-#endif
 	
 	memory_print_file = fopen(memory_print_file_name, "w");
 	
@@ -312,7 +309,52 @@ void print_memory_page(int page_number) {
 		printf("Error opening MEMORY_PAGE.txt\n");
 	}
 	else {
-#ifdef USE_LIST_FILE
+		//Move the 5 bit page number to the page bits a PDP8 address
+		page_base_address = (page_number & 0x1F) << 7;
+		page_max_address = ((page_number + 1) & 0x3F) << 7;
+		
+		fprintf(memory_print_file, "    \t|                              PAGE: %o           \t\t        |\n", page_number);
+		fprintf(memory_print_file, "    \t|            LSB OCTAL DIGIT OF ADDRESS             |\n");
+		fprintf(memory_print_file, "    \t|-----------------------------------------------------------------------|\n");
+		fprintf(memory_print_file, "    \t|   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |\n");
+		fprintf(memory_print_file, "MSB  |-----------------------------------------------------------------------|\n");
+		for(index = page_base_address; index < page_max_address; index += 8) {
+			//Grab the data values from memory
+			data_values[0] = memory[index] & MEMORY_MASK;
+			data_values[1] = memory[index + 1] & MEMORY_MASK;
+			data_values[2] = memory[index + 2] & MEMORY_MASK;
+			data_values[3] = memory[index + 3] & MEMORY_MASK;
+			data_values[4] = memory[index + 4] & MEMORY_MASK;
+			data_values[5] = memory[index + 5] & MEMORY_MASK;
+			data_values[6] = memory[index + 6] & MEMORY_MASK;
+			data_values[7] = memory[index + 7] & MEMORY_MASK;
+			
+			fprintf(memory_print_file, "%03o | %04o %04o %04o %04o %04o %04o %04o %04o|\n", 
+					(index & 07770) >> 3, data_values[0], data_values[1], data_values[2], 
+					data_values[3], data_values[4], data_values[5], data_values[6], 
+					data_values[7]);
+		}
+		fprintf(memory_print_file, "       |------------------------------------------------------------------------|\n");
+	}
+
+	fclose(memory_print_file);
+}
+
+/******************************************************************************
+**	PRINTS VALID MEMORY ALONG WITH THE LIST FILE ASSEMBLBY CODE AND COMMENTS
+** CAN BE OPENED BY THE GUI TO PRINT TO THE TEXT WINDOW
+******************************************************************************/
+void print_memory_list(void) {
+	FILE* memory_print_file;
+	char* memory_print_file_name = "MEMORY_LIST.txt";
+	unsigned int i;
+	
+	memory_print_file = fopen(memory_print_file_name, "w");
+	
+	if(memory_print_file == NULL) {
+		printf("Error opening MEMORY_LIST.txt\n");
+	}
+	else {
 		for(i=0; i < PAGES * WORDS_PER_PAGE; i++){
 			if(memory[i] & MEMORY_VALID_BIT){
 				// first print breakpoint, tracepoint bits
@@ -340,36 +382,7 @@ void print_memory_page(int page_number) {
 				fprintf(memory_print_file, "\n");
 			}
 		}
-#else
-		//Move the 5 bit page number to the page bits a PDP8 address
-		page_base_address = (page_number & 0x1F) << 7;
-		page_max_address = ((page_number + 1) & 0x3F) << 7;
-		
-		fprintf(memory_print_file, "    \t|                              PAGE: %o           \t\t        |\n", page_number);
-		fprintf(memory_print_file, "    \t|            LSB OCTAL DIGIT OF ADDRESS             |\n");
-		fprintf(memory_print_file, "    \t|-----------------------------------------------------------------------|\n");
-		fprintf(memory_print_file, "    \t|   0   |   1   |   2   |   3   |   4   |   5   |   6   |   7   |\n");
-		fprintf(memory_print_file, "MSB  |-----------------------------------------------------------------------|\n");
-		for(index = page_base_address; index < page_max_address; index += 8) {
-			//Grab the data values from memory
-			data_values[0] = memory[index] & MEMORY_MASK;
-			data_values[1] = memory[index + 1] & MEMORY_MASK;
-			data_values[2] = memory[index + 2] & MEMORY_MASK;
-			data_values[3] = memory[index + 3] & MEMORY_MASK;
-			data_values[4] = memory[index + 4] & MEMORY_MASK;
-			data_values[5] = memory[index + 5] & MEMORY_MASK;
-			data_values[6] = memory[index + 6] & MEMORY_MASK;
-			data_values[7] = memory[index + 7] & MEMORY_MASK;
-			
-			fprintf(memory_print_file, "%03o | %04o %04o %04o %04o %04o %04o %04o %04o|\n", 
-					(index & 07770) >> 3, data_values[0], data_values[1], data_values[2], 
-					data_values[3], data_values[4], data_values[5], data_values[6], 
-					data_values[7]);
-		}
-		fprintf(memory_print_file, "       |------------------------------------------------------------------------|\n");
-#endif
 	}
-
 	fclose(memory_print_file);
 }
 
