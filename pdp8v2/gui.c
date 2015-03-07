@@ -42,7 +42,7 @@ void create_labels(g_items * obj)
     obj->IR_label= gtk_label_new ("IR");
     obj->Link_label= gtk_label_new ("Link");
     obj->Memory_Buffer_label= gtk_label_new ("Memory Buffer");
-    obj->memory_entry_label= gtk_label_new ("Memory Value At Address");  // re-name 
+    obj->memory_entry_label= gtk_label_new ("Memory Value At Address"); 
     obj->Mesages_label= gtk_label_new ("Messages");
     obj->SR_label=gtk_label_new ("SR"); 
 
@@ -114,11 +114,9 @@ void set_grid(g_items * obj)
     gtk_grid_set_row_spacing (GTK_GRID (obj->grid), 3);
     gtk_grid_set_column_homogeneous (GTK_GRID (obj->grid), TRUE);
 
-
-
 //***********************************************************(left ,Top, width, height)
     gtk_widget_set_vexpand (obj->scrolled_window, TRUE);
-    gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_window ,1, 4, 2, 5);
+  //  gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_window ,1, 4, 2, 5);
 
 
     /* set button location on the grid */
@@ -126,11 +124,13 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->step, obj->run_button,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->show_breakpoints, obj->step,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->exit_button, obj->show_breakpoints,GTK_POS_RIGHT,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->run_button,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->step,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->page_number_entry, obj->pagenum,GTK_POS_BOTTOM,1,1);
-
-
-
+          // radio button at top of the screen 
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->display_memory_page, obj->page_number_entry,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->display_lst_file, obj->display_memory_page ,GTK_POS_LEFT,1,1);
+    // place top text screen
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->scrolled_window, obj->display_lst_file ,GTK_POS_BOTTOM,2,5);
 
     /****************************************************************************
     NOTE: variables lcol and c1row are uto incremented to ensure that
@@ -146,7 +146,8 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->IR_label, obj->CPMA_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Link_label, obj->IR_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Memory_Buffer_label, obj->Link_label,GTK_POS_BOTTOM,1,1);
-     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->SR_label, obj->Memory_Buffer_label,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->SR_label, obj->Memory_Buffer_label,GTK_POS_BOTTOM,1,1);
+    
 
 //*IR_label *Link_label, Memory_Buffer_label
 
@@ -167,14 +168,16 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_entry,obj->BreakP_entry, GTK_POS_BOTTOM, 1,1);
     
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_entry_label, obj->memory_entry ,GTK_POS_LEFT,1,1);
+    // set and clear trace points 
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_SetTr, obj->SR_label,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_ClrTr, obj->radioB_SetTr,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Trace_entry, obj->radioB_ClrTr,GTK_POS_BOTTOM,1,1);
 
-// buttons at the buttom of text window
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->branch_trace, obj->scrolled_window,GTK_POS_BOTTOM,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_trace, obj->branch_trace,GTK_POS_RIGHT,1,1);
-    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->trace_text_window, obj->branch_trace,GTK_POS_BOTTOM,2,10); 
+
+// buttons at the buttom of text window 
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_trace,obj->scrolled_window ,GTK_POS_BOTTOM,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->branch_trace,obj->memory_trace ,GTK_POS_RIGHT,1,1);
+    gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->trace_text_window, obj->memory_trace,GTK_POS_BOTTOM,2,10); 
 
 // message window
     
@@ -252,7 +255,9 @@ void create_text_boxes (g_items * obj)
 
 
 }
-
+    /*****************************************************************
+                     CREATE RADIO BUTTONS
+    *******************************************************************/
 void create_radio_buttons(g_items* obj)
 {
     obj->radio_set_BP=gtk_radio_button_new_with_label(NULL, "Set Breakpoint");
@@ -261,16 +266,24 @@ void create_radio_buttons(g_items* obj)
                         (GTK_RADIO_BUTTON (obj->radio_set_BP), "Clear Breakpoint");
 
     obj->radioB_SetTr =gtk_radio_button_new_with_label(NULL, "Set Tracepoint");
-    obj->radioB_ClrTr =gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (obj->radioB_SetTr), "Clear Tracepoint");
+    obj->radioB_ClrTr =gtk_radio_button_new_with_label_from_widget(
+                       GTK_RADIO_BUTTON (obj->radioB_SetTr), "Clear Tracepoint");
 
 
     obj->memory_trace =gtk_radio_button_new_with_label(NULL, "Memory Trace");
-    obj->branch_trace =gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON (obj->memory_trace), "Branch Trace");
+    obj->branch_trace =gtk_radio_button_new_with_label_from_widget(
+                       GTK_RADIO_BUTTON (obj->memory_trace), "Branch Trace");
+
+    obj->display_memory_page = gtk_radio_button_new_with_label(NULL, "Display Memory Page");
+    obj->display_lst_file = gtk_radio_button_new_with_label_from_widget(
+                             GTK_RADIO_BUTTON (obj->display_memory_page), "Display List File");
 
 }
 
 
-
+    /*****************************************************************
+                      SET VALUES OF THE RADIO BUTTONS
+    *******************************************************************/
 void set_radio_buttons( g_items *obj)
 {
 // set values
@@ -284,8 +297,14 @@ void set_radio_buttons( g_items *obj)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->memory_trace), TRUE);
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->branch_trace), TRUE);
 
-
+     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->display_lst_file), TRUE);
+     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->display_memory_page), FALSE);
+   
 }
+
+    /*****************************************************************
+                     Create entry box callbacks
+    *******************************************************************/
 void entry_box_cb(g_items *obj)
 {
     g_signal_connect (GTK_ENTRY (obj->BreakP_entry), "activate",
@@ -305,6 +324,9 @@ void entry_box_cb(g_items *obj)
 
 }
 
+    /*****************************************************************
+                      RADIO BUTTONS CALLBACKS
+    *******************************************************************/
 void radio_button_callbacks( g_items * obj)
 {
   // trace points
@@ -313,9 +335,12 @@ void radio_button_callbacks( g_items * obj)
 
     g_signal_connect (GTK_TOGGLE_BUTTON (obj->branch_trace), "toggled",
                       G_CALLBACK (Diplay_branch_trace),  obj);
+
 }
 
-
+    /*****************************************************************
+                      CREATE BUTTONS CALL BACK
+    *******************************************************************/
 void create_buttons_callbacks(g_items* obj)
 {
     /*Connecting the clicked signal to the callback function*/
@@ -331,8 +356,6 @@ void create_buttons_callbacks(g_items* obj)
 
     g_signal_connect (GTK_BUTTON (obj->exit_button), "clicked",
                       G_CALLBACK (exit_button_click), obj);
-
-  
 }
 
 void activate (GtkApplication *app, gpointer    data)

@@ -38,6 +38,8 @@ int main(int argc, char* argv[]) {
 
    remove_text_files("MEMORY_PAGE.txt");
    remove_text_files("memory_trace.txt");
+   remove_text_files("branch_trace.txt");
+   remove_text_files("breakpoints.txt");
 
 #endif
 

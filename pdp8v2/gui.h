@@ -37,7 +37,8 @@ typedef struct g_tag
 
 
 // Buttons 
-    GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr, *radioB_ClrTr;   // radio buttons
+    GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr;
+    GtkWidget *radioB_ClrTr, * display_memory_page, * display_lst_file;   // radio buttons
     GtkWidget * memory_pages, *memory_trace, *branch_trace;
 
 
