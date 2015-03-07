@@ -23,7 +23,6 @@ void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
    const char *pagenumber_text;
 	const char *octal_error = "The inputted address is not a valid octal address";
 	static int valid_octal;
-//   int page_number; 
    pagenumber_text = gtk_entry_get_text(entry);
    local_object = (g_items *) user_data;
 
@@ -41,9 +40,6 @@ void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
 
    // clear screen to confirm entry
     gtk_entry_set_text (entry,"\0");
-//**************************************************************************************
-
-
 }
 
 /******************************************************************************
@@ -348,9 +344,6 @@ void sr_entry_callback (GtkEntry *entry, gpointer  user_data)
 	gtk_text_buffer_set_text (local_object->msgbuff, buffer_text,-1);
  	gtk_entry_set_text (entry,"\0");
 }
-
-
-
 
 /******************************************************************************
 ** THIS FUNCTION ADDS A BREAKPOINT TO MEMORY
