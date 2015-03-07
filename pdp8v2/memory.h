@@ -65,6 +65,7 @@ void remove_breakpoint(uint16_t);
 void set_tracepoint(uint16_t);
 void remove_tracepoint(uint16_t);
 void print_memory_page(int);
+void print_memory_list(void);
 void print_breakpoints(void);
 
 /******************************************************************************
