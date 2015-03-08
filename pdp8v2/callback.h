@@ -31,6 +31,9 @@ void breakpoint_to_remove(int breakpoint_address, g_items * obj);
 void tracepoint_to_set(int, g_items*);
 void tracepoint_to_remove(int, g_items*);
 void sr_entry_callback (GtkEntry *entry, gpointer  user_data);
+void display_memory_page(GtkWidget *button, gpointer   user_data);
+void display_lst_file(GtkWidget *button, gpointer   user_data);
+
 
 //Intermediate functions
 void Diplay_branch_trace(GtkWidget *button, gpointer   user_data);
