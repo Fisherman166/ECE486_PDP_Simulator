@@ -1,0 +1,27 @@
+   1            / Program : JMS_DCA_test.as
+   2            / Date : Feb 2, 2015
+   3            / 12 cycles in total
+   4            / C = 5 at the end of the program and accum = 0
+   5            /-------------------------------------------
+   6            / Code Section
+   7            /
+   8            *0200			/ start at address 0200
+   9            Main, 	
+  10 00200 7300 	cla cll 	/ clear AC and Link
+  11 00201 4203 	jms Add	/ Go to sub
+  12 00202 7402 	hlt 		/ Halt program
+  13            
+  14            Add, 			/ C = A + B
+  15 00203 7000 	nop			/ Space for return address
+  16 00204 1250 	tad A 		/ add A to Accumulator
+  17 00205 1251 	tad B 		/ add B
+  18 00206 3252 	dca C 		/ store sum at C
+  19 00207 5603 	jmp i ADD	/ Return to main
+  20            /
+  21            / Data Section
+  22            /
+  23            *0250 			/ place data at address 0250
+  24 00250 0002 A, 	2 		/ A equals 2
+  25 00251 0003 B, 	3 		/ B equals 3
+  26 00252 0000 C, 	0
+  27            $Main 			/ End of Program; Main is entry point

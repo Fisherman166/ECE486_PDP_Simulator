@@ -163,18 +163,18 @@ uint16_t currentpage (uint16_t instruction, regs* reg)
 /******************************************************************************
 **	DECODE ADDRESS
 ******************************************************************************/
-// Check bit 4 (on PDP8 )  to federmine current page or zero page mode
+// Check bit 4 (on PDP8 )  to determine current page or zero page mode
 
 uint16_t getaddress(uint16_t instruction,regs* reg, uint8_t * page)
 {
 	uint16_t retval;
-	if (PageMode(instruction)) 
+	if (PageMode(instruction)) // current page
    {
    	retval = currentpage(instruction, reg);
   	*page=1;
    }
    else
-   {
+   {// zero page
    	retval = zeropage(instruction);
 	*page=0;
    }
@@ -184,8 +184,8 @@ uint16_t getaddress(uint16_t instruction,regs* reg, uint8_t * page)
 
 /******************************************************************************
 **	CALCULATE THE EFFECTIVE ADDRESS
-**	RETURNS 0 FOR DIRECT ADDRESSING, 1 FOR INDIRECT ADDRESSING,
-** AND 2 FOR AUTOINCREMENT
+**	RETURNS 0 FOR DIRECT ADDRESSING, 2 FOR INDIRECT ADDRESSING,
+** AND 4 FOR AUTOINCREMENT
 ******************************************************************************/
 uint8_t EffAddCalc(uint16_t instruction, regs* reg)
 {

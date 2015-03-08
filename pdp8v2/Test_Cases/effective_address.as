@@ -1,8 +1,12 @@
-/It has a pointer before 10 and past 10
-/ it should only out increment 10-17
-/ not the other 
-/ Also access the same array using zero 
-/ page indirect
+/Test case: Effective address calculation 
+/ Objective: test all addressing modes and 
+/            and the entire range of autoincrement 
+/            address 
+/
+/ Description: It has a pointer before 10 and past
+/ address 10 it should only out increment 10-17
+/ not the others. Also access the same array using 
+/ zero page indirect
 *7
 var1,	Array
 Ptr0,	Array-1
