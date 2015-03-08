@@ -1,9 +1,9 @@
 /******************************************************************************
 ** ECE486/586 PDP-8 Simulator
-** Sean Koppenhafer, Luis Santiago, Ken
-**
-** branch_trace.c
-*/
+** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
+** 
+** branch_trace.c - Implements the branch trace file functions
+******************************************************************************/
 
 #include "branch_trace.h"
 

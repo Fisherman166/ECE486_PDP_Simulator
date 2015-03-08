@@ -1,9 +1,8 @@
 /******************************************************************************
 ** ECE486/586 PDP-8 Simulator
 ** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
-**
-** cpu.c
-**
+** 
+** cpu.c - Implements the cpu opcode functions
 ******************************************************************************/
 
 #include "cpu.h"

@@ -1,33 +1,13 @@
-// gui.c
+/******************************************************************************
+** ECE486/586 PDP-8 Simulator
+** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
+** 
+** gui.c - Implements functions that add content to the GUI window
+******************************************************************************/
 
 #include "gui.h"
 #include "callback.h"
 #include "main.h"
-
-// compile with
-// gcc projgui.c -o proj $(pkg-config --cflags --libs gtk+-3.0)
-
-/****************************************************************************
-                                   To DO
-*****************************************************************************
- 1)  msg window needs to work
- 2)
- 3)
- 4)
- 5)
- 6)
- 7)
- 8)
- 9)
-***************************************************************************/
-
-
-
-/*Signal handler for the "clicked" signal of the Button.
-each click increment a variable by one an change label*/
-
-
-
 
 /*Create a label and set its alignment. Setting the line wrap to TRUE makes
 the label break lines if the text exceeds the widget's size. When set to
@@ -73,7 +53,6 @@ void create_labels(g_items * obj)
 /****************************************************************************
                        create buttons
 ****************************************************************************/
-
 void create_buttons(g_items* obj)
 {
 // radio button needs to be created and label created
@@ -84,6 +63,7 @@ void create_buttons(g_items* obj)
     obj->exit_button = gtk_button_new_with_label ("Exit");
     obj->step = gtk_button_new_with_label ("Step");
 }
+
 /****************************************************************************
                       entry box
 ****************************************************************************/
@@ -97,14 +77,11 @@ void create_entrybox (g_items* obj)
 
 }
 
-
 /********************************************************************
   Create a grid and attach the button 
 ********************************************************************/
-
 void set_grid(g_items * obj)
 {
-
     int lcol ,c1row, c2row;
     lcol =3;
     c1row = c2row = 2;
@@ -114,10 +91,9 @@ void set_grid(g_items * obj)
     gtk_grid_set_row_spacing (GTK_GRID (obj->grid), 3);
     gtk_grid_set_column_homogeneous (GTK_GRID (obj->grid), TRUE);
 
-//***********************************************************(left ,Top, width, height)
+    //**************************************************(left ,Top, width, height)
     gtk_widget_set_vexpand (obj->scrolled_window, TRUE);
-  //  gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_window ,1, 4, 2, 5);
-
+    //gtk_grid_attach (GTK_GRID (obj->grid), obj->scrolled_window ,1, 4, 2, 5);
 
     /* set button location on the grid */
     gtk_grid_attach (GTK_GRID (obj->grid), obj->run_button ,1, 1, 1, 1);
@@ -126,7 +102,7 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->exit_button, obj->show_breakpoints,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->pagenum, obj->step,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->page_number_entry, obj->pagenum,GTK_POS_BOTTOM,1,1);
-          // radio button at top of the screen 
+    // radio button at top of the screen 
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->display_memory_page, obj->page_number_entry,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->display_lst_file, obj->display_memory_page ,GTK_POS_LEFT,1,1);
     // place top text screen
@@ -160,7 +136,6 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Memory_Buffer_value, obj->Link_value,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->SR_entry, obj->Memory_Buffer_value,GTK_POS_BOTTOM,1,1);
 
-
 // radio Buttons placement
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_set_BP, obj->SR_entry,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radio_clear_BP, obj->radio_set_BP,GTK_POS_BOTTOM,1,1);
@@ -173,22 +148,18 @@ void set_grid(g_items * obj)
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->radioB_ClrTr, obj->radioB_SetTr,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Trace_entry, obj->radioB_ClrTr,GTK_POS_BOTTOM,1,1);
 
-
 // buttons at the buttom of text window 
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->memory_trace,obj->scrolled_window ,GTK_POS_BOTTOM,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->branch_trace,obj->memory_trace ,GTK_POS_RIGHT,1,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->trace_text_window, obj->memory_trace,GTK_POS_BOTTOM,2,10); 
 
 // message window
-    
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->Mesages_label, obj->memory_entry_label ,GTK_POS_BOTTOM,2,1);
     gtk_grid_attach_next_to (GTK_GRID (obj->grid),obj->scrolled_msg, obj->Mesages_label,GTK_POS_BOTTOM,2,1);
 }
 
-
 void create_buffers(g_items * obj)
 {
-
     /* text view windows with buffers
       does not add scroll functionality here
      that is done in create_test_boxes */
@@ -209,9 +180,7 @@ void create_buffers(g_items * obj)
     obj->trace_text_buffer = gtk_text_buffer_new (NULL);   //input buffer
     obj->trace_text_view = gtk_text_view_new_with_buffer (obj->trace_text_buffer);
     gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (obj->trace_text_view), GTK_WRAP_WORD);
-
 }
-
 
 void create_text_boxes (g_items * obj)
 {
@@ -224,7 +193,6 @@ void create_text_boxes (g_items * obj)
     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (obj->scrolled_window),
                                     GTK_POLICY_AUTOMATIC,
                                     GTK_POLICY_AUTOMATIC);
-
 
     /* The function directly below is used to add children to the scrolled window
      * with scrolling capabilities (e.g text_view), otherwise,
@@ -255,9 +223,10 @@ void create_text_boxes (g_items * obj)
 
 
 }
-    /*****************************************************************
+
+/*****************************************************************
                      CREATE RADIO BUTTONS
-    *******************************************************************/
+*******************************************************************/
 void create_radio_buttons(g_items* obj)
 {
     obj->radio_set_BP=gtk_radio_button_new_with_label(NULL, "Set Breakpoint");
@@ -277,13 +246,11 @@ void create_radio_buttons(g_items* obj)
     obj->display_memory_page = gtk_radio_button_new_with_label(NULL, "Display Memory Page");
     obj->display_lst_file = gtk_radio_button_new_with_label_from_widget(
                              GTK_RADIO_BUTTON (obj->display_memory_page), "Display List File");
-
 }
 
-
-    /*****************************************************************
+/*****************************************************************
                       SET VALUES OF THE RADIO BUTTONS
-    *******************************************************************/
+*******************************************************************/
 void set_radio_buttons( g_items *obj)
 {
 // set values
@@ -298,13 +265,12 @@ void set_radio_buttons( g_items *obj)
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->branch_trace), TRUE);
 
      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->display_lst_file), TRUE);
-     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->display_memory_page), FALSE);
-   
+     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (obj->display_memory_page), FALSE);   
 }
 
-    /*****************************************************************
+/*****************************************************************
                      Create entry box callbacks
-    *******************************************************************/
+*******************************************************************/
 void entry_box_cb(g_items *obj)
 {
     g_signal_connect (GTK_ENTRY (obj->BreakP_entry), "activate",
@@ -321,12 +287,11 @@ void entry_box_cb(g_items *obj)
 
  g_signal_connect (GTK_ENTRY (obj->page_number_entry), "activate",
                       G_CALLBACK (page_number_entry_callback), obj);
-
 }
 
-    /*****************************************************************
+/*****************************************************************
                       RADIO BUTTONS CALLBACKS
-    *******************************************************************/
+*******************************************************************/
 void radio_button_callbacks( g_items * obj)
 {
   // trace points
@@ -335,12 +300,11 @@ void radio_button_callbacks( g_items * obj)
 
     g_signal_connect (GTK_TOGGLE_BUTTON (obj->branch_trace), "toggled",
                       G_CALLBACK (Diplay_branch_trace),  obj);
-
 }
 
-    /*****************************************************************
+/*****************************************************************
                       CREATE BUTTONS CALL BACK
-    *******************************************************************/
+*******************************************************************/
 void create_buttons_callbacks(g_items* obj)
 {
     /*Connecting the clicked signal to the callback function*/
@@ -360,7 +324,6 @@ void create_buttons_callbacks(g_items* obj)
 
 void activate (GtkApplication *app, gpointer    data)
 {
-    
     g_items * obj;
     obj = (g_items *) data;
 

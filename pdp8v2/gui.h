@@ -1,4 +1,9 @@
-// gui.h
+/******************************************************************************
+** ECE486/586 PDP-8 Simulator
+** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
+** 
+** gui.h
+******************************************************************************/
 
 #ifndef _GUI_H
 #define _GUI_H
@@ -34,25 +39,20 @@ typedef struct g_tag
     GtkWidget  *BreakP_entry,*Trace_entry;
     GtkWidget  *memory_entry, *SR_entry, *page_number_entry;;
 
-
-
 // Buttons 
     GtkWidget *radio_set_BP, *radio_clear_BP,*radioB_SetTr;
     GtkWidget *radioB_ClrTr, * display_memory_page, * display_lst_file;   // radio buttons
     GtkWidget * memory_pages, *memory_trace, *branch_trace;
-
-
   
-// file descripto for screen
+// file descriptor for screen
     GFile *FP;
     gchar *fname;
 
-	 //Local stuff
+// Local stuff
     int copy_argc;
     char ** copy_argv;
     struct shared_vars* coherance_vars; 
 } g_items;
-
 
 // PROTOTYPES
 void create_labels(g_items * obj);
@@ -67,4 +67,6 @@ void radio_button_callbacks( g_items * obj);
 void create_buttons_callbacks(g_items* obj);
 void activate (GtkApplication *app, gpointer    data);
 void update_labels(g_items*);
+
 #endif
+

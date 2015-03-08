@@ -1,9 +1,10 @@
 /******************************************************************************
 ** ECE486/586 PDP-8 Simulator
-** Sean Koppenhafer, Luis Santiago, Ken Benderly
-**
-** main.c
-*/
+** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
+** 
+** main.c - Implements all of the glue logic. Init functions, run functions,
+close functions, etc.
+******************************************************************************/
 
 #include "main.h"
 
@@ -53,6 +54,9 @@ int main(int argc, char* argv[]) {
 	return(0);
 }/*end main*/
 
+/******************************************************************************
+** REMOVES ALL OF THE TEXT FILES WE USE FOR PRINTING TO THE GUI BUFFERS
+******************************************************************************/
 void remove_text_files(char * buffer)
 {
 	if(remove(buffer) == 0)
@@ -61,8 +65,6 @@ void remove_text_files(char * buffer)
 	 fprintf(stderr, "Error deleting the file %s.\n", buffer);
 
 }
-
-
 
 /******************************************************************************
 ** RUNS THE PROGRAM WITHOUT THE GUI	

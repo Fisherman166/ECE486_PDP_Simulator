@@ -1,10 +1,15 @@
-// place call back for buttons here for easy access and debug
+/******************************************************************************
+** ECE486/586 PDP-8 Simulator
+** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
+** 
+** callback.c - Implements the callback functions for the buttons, radio buttons,
+** and text boxes found in the GUI.
+******************************************************************************/
 
 #include "callback.h"
 #include "gui.h"
 #include "memory.h"
 #include "main.h"
-#include <errno.h>
 
 extern uint8_t tracepoint_reached;	//From memory.h
 extern uint8_t tracepoint_number;	//From memory.h

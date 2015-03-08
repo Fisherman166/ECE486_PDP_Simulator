@@ -1,9 +1,9 @@
 /******************************************************************************
 ** ECE486/586 PDP-8 Simulator
-** Sean Koppenhafer, Luis Santiago, Ken
-**
+** Sean Koppenhafer, Luis Santiago, Ken Benderly, J.S. Peirce
+** 
 ** branch_trace.h
-*/
+******************************************************************************/
 
 #ifndef BRANCH_TRACE_H
 #define BRANCH_TRACE_H

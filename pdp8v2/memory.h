@@ -4,10 +4,8 @@
 ** 
 ** 15 JANUARY 2015
 ** memory.h
-@CHANGELOG:
-	JSP:
-	-added tracefile open/close functions
 ******************************************************************************/
+
 #include <inttypes.h>
 #include <unistd.h>
 #include <stdio.h>
