@@ -300,6 +300,12 @@ void radio_button_callbacks( g_items * obj)
 
     g_signal_connect (GTK_TOGGLE_BUTTON (obj->branch_trace), "toggled",
                       G_CALLBACK (Diplay_branch_trace),  obj);
+
+   g_signal_connect (GTK_TOGGLE_BUTTON (obj->memory_trace), "toggled",
+                      G_CALLBACK (display_lst_file),  obj);
+
+    g_signal_connect (GTK_TOGGLE_BUTTON (obj->branch_trace), "toggled",
+                      G_CALLBACK (display_memory_page),  obj);
 }
 
 /*****************************************************************

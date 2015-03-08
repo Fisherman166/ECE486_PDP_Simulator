@@ -246,6 +246,31 @@ void Diplay_branch_trace(GtkWidget *button, gpointer   user_data)
 }
 
 /******************************************************************************
+** PRINTS THE LIST FILE TO THE SCREEN
+******************************************************************************/
+void display_lst_file(GtkWidget *button, gpointer   user_data)
+{
+   // g_items* local_object = (g_items *) user_data;
+
+ 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button))) {
+		
+  	}
+}
+
+/******************************************************************************
+** PRINTS THE PAGE NUMBER 
+******************************************************************************/
+void display_memory_page(GtkWidget *button, gpointer   user_data)
+{
+   // g_items* local_object = (g_items *) user_data;
+
+ 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button))) {
+		
+  	}
+}
+
+
+/******************************************************************************
 ** DETERMINES IF WE WANT TO ADD OR REMOVE A BREAKPOINT
 ******************************************************************************/
 void breakpoint_handler(GtkEntry *entry, gpointer  user_data)
