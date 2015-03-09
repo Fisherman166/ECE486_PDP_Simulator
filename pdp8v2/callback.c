@@ -23,7 +23,6 @@ extern uint8_t tracepoint_number;	//From memory.h
 ******************************************************************************/
 void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
 {
-
    g_items * local_object;
    const char *pagenumber_text;
 	const char *octal_error = "The inputted address is not a valid octal address";
@@ -33,13 +32,14 @@ void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
 
 	check_if_octal( atoi(pagenumber_text), &valid_octal );
 
+	local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	if(valid_octal) {
    	local_object->coherance_vars->last_mem_page = strtol(pagenumber_text, NULL, 8);	//Use octal base
-        print_memory_page(local_object->coherance_vars->last_mem_page);
-        load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
+      print_memory_page(local_object->coherance_vars->last_mem_page);
+		update_memory_buffer(local_object);
+      gtk_text_buffer_set_text (local_object->msgbuff, "", -1);
 	}
 	else {
-		local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
       gtk_text_buffer_set_text (local_object->msgbuff, octal_error, -1);
 	}
 
@@ -124,8 +124,11 @@ void run_button_click (GtkButton *button,
 	//Update the screen values
 	loadscreen_trace(local_object);	//update the trace window
 	update_labels(local_object);
+
+	//Update the text files and the buffer
 	print_memory_page(local_object->coherance_vars->last_mem_page);
-   load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
+	print_memory_list();
+	update_memory_buffer(local_object);
 
 	if(local_object->coherance_vars->breakpoint_reached) {
 		local_object->coherance_vars->breakpoint_reached = 0;
@@ -176,8 +179,11 @@ void step_button_click(GtkButton *button, gpointer   data)
 	//Update the screen values
 	loadscreen_trace(local_object);	//update the trace window
 	update_labels(local_object);
+
+	//Update text files and buffer
 	print_memory_page(local_object->coherance_vars->last_mem_page);
-   load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
+	print_memory_list();
+	update_memory_buffer(local_object);
 
 EXECUTION_DONE:
 	if(local_object->coherance_vars->execution_done) {
@@ -250,10 +256,10 @@ void Diplay_branch_trace(GtkWidget *button, gpointer   user_data)
 ******************************************************************************/
 void display_lst_file(GtkWidget *button, gpointer   user_data)
 {
-   // g_items* local_object = (g_items *) user_data;
+   g_items* local_object = (g_items *) user_data;
 
  	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button))) {
-		
+        load_buffer(local_object, "MEMORY_LIST.txt", local_object->buffer);
   	}
 }
 
@@ -262,13 +268,27 @@ void display_lst_file(GtkWidget *button, gpointer   user_data)
 ******************************************************************************/
 void display_memory_page(GtkWidget *button, gpointer   user_data)
 {
-   // g_items* local_object = (g_items *) user_data;
+   g_items* local_object = (g_items *) user_data;
 
  	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button))) {
-		
+        load_buffer(local_object, "MEMORY_PAGE.txt", local_object->buffer);
   	}
 }
 
+/******************************************************************************
+** CHOOSES TO UPDATE THE MEMORY PAGE FILE OR THE LIST FILE
+******************************************************************************/
+void update_memory_buffer(g_items* local_object) {
+	const char* page_file = "MEMORY_PAGE.txt";
+	const char* list_file = "MEMORY_LIST.txt";
+
+ 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (local_object->display_lst_file))) {
+   	load_buffer(local_object, list_file, local_object->buffer);
+	}
+	else {
+   	load_buffer(local_object, page_file, local_object->buffer);
+	}
+}
 
 /******************************************************************************
 ** DETERMINES IF WE WANT TO ADD OR REMOVE A BREAKPOINT

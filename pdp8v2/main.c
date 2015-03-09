@@ -35,13 +35,12 @@ int main(int argc, char* argv[]) {
 
 #ifdef GUI
 	free(obj->coherance_vars);
-    free(obj);
+   free(obj);
 
    remove_text_files("MEMORY_PAGE.txt");
    remove_text_files("memory_trace.txt");
    remove_text_files("branch_trace.txt");
    remove_text_files("breakpoints.txt");
-
 #endif
 
 	// Free allocated list file memory
@@ -59,11 +58,16 @@ int main(int argc, char* argv[]) {
 ******************************************************************************/
 void remove_text_files(char * buffer)
 {
-	if(remove(buffer) == 0)
+	if(remove(buffer) == 0) {
+	 #ifdef TRACE_DEBUG
 	 printf("File %s  deleted.\n", buffer);
-	else
+	 #endif
+	}
+	else {
+	 #ifdef TRACE_DEBUG
 	 fprintf(stderr, "Error deleting the file %s.\n", buffer);
-
+	 #endif
+	}
 }
 
 /******************************************************************************
@@ -606,7 +610,9 @@ void shutdown_system(struct shared_vars* shared) {
 		free(shared->registers_ptr);
 		free(shared->kb_ptr);
 		if(shared->ran_once) {
+			#ifdef DEBUG
 			mem_print_valid();
+			#endif
 			print_stats();
 		}
 		trace_close();
