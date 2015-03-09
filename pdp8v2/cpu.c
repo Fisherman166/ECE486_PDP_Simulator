@@ -182,7 +182,7 @@ void TCF(regs* registers) {
 ** OPCODE 6 - Monitor - TPC
 ******************************************************************************/
 void TPC(regs* registers) {
-	char to_print = (registers->AC >> 4) & 0xFF;
+	char to_print = registers->AC & 0xFF;
 	printf("%c", to_print);
 	fflush(stdout);
 }
@@ -192,7 +192,7 @@ void TPC(regs* registers) {
 ******************************************************************************/
 void TLS(regs* registers) {
 	registers->print_flag = 0;
-	char to_print = (registers->AC >> 4) & 0xFF;
+	char to_print = registers->AC & 0xFF;
 	printf("%c", to_print);
 	fflush(stdout);
 }
@@ -229,7 +229,11 @@ void CML(regs* registers) {
 ** OPCODE 7 GROUP 1 - IAC
 ******************************************************************************/
 void IAC(regs* registers) {
-	registers->AC = (registers->AC + 1) & CUTOFF_MASK;
+	registers->AC = registers->AC + 1;
+	if(registers->AC & 0x1000) {
+		registers->link_bit = ~(registers->link_bit & 1);
+	}
+	registers->AC &= CUTOFF_MASK;
 }
 
 /******************************************************************************

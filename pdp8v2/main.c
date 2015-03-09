@@ -145,10 +145,6 @@ void execute_opcode(struct shared_vars* shared){
 	}
 	#endif
 
-	registers->PC++;																	// increment the PC
-	registers->IR = (current_instruction >> 9) & 0x7;						// Only grab the 3 opcode bits
-
-
 	//Microinstructions don't have indirect or auto increment modes
 	//Set the addressing mode to direct to not add additional cycles onto micro ops
 	if(registers->IR != microinstruction) {
@@ -157,6 +153,9 @@ void execute_opcode(struct shared_vars* shared){
 	else {
 		addressing_mode = DIRECT_MODE;
 	}
+	
+	registers->PC++;																	// increment the PC
+	registers->IR = (current_instruction >> 9) & 0x7;						// Only grab the 3 opcode bits
 
 	/* !update trace file here for instruction read! */
 	switch(current_instruction & OP_CODE_MASK){
