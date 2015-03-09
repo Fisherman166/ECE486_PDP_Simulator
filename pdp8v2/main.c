@@ -312,7 +312,9 @@ void execute_opcode(struct shared_vars* shared){
 				write_branch_trace(current_PC, current_PC + 1, conditional_text, subgroup_taken);
 			}
 			//AND subgroup if bit 3 is set and bits 0-2 are not set
-			else if( current_instruction & MICRO_GROUP2_SUBGROUP_BIT ) {
+			else if(((current_instruction & MICRO_INSTRUCTION_SPA_BITS) == MICRO_INSTRUCTION_SPA_BITS) ||
+					  ((current_instruction & MICRO_INSTRUCTION_SNA_BITS) == MICRO_INSTRUCTION_SNA_BITS) ||
+					  ((current_instruction & MICRO_INSTRUCTION_SZL_BITS) == MICRO_INSTRUCTION_SZL_BITS)) {
 				//Set to 1 initially so it passes the AND at the end
 				subgroup_returns[0] = 1;
 				subgroup_returns[1] = 1;
@@ -339,12 +341,12 @@ void execute_opcode(struct shared_vars* shared){
 					subgroup_taken = 1;
 				}
 				write_branch_trace(current_PC, current_PC + 1, conditional_text, subgroup_taken);
-			}
-
-			//SKP will run along with SPA, SNA or SZL if bits 3-5 are not checked
-			if((current_instruction & 07770) == MICRO_INSTRUCTION_SKP_BITS){
-				SKP(registers);
-				strcat(instruct_text, "SKP ");
+			} else {
+				//SKP will run along with SPA, SNA or SZL if bits 3-5 are not checked
+				if((current_instruction & MICRO_INSTRUCTION_SKP_BITS) == MICRO_INSTRUCTION_SKP_BITS){
+					SKP(registers);
+					strcat(instruct_text, "SKP ");
+				}
 			}
 			if((current_instruction & MICRO_INSTRUCTION_CLA_BITS) == MICRO_INSTRUCTION_CLA_BITS){
 				CLA(registers);
