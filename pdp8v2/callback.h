@@ -33,6 +33,7 @@ void tracepoint_to_remove(int, g_items*);
 void sr_entry_callback (GtkEntry *entry, gpointer  user_data);
 void display_memory_page(GtkWidget *button, gpointer   user_data);
 void display_lst_file(GtkWidget *button, gpointer   user_data);
+void update_memory_buffer(g_items*);
 
 
 //Intermediate functions

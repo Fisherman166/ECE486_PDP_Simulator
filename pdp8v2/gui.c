@@ -301,10 +301,10 @@ void radio_button_callbacks( g_items * obj)
     g_signal_connect (GTK_TOGGLE_BUTTON (obj->branch_trace), "toggled",
                       G_CALLBACK (Diplay_branch_trace),  obj);
 
-   g_signal_connect (GTK_TOGGLE_BUTTON (obj->memory_trace), "toggled",
+   g_signal_connect (GTK_TOGGLE_BUTTON (obj->display_lst_file), "toggled",
                       G_CALLBACK (display_lst_file),  obj);
 
-    g_signal_connect (GTK_TOGGLE_BUTTON (obj->branch_trace), "toggled",
+    g_signal_connect (GTK_TOGGLE_BUTTON (obj->display_memory_page), "toggled",
                       G_CALLBACK (display_memory_page),  obj);
 }
 
@@ -360,7 +360,8 @@ void activate (GtkApplication *app, gpointer    data)
 	 init_system(obj->copy_argc, obj->copy_argv, obj->coherance_vars);	//Initialize the simulator
 	 //Start the memory page window at page 0
 	 print_memory_page(0);
-    load_buffer(obj, "MEMORY_PAGE.txt", obj->buffer);
+	 print_memory_list();
+	 update_memory_buffer(obj);
 
     gtk_container_add (GTK_CONTAINER (obj->window), GTK_WIDGET (obj->grid));
     gtk_widget_show_all (obj->window);
