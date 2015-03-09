@@ -26,6 +26,8 @@ void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
    g_items * local_object;
    const char *pagenumber_text;
 	const char *octal_error = "The inputted address is not a valid octal address";
+	const uint16_t maximum_page_num = 037;
+	char buffer_text[50];
 	static int valid_octal;
    pagenumber_text = gtk_entry_get_text(entry);
    local_object = (g_items *) user_data;
@@ -35,9 +37,16 @@ void page_number_entry_callback (GtkEntry *entry, gpointer  user_data)
 	local_object->msgbuff = gtk_text_view_get_buffer (GTK_TEXT_VIEW (local_object->messages_txt));
 	if(valid_octal) {
    	local_object->coherance_vars->last_mem_page = strtol(pagenumber_text, NULL, 8);	//Use octal base
-      print_memory_page(local_object->coherance_vars->last_mem_page);
-		update_memory_buffer(local_object);
-      gtk_text_buffer_set_text (local_object->msgbuff, "", -1);
+
+		if(local_object->coherance_vars->last_mem_page > maximum_page_num) {
+			sprintf(buffer_text, "Page number %02o is out of range", local_object->coherance_vars->last_mem_page );
+			gtk_text_buffer_set_text (local_object->msgbuff, buffer_text, -1);
+		}
+		else {
+			print_memory_page(local_object->coherance_vars->last_mem_page);
+			update_memory_buffer(local_object);
+			gtk_text_buffer_set_text (local_object->msgbuff, "", -1);
+		}
 	}
 	else {
       gtk_text_buffer_set_text (local_object->msgbuff, octal_error, -1);
