@@ -233,8 +233,8 @@ void RAR(regs* registers) {
 	/* Shift right 1.  New link is bit 0 of registers->AC.
 	** Bit 11 of new registers->AC is old link bit value.
 	*/
-	registers->AC >>= 1;
 	registers->link_bit = registers->AC & 1;
+	registers->AC >>= 1;
 	registers->AC = (registers->AC | (old_link << bit11_shift)) & CUTOFF_MASK;
 }
 
